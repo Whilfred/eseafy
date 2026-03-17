@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fatima Mode — Boutique Zora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,600&family=Cabinet+Grotesk:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --navy: #060D1C;
+  --navy-2: #0A1428;
+  --navy-3: #0F1D38;
+  --navy-4: #152244;
+  --blue: #1A4A8A;
+  --sapphire: #2E7CF6;
+  --sapphire-2: #4A8FF7;
+  --sapphire-bright: #7ABCFA;
+  --silver: #BDD0EF;
+  --silver-2: #7295C5;
+  --silver-3: #3A5880;
+  --white: #F2F7FF;
+  --white-2: #E8F0FC;
+  --border: rgba(46,124,246,0.12);
+  --border-2: rgba(46,124,246,0.28);
+  --success: #34D399;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Cabinet Grotesk', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: var(--font-sans);
+  cursor: none;
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit; }
+
+/* CURSOR */
+#cursor {
+  position: fixed; width: 8px; height: 8px;
+  background: var(--sapphire); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  mix-blend-mode: screen;
+}
+#cursor-ring {
+  position: fixed; width: 30px; height: 30px;
+  border: 1px solid rgba(46,124,246,0.35);
+  border-radius: 50%; pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: all 0.1s ease-out;
+}
+
+/* BG */
+.bg-fixed {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 50% 40% at 80% 10%, rgba(26,74,138,0.3) 0%, transparent 60%),
+    radial-gradient(ellipse 30% 40% at 20% 80%, rgba(46,124,246,0.1) 0%, transparent 60%);
+}
+.bg-noise {
+  position: fixed; inset: 0; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* ─── TOP BAR (shop header) ─── */
+.shop-topbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 200;
+  height: 58px;
+  display: flex; align-items: center;
+  padding: 0 32px;
+  background: rgba(6,13,28,0.85);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  gap: 16px;
+  transition: background 0.3s;
+}
+.zora-badge {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.78rem; color: var(--silver-3);
+  font-family: var(--font-mono);
+}
+.zora-badge-icon {
+  width: 22px; height: 22px;
+  background: var(--sapphire);
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 900; color: white;
+}
+.topbar-divider { width: 1px; height: 20px; background: var(--border-2); }
+.shop-topbar-name {
+  font-weight: 600; font-size: 0.88rem; color: var(--white);
+}
+.topbar-spacer { flex: 1; }
+.topbar-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--navy-3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; width: 220px;
+  transition: border-color 0.2s;
+}
+.topbar-search:focus-within { border-color: var(--border-2); }
+.topbar-search input {
+  background: none; border: none; outline: none;
+  font-size: 0.82rem; color: var(--white); flex: 1;
+  font-family: var(--font-sans);
+}
+.topbar-search input::placeholder { color: var(--silver-3); }
+.cart-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 18px;
+  background: var(--sapphire);
+  border-radius: 8px;
+  font-size: 0.84rem; font-weight: 600;
+  color: white; cursor: none;
+  transition: all 0.2s;
+  position: relative;
+}
+.cart-btn:hover {
+  background: var(--sapphire-2);
+  box-shadow: 0 6px 20px rgba(46,124,246,0.35);
+}
+.cart-count {
+  background: white; color: var(--sapphire);
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  font-size: 0.65rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+}
+
+/* ─── SHOP HERO ─── */
+.shop-hero {
+  padding-top: 58px;
+  position: relative;
+  z-index: 1;
+}
+.shop-banner {
+  height: 280px;
+  position: relative;
+  overflow: hidden;
+}
+.shop-banner img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  filter: brightness(0.35) saturate(0.7);
+}
+.shop-banner::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 30%, var(--navy) 100%),
+              linear-gradient(0deg, rgba(46,124,246,0.08) 0%, transparent 50%);
+}
+.shop-banner-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(46,124,246,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46,124,246,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.shop-profile {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px;
+  position: relative;
+  z-index: 2;
+  margin-top: -60px;
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+.shop-logo {
+  width: 100px; height: 100px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--blue), var(--sapphire));
+  border: 3px solid var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 16px 40px rgba(46,124,246,0.25);
+}
+.shop-info { padding-bottom: 4px; }
+.shop-name-big {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 12px;
+}
+.verified-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(46,124,246,0.15);
+  border: 1px solid rgba(46,124,246,0.3);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.65rem; font-family: var(--font-mono);
+  color: var(--sapphire-bright);
+}
+.shop-desc-short {
+  font-size: 0.9rem; color: var(--silver-2);
+  font-weight: 300; max-width: 500px;
+}
+.shop-profile-right {
+  margin-left: auto;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding-bottom: 4px;
+}
+.shop-stat-mini { text-align: center; }
+.shop-stat-mini-val {
+  font-family: var(--font-serif);
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--white); line-height: 1;
+}
+.shop-stat-mini-lbl {
+  font-size: 0.68rem; color: var(--silver-3);
+  font-family: var(--font-mono); text-transform: uppercase;
+  letter-spacing: 0.06em; margin-top: 3px;
+}
+.share-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 20px;
+  background: rgba(46,124,246,0.12);
+  border: 1px solid var(--border-2);
+  border-radius: 9px;
+  font-size: 0.84rem; font-weight: 500;
+  color: var(--sapphire-bright); cursor: none;
+  transition: all 0.2s;
+}
+.share-btn:hover { background: rgba(46,124,246,0.2); }
+
+/* ─── FILTER TABS ─── */
+.filter-bar {
+  max-width: 1100px;
+  margin: 0 auto 32px;
+  padding: 0 32px;
+  position: relative; z-index: 1;
+}
+.filter-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+.filter-tab {
+  padding: 10px 20px;
+  font-size: 0.86rem; font-weight: 500;
+  color: var(--silver-3); cursor: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.filter-tab:hover { color: var(--white); }
+.filter-tab.active {
+  color: var(--sapphire-bright);
+  border-bottom-color: var(--sapphire);
+}
+.filter-spacer { flex: 1; }
+.sort-select {
+  background: var(--navy-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--silver);
+  outline: none; cursor: none;
+}
+
+/* ─── PRODUCTS GRID ─── */
+.products-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px 80px;
+  position: relative; z-index: 1;
+}
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.product-card {
+  background: var(--navy-3);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s var(--ease), box-shadow 0.3s;
+  cursor: none;
+  animation: fadeUp 0.5s var(--ease) both;
+}
+.product-card:hover {
+  border-color: var(--border-2);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(46,124,246,0.12);
+}
+.product-card:nth-child(1) { animation-delay: 0.05s; }
+.product-card:nth-child(2) { animation-delay: 0.1s; }
+.product-card:nth-child(3) { animation-delay: 0.15s; }
+.product-card:nth-child(4) { animation-delay: 0.2s; }
+.product-card:nth-child(5) { animation-delay: 0.25s; }
+.product-card:nth-child(6) { animation-delay: 0.3s; }
+.product-card:nth-child(7) { animation-delay: 0.35s; }
+.product-card:nth-child(8) { animation-delay: 0.4s; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.product-img-wrap {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+.product-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s var(--ease);
+  filter: brightness(0.85) saturate(0.9);
+}
+.product-card:hover .product-img-wrap img { transform: scale(1.06); }
+
+.product-type-badge {
+  position: absolute;
+  top: 12px; left: 12px;
+  background: rgba(6,13,28,0.8);
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  color: var(--sapphire-bright);
+  backdrop-filter: blur(8px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.product-wishlist {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 30px; height: 30px;
+  background: rgba(6,13,28,0.7);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s;
+  cursor: none;
+}
+.product-wishlist:hover { background: rgba(46,124,246,0.2); border-color: var(--border-2); }
+
+.product-body { padding: 16px; }
+.product-category {
+  font-size: 0.65rem; font-family: var(--font-mono);
+  color: var(--silver-3); text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+.product-title {
+  font-family: var(--font-serif);
+  font-size: 1.05rem; font-weight: 600;
+  color: var(--white); line-height: 1.3;
+  margin-bottom: 8px;
+}
+.product-desc {
+  font-size: 0.78rem; color: var(--silver-3); line-height: 1.5;
+  margin-bottom: 14px;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.product-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.product-price {
+  font-family: var(--font-serif);
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--white);
+}
+.product-price-sub {
+  font-size: 0.65rem; color: var(--silver-3); font-family: var(--font-mono);
+}
+.add-to-cart {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  background: var(--sapphire);
+  color: white; border-radius: 8px;
+  font-size: 0.78rem; font-weight: 600;
+  cursor: none; transition: all 0.2s;
+  font-family: var(--font-sans);
+  border: none;
+}
+.add-to-cart:hover {
+  background: var(--sapphire-2);
+  box-shadow: 0 6px 16px rgba(46,124,246,0.35);
+  transform: scale(1.03);
+}
+
+/* ─── MODAL panier ─── */
+.cart-overlay {
+  position: fixed; inset: 0;
+  background: rgba(6,13,28,0.8);
+  z-index: 400;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(4px);
+}
+.cart-overlay.open { opacity: 1; pointer-events: all; }
+
+.cart-drawer {
+  position: fixed;
+  top: 0; right: -440px; bottom: 0;
+  width: 420px;
+  background: var(--navy-2);
+  border-left: 1px solid var(--border-2);
+  z-index: 500;
+  display: flex; flex-direction: column;
+  transition: right 0.35s var(--ease);
+  overflow-y: auto;
+}
+.cart-drawer.open { right: 0; }
+
+.cart-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cart-title {
+  font-family: var(--font-serif);
+  font-size: 1.3rem; font-weight: 700; color: var(--white);
+}
+.cart-close {
+  width: 32px; height: 32px;
+  background: var(--navy-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none; font-size: 0.85rem; color: var(--silver-2);
+  transition: all 0.2s;
+}
+.cart-close:hover { border-color: var(--border-2); color: var(--white); }
+
+.cart-items { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.cart-item {
+  display: flex; gap: 12px;
+  padding: 12px;
+  background: var(--navy-3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.cart-item-img {
+  width: 60px; height: 60px;
+  border-radius: 8px; object-fit: cover;
+  flex-shrink: 0; border: 1px solid var(--border);
+}
+.cart-item-name { font-size: 0.88rem; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+.cart-item-price { font-size: 0.8rem; color: var(--sapphire-bright); font-family: var(--font-mono); }
+.cart-item-qty {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 0.85rem;
+}
+.qty-btn {
+  width: 24px; height: 24px;
+  background: var(--navy-4);
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none; font-size: 0.85rem; color: var(--silver);
+  transition: all 0.2s;
+}
+.qty-btn:hover { background: rgba(46,124,246,0.15); border-color: var(--sapphire); }
+
+.cart-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; flex: 1; gap: 12px;
+  padding: 40px;
+}
+.cart-empty-icon { font-size: 3rem; opacity: 0.3; }
+.cart-empty-text { font-size: 0.88rem; color: var(--silver-3); text-align: center; }
+
+.cart-footer {
+  padding: 20px;
+  border-top: 1px solid var(--border);
+}
+.cart-total {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+}
+.cart-total-label { font-size: 0.85rem; color: var(--silver-2); }
+.cart-total-value {
+  font-family: var(--font-serif);
+  font-size: 1.3rem; font-weight: 700; color: var(--white);
+}
+.checkout-btn {
+  display: block; width: 100%;
+  padding: 14px; text-align: center;
+  background: var(--sapphire);
+  color: white; border-radius: 10px;
+  font-size: 0.95rem; font-weight: 700;
+  cursor: none; transition: all 0.2s;
+  font-family: var(--font-sans);
+  border: none; margin-bottom: 10px;
+}
+.checkout-btn:hover {
+  background: var(--sapphire-2);
+  box-shadow: 0 10px 28px rgba(46,124,246,0.4);
+  transform: translateY(-1px);
+}
+.delivery-note {
+  font-size: 0.75rem; color: var(--silver-3); text-align: center;
+  font-family: var(--font-mono);
+}
+
+/* ORDER MODAL */
+.order-overlay {
+  position: fixed; inset: 0;
+  background: rgba(6,13,28,0.9);
+  z-index: 600;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+}
+.order-overlay.open { opacity: 1; pointer-events: all; }
+.order-modal {
+  background: var(--navy-2);
+  border: 1px solid var(--border-2);
+  border-radius: 20px;
+  padding: 36px;
+  width: 100%; max-width: 480px;
+  animation: modalIn 0.4s var(--ease) both;
+  position: relative;
+}
+@keyframes modalIn {
+  from { opacity:0; transform:scale(0.95) translateY(16px); }
+  to { opacity:1; transform:scale(1) translateY(0); }
+}
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.6rem; font-weight: 700; color: var(--white);
+  margin-bottom: 6px;
+}
+.modal-sub { font-size: 0.85rem; color: var(--silver-2); margin-bottom: 28px; font-weight: 300; }
+.modal-field-group { margin-bottom: 16px; }
+.modal-label {
+  display: block;
+  font-size: 0.72rem; font-family: var(--font-mono);
+  color: var(--silver); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.modal-input {
+  width: 100%;
+  padding: 11px 14px;
+  background: rgba(15,29,56,0.8);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font-family: var(--font-sans); font-size: 0.88rem; color: var(--white);
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.modal-input:focus {
+  border-color: var(--sapphire);
+  box-shadow: 0 0 0 3px rgba(46,124,246,0.12);
+}
+.modal-input::placeholder { color: var(--silver-3); }
+.modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-submit {
+  width: 100%; padding: 14px;
+  background: var(--sapphire); color: white; border: none;
+  border-radius: 10px; font-size: 0.95rem; font-weight: 700;
+  cursor: none; transition: all 0.2s; font-family: var(--font-sans);
+  margin-top: 8px; margin-bottom: 12px;
+}
+.modal-submit:hover {
+  background: var(--sapphire-2);
+  box-shadow: 0 10px 28px rgba(46,124,246,0.4);
+}
+.modal-delivery-info {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  background: rgba(52,211,153,0.06);
+  border: 1px solid rgba(52,211,153,0.15);
+  border-radius: 10px;
+  font-size: 0.8rem; color: var(--silver-2);
+}
+.modal-close {
+  position: absolute; top: 20px; right: 20px;
+  width: 30px; height: 30px;
+  background: var(--navy-3); border: 1px solid var(--border);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: none; color: var(--silver-2); transition: all 0.2s;
+}
+.modal-close:hover { border-color: var(--border-2); color: var(--white); }
+
+/* ─── FOOTER ─── */
+.shop-footer {
+  border-top: 1px solid var(--border);
+  text-align: center;
+  padding: 24px;
+  position: relative; z-index: 1;
+}
+.powered-by {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.78rem; color: var(--silver-3);
+}
+.powered-by .zora-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  color: var(--sapphire-bright); font-weight: 500;
+  transition: color 0.2s;
+}
+.powered-by .zora-link:hover { color: var(--white); }
+
+/* RESPONSIVE */
+@media (max-width: 1000px) {
+  .products-grid { grid-template-columns: repeat(3, 1fr); }
+  .shop-profile { flex-wrap: wrap; }
+  .shop-profile-right { width: 100%; justify-content: flex-start; }
+}
+@media (max-width: 700px) {
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .shop-topbar { padding: 0 16px; }
+  .topbar-search { display: none; }
+  .shop-profile { padding: 0 16px; margin-top: -40px; }
+  .products-section { padding: 0 16px 60px; }
+  .filter-bar { padding: 0 16px; }
+  .cart-drawer { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div class="bg-fixed"></div>
+<div class="bg-noise"></div>
+
+<!-- TOP BAR -->
+<header class="shop-topbar">
+  <div class="zora-badge">
+    <div class="zora-badge-icon">Z</div>
+    Zora
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="shop-topbar-name">Fatima Mode</div>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-search">
+    <span style="color:var(--silver-3);font-size:.8rem">🔍</span>
+    <input type="text" placeholder="Rechercher un produit...">
+  </div>
+  <div class="cart-btn" onclick="openCart()">
+    🛒 Panier
+    <span class="cart-count" id="cart-count">0</span>
+  </div>
+</header>
+
+<!-- SHOP HERO -->
+<div class="shop-hero">
+  <div class="shop-banner">
+    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400&q=80&fit=crop" alt="Fatima Mode" loading="eager">
+    <div class="shop-banner-grid"></div>
+  </div>
+
+  <div class="shop-profile">
+    <div class="shop-logo">👗</div>
+    <div class="shop-info">
+      <div class="shop-name-big">
+        Fatima Mode
+        <span class="verified-badge">✓ Vérifié</span>
+      </div>
+      <div class="shop-desc-short">Mode africaine authentique — pagnes, bijoux, formations couture. Livraison partout au Burkina Faso.</div>
+    </div>
+    <div class="shop-profile-right">
+      <div class="shop-stat-mini">
+        <div class="shop-stat-mini-val">124</div>
+        <div class="shop-stat-mini-lbl">Commandes</div>
+      </div>
+      <div class="shop-stat-mini">
+        <div class="shop-stat-mini-val">12</div>
+        <div class="shop-stat-mini-lbl">Produits</div>
+      </div>
+      <div class="shop-stat-mini">
+        <div class="shop-stat-mini-val">4.9★</div>
+        <div class="shop-stat-mini-lbl">Note</div>
+      </div>
+      <div class="share-btn" onclick="shareShop()">📤 Partager</div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-inner">
+    <span class="filter-tab active" onclick="filterProducts(this, 'all')">Tout (12)</span>
+    <span class="filter-tab" onclick="filterProducts(this, 'physique')">Physique (8)</span>
+    <span class="filter-tab" onclick="filterProducts(this, 'digital')">Digital (4)</span>
+    <span class="filter-tab" onclick="filterProducts(this, 'mode')">Mode</span>
+    <span class="filter-tab" onclick="filterProducts(this, 'bijoux')">Bijoux</span>
+    <div class="filter-spacer"></div>
+    <select class="sort-select">
+      <option>Trier : Popularité</option>
+      <option>Prix : croissant</option>
+      <option>Prix : décroissant</option>
+      <option>Nouveautés</option>
+    </select>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="products-section">
+  <div class="products-grid" id="products-grid">
+
+    <!-- Product 1 -->
+    <div class="product-card" data-category="physique mode">
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=75&fit=crop" alt="Pagne wax" loading="lazy">
+        <span class="product-type-badge">Physique</span>
+        <div class="product-wishlist">♡</div>
+      </div>
+      <div class="product-body">
+        <div class="product-category">Mode · Tissus</div>
+        <div class="product-title">Pagne Wax Premium Bogolan</div>
+        <div class="product-desc">Tissu authentique 6 yards, motifs traditionnels du Burkina. Qualité supérieure.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">22 500 XOF</div>
+            <div class="product-price-sub">Livraison incluse</div>
+          </div>
+          <button class="add-to-cart" onclick="addToCart('Pagne Wax Premium', 22500, this)">+ Panier</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="product-card" data-category="digital">
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=400&q=75&fit=crop" alt="Formation" loading="lazy">
+        <span class="product-type-badge" style="color:#A78BFA;border-color:rgba(167,139,250,0.3)">Digital</span>
+        <div class="product-wishlist">♡</div>
+      </div>
+      <div class="product-body">
+        <div class="product-category">Formation · Couture</div>
+        <div class="product-title">Formation Couture Africaine Complète</div>
+        <div class="product-desc">20 vidéos HD, PDF patrons, accès à vie. Du débutant au niveau pro.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">15 000 XOF</div>
+            <div class="product-price-sub">Accès immédiat</div>
+          </div>
+          <button class="add-to-cart" onclick="addToCart('Formation Couture', 15000, this)">+ Panier</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product 3 -->
+    <div class="product-card" data-category="physique bijoux">
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=75&fit=crop" alt="Collier" loading="lazy">
+        <span class="product-type-badge">Physique</span>
+        <div class="product-wishlist">♡</div>
+      </div>
+      <div class="product-body">
+        <div class="product-category">Bijoux · Artisanat</div>
+        <div class="product-title">Collier Perles Royales</div>
+        <div class="product-desc">Perles naturelles, fabrication artisanale à Ouagadougou. Pièce unique.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">8 500 XOF</div>
+            <div class="product-price-sub">+ Livraison</div>
+          </div>
+          <button class="add-to-cart" onclick="addToCart('Collier Perles Royales', 8500, this)">+ Panier</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product 4 -->
+    <div class="product-card" data-category="digital">
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=75&fit=crop" alt="E-book" loading="lazy">
+        <span class="product-type-badge" style="color:#A78BFA;border-color:rgba(167,139,250,0.3)">Digital</span>
+        <div class="product-wishlist">♡</div>
+      </div>
+      <div class="product-body">
+        <div class="product-category">E-book · Mode</div>
+        <div class="product-title">Guide Mode Africaine 2024</div>
+        <div class="product-desc">100 pages, tendances, conseils stylisme, adresses créateurs. PDF + EPUB.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">5 000 XOF</div>
+            <div class="product-price-sub">Téléchargement instantané</div>
+          </div>
+          <button class="add-to-cart" onclick="addToCart('Guide Mode Africaine', 5000, this)">+ Panier</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product 5 -->
+    <div class="product-card" data-category="physique mode">
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1571513722275-4b41940f54b8?w=400&q=75&fit=crop" alt="Boubou" loading="lazy">
+        <span class="product-type-badge">Physique</span>
+        <div class="product-wishlist">♡</div>
+      </div>
+      <div class="product-body">
+        <div class="product-category">Mode · Tenue</div>
+        <div class="product-title">Boubou Grand Kaftan</div>
+        <div class="product-desc">Taille unique ajustable. Broderies à la main, tissu coton léger. Cérémonie & quotidien.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">35 000 XOF</div>
+            <div class="product-price-sub">Livraison incluse</div>
+          </div>
+          <button class="add-to-cart" onclick="addToCart('Boubou Grand Kaftan', 35000, this)">+ Panier</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product 6 -->
+    <div class="product-card" data-category="physique bijoux">
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=400&q=75&fit=crop" alt="Bracelet" loading="lazy">
+        <span class="product-type-badge">Physique</span>
+        <div class="product-wishlist">♡</div>
+      </div>
+      <div class="product-body">
+        <div class="product-category">Bijoux · Artisanat</div>
+        <div class="product-title">Set Bracelets Cuivre</div>
+        <div class="product-desc">Lot de 3 bracelets tressés, cuivre et or. Symboles africains gravés à la main.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">12 000 XOF</div>
+            <div class="product-price-sub">+ Livraison</div>
+          </div>
+          <button class="add-to-cart" onclick="addToCart('Set Bracelets Cuivre', 12000, this)">+ Panier</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product 7 -->
+    <div class="product-card" data-category="digital">
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&q=75&fit=crop" alt="Templates" loading="lazy">
+        <span class="product-type-badge" style="color:#A78BFA;border-color:rgba(167,139,250,0.3)">Digital</span>
+        <div class="product-wishlist">♡</div>
+      </div>
+      <div class="product-body">
+        <div class="product-category">Templates · Business</div>
+        <div class="product-title">Pack Templates Réseaux Sociaux</div>
+        <div class="product-desc">50 templates Canva pour promouvoir votre boutique. Instagram, Facebook, WhatsApp.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">7 500 XOF</div>
+            <div class="product-price-sub">Accès Canva inclus</div>
+          </div>
+          <button class="add-to-cart" onclick="addToCart('Pack Templates', 7500, this)">+ Panier</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product 8 -->
+    <div class="product-card" data-category="physique mode">
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=75&fit=crop" alt="Sneakers" loading="lazy">
+        <span class="product-type-badge">Physique</span>
+        <div class="product-wishlist">♡</div>
+      </div>
+      <div class="product-body">
+        <div class="product-category">Chaussures · Mode</div>
+        <div class="product-title">Sneakers Tissu Kente</div>
+        <div class="product-desc">Chaussures artisanales, semelle caoutchouc. Tissu kente du Ghana. Pointures 36–45.</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">28 000 XOF</div>
+            <div class="product-price-sub">Livraison incluse</div>
+          </div>
+          <button class="add-to-cart" onclick="addToCart('Sneakers Kente', 28000, this)">+ Panier</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header">
+    <div class="cart-title">Mon panier 🛒</div>
+    <div class="cart-close" onclick="closeCart()">✕</div>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🛒</div>
+      <div class="cart-empty-text">Votre panier est vide.<br>Ajoutez des produits pour commencer.</div>
+    </div>
+  </div>
+  <div class="cart-footer" id="cart-footer" style="display:none">
+    <div class="cart-total">
+      <div class="cart-total-label">Total</div>
+      <div class="cart-total-value" id="cart-total-val">0 XOF</div>
+    </div>
+    <button class="checkout-btn" onclick="openOrder()">Commander — Paiement à la livraison →</button>
+    <div class="delivery-note">🚚 Paiement à la réception · Livraison 24-48h</div>
+  </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="order-overlay" id="order-overlay">
+  <div class="order-modal">
+    <div class="modal-close" onclick="closeOrder()">✕</div>
+    <div class="modal-title">Finaliser la commande</div>
+    <div class="modal-sub">Paiement à la livraison — aucune carte bancaire requise</div>
+    <form onsubmit="submitOrder(event)">
+      <div class="modal-row">
+        <div class="modal-field-group">
+          <label class="modal-label">Prénom</label>
+          <input type="text" class="modal-input" placeholder="Fatima" required>
+        </div>
+        <div class="modal-field-group">
+          <label class="modal-label">Nom</label>
+          <input type="text" class="modal-input" placeholder="Ouédraogo" required>
+        </div>
+      </div>
+      <div class="modal-field-group">
+        <label class="modal-label">Téléphone</label>
+        <input type="tel" class="modal-input" placeholder="+226 70 00 00 00" required>
+      </div>
+      <div class="modal-field-group">
+        <label class="modal-label">Adresse de livraison</label>
+        <input type="text" class="modal-input" placeholder="Secteur 15, Ouagadougou" required>
+      </div>
+      <div class="modal-field-group">
+        <label class="modal-label">Note (optionnel)</label>
+        <input type="text" class="modal-input" placeholder="Taille, couleur, instructions...">
+      </div>
+      <button type="submit" class="modal-submit">✓ Confirmer ma commande →</button>
+    </form>
+    <div class="modal-delivery-info">
+      <span>🚚</span>
+      <span>Livraison sous 24–48h · Paiement uniquement à la réception</span>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="shop-footer">
+  <div class="powered-by">
+    Boutique propulsée par
+    <a href="index.html" class="zora-link">
+      <span style="width:16px;height:16px;background:var(--sapphire);border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:900;color:white">Z</span>
+      Zora
+    </a>
+    · Créez votre boutique gratuitement
+  </div>
+</footer>
+
+<script>
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+(function anim() {
+  cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+  rx+=(mx-rx)*0.1; ry+=(my-ry)*0.1;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(anim);
+})();
+
+// Cart state
+let cart = [];
+
+function addToCart(name, price, btn) {
+  const existing = cart.find(i => i.name === name);
+  if (existing) existing.qty++;
+  else cart.push({ name, price, qty: 1 });
+  updateCartUI();
+  const orig = btn.textContent;
+  btn.textContent = '✓ Ajouté !';
+  btn.style.background = '#34D399';
+  setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
+}
+
+function updateCartUI() {
+  const count = cart.reduce((s,i) => s+i.qty, 0);
+  document.getElementById('cart-count').textContent = count;
+  const total = cart.reduce((s,i) => s + i.price*i.qty, 0);
+  document.getElementById('cart-total-val').textContent = total.toLocaleString('fr-FR') + ' XOF';
+  const itemsEl = document.getElementById('cart-items');
+  const footer = document.getElementById('cart-footer');
+  if (cart.length === 0) {
+    itemsEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><div class="cart-empty-text">Votre panier est vide.<br>Ajoutez des produits pour commencer.</div></div>`;
+    footer.style.display = 'none';
+  } else {
+    footer.style.display = 'block';
+    itemsEl.innerHTML = cart.map((item,i) => `
+      <div class="cart-item">
+        <div style="width:60px;height:60px;border-radius:8px;background:var(--navy-4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:1px solid var(--border);flex-shrink:0">🛍</div>
+        <div style="flex:1;min-width:0">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-price">${(item.price*item.qty).toLocaleString('fr-FR')} XOF</div>
+        </div>
+        <div class="cart-item-qty">
+          <div class="qty-btn" onclick="changeQty(${i},-1)">−</div>
+          <span>${item.qty}</span>
+          <div class="qty-btn" onclick="changeQty(${i},1)">+</div>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function changeQty(i, d) {
+  cart[i].qty += d;
+  if (cart[i].qty <= 0) cart.splice(i, 1);
+  updateCartUI();
+}
+
+function openCart() {
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('open');
+}
+function closeCart() {
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+}
+function openOrder() {
+  document.getElementById('order-overlay').classList.add('open');
+  closeCart();
+}
+function closeOrder() {
+  document.getElementById('order-overlay').classList.remove('open');
+}
+
+function submitOrder(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('.modal-submit');
+  btn.textContent = '⏳ Traitement...';
+  setTimeout(() => {
+    btn.textContent = '✓ Commande confirmée !';
+    btn.style.background = '#34D399';
+    cart = [];
+    updateCartUI();
+    setTimeout(() => closeOrder(), 2500);
+  }, 1200);
+}
+
+function filterProducts(el, cat) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.product-card').forEach(card => {
+    const cats = card.dataset.category || '';
+    card.style.display = (cat === 'all' || cats.includes(cat)) ? '' : 'none';
+  });
+}
+
+function shareShop() {
+  if (navigator.share) {
+    navigator.share({ title: 'Fatima Mode', url: window.location.href });
+  } else {
+    navigator.clipboard.writeText(window.location.href).catch(()=>{});
+    alert('Lien copié !');
+  }
+}
+</script>
+</body>
+</html>

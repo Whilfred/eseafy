@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Easyfy — Votre boutique. Votre empire.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,700;0,800;1,700&family=Fraunces:ital,wght@0,700;0,900;1,700;1,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: #F0F6FF;
+  color: #0B1F3A;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 400;
+  overflow-x: hidden;
+  cursor: none;
+}
+a { text-decoration: none; color: inherit; }
+img { display: block; max-width: 100%; }
+
+/* ═══════════════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════════════ */
+#cursor {
+  position: fixed;
+  width: 10px; height: 10px;
+  background: #1A6BFF;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s;
+  mix-blend-mode: multiply;
+}
+#cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(26,107,255,0.35);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: all 0.12s ease-out;
+}
+body:has(a:hover) #cursor { width: 16px; height: 16px; background: #0A4FCC; }
+body:has(a:hover) #cursor-ring { width: 52px; height: 52px; border-color: rgba(26,107,255,0.6); }
+
+/* ═══════════════════════════════════════════
+   CSS VARIABLES
+═══════════════════════════════════════════ */
+:root {
+  --sky: #1A6BFF;
+  --sky-bright: #4D8FFF;
+  --sky-light: #E8F1FF;
+  --sky-pale: #F0F6FF;
+  --cyan: #00C2FF;
+  --cyan-dim: rgba(0,194,255,0.1);
+  --navy: #0B1F3A;
+  --navy-2: #152E52;
+  --navy-3: #1E3D6B;
+  --white: #FFFFFF;
+  --off-white: #F8FBFF;
+  --mist: #E2EEFF;
+  --mist-2: #C8DCFF;
+  --steel: #7A9CC5;
+  --steel-2: #4A72A0;
+  --border: rgba(26,107,255,0.12);
+  --border-2: rgba(26,107,255,0.28);
+  --shadow: 0 4px 24px rgba(26,107,255,0.12);
+  --shadow-lg: 0 16px 60px rgba(26,107,255,0.18);
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ═══════════════════════════════════════════
+   BG MESH
+═══════════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 100% 0%, rgba(26,107,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 0% 100%, rgba(0,194,255,0.06) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(26,107,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,107,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
+}
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 0 48px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid transparent;
+  transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
+}
+nav.scrolled {
+  background: rgba(240,246,255,0.94);
+  border-color: var(--border);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 4px 24px rgba(26,107,255,0.08);
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--navy);
+}
+.nav-logo-icon {
+  width: 36px; height: 36px;
+  background: var(--sky);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-size: 0.95rem; font-weight: 800;
+  font-family: var(--font-serif);
+  box-shadow: 0 6px 20px rgba(26,107,255,0.35);
+}
+.nav-links {
+  display: flex; gap: 36px; align-items: center;
+}
+.nav-links a {
+  font-size: 0.87rem; font-weight: 500;
+  color: var(--steel-2);
+  letter-spacing: 0.01em;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 0; height: 2px;
+  background: var(--sky);
+  border-radius: 1px;
+  transition: width 0.3s var(--ease);
+}
+.nav-links a:hover { color: var(--navy); }
+.nav-links a:hover::after { width: 100%; }
+.nav-cta { display: flex; gap: 10px; align-items: center; }
+.btn-ghost {
+  padding: 9px 22px;
+  border: 1.5px solid var(--border-2);
+  border-radius: 8px;
+  font-size: 0.84rem; font-weight: 600;
+  color: var(--sky);
+  transition: all 0.2s;
+  font-family: var(--font-sans);
+  background: white;
+}
+.btn-ghost:hover { border-color: var(--sky); background: var(--sky-light); }
+.btn-primary {
+  padding: 9px 22px;
+  background: var(--sky);
+  border-radius: 8px;
+  font-size: 0.84rem; font-weight: 700;
+  color: white;
+  transition: all 0.2s;
+  font-family: var(--font-sans);
+  border: 1.5px solid var(--sky);
+  box-shadow: 0 4px 14px rgba(26,107,255,0.3);
+}
+.btn-primary:hover {
+  background: #0A4FCC;
+  border-color: #0A4FCC;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(26,107,255,0.4);
+}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Animated blobs */
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: blobFloat 10s ease-in-out infinite;
+}
+.blob-1 {
+  width: 600px; height: 600px;
+  background: rgba(26,107,255,0.1);
+  top: -200px; right: -100px;
+  animation-delay: 0s;
+}
+.blob-2 {
+  width: 400px; height: 400px;
+  background: rgba(0,194,255,0.08);
+  bottom: -100px; left: -80px;
+  animation-delay: 3s;
+}
+.blob-3 {
+  width: 300px; height: 300px;
+  background: rgba(26,107,255,0.06);
+  top: 40%; left: 35%;
+  animation-delay: 6s;
+}
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(20px,-30px) scale(1.05); }
+  66% { transform: translate(-15px,20px) scale(0.97); }
+}
+
+/* Floating dots */
+.hero-dots {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.hero-dot {
+  position: absolute;
+  width: 4px; height: 4px;
+  background: var(--sky);
+  border-radius: 50%;
+  opacity: 0.25;
+  animation: dotRise 12s linear infinite;
+}
+.hero-dot:nth-child(1) { left: 15%; animation-delay: 0s; }
+.hero-dot:nth-child(2) { left: 38%; animation-delay: 3s; }
+.hero-dot:nth-child(3) { left: 62%; animation-delay: 6s; }
+.hero-dot:nth-child(4) { left: 82%; animation-delay: 9s; }
+@keyframes dotRise {
+  0% { bottom: -10px; opacity: 0; }
+  10% { opacity: 0.3; }
+  90% { opacity: 0.2; }
+  100% { bottom: 110vh; opacity: 0; }
+}
+
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 140px 48px 100px;
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  gap: 80px;
+  align-items: center;
+  width: 100%;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center; gap: 8px;
+  padding: 6px 16px;
+  border: 1.5px solid var(--border-2);
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-family: var(--font-mono);
+  color: var(--sky);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  background: white;
+  width: fit-content;
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.8s var(--ease) both;
+}
+.badge-dot {
+  width: 5px; height: 5px;
+  background: var(--sky);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--sky);
+  animation: glow 2s ease-in-out infinite;
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 6px var(--sky); }
+  50% { box-shadow: 0 0 16px var(--cyan); }
+}
+
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 5.5vw, 5rem);
+  font-weight: 900;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--navy);
+  margin-bottom: 24px;
+  animation: fadeUp 0.8s 0.1s var(--ease) both;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--sky);
+  position: relative;
+  display: inline-block;
+}
+.hero-title em::after {
+  content: '';
+  position: absolute;
+  bottom: 4px; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--sky), var(--cyan), transparent);
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--steel-2);
+  max-width: 500px;
+  margin-bottom: 40px;
+  font-weight: 300;
+  animation: fadeUp 0.8s 0.2s var(--ease) both;
+}
+
+.hero-actions {
+  display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+  animation: fadeUp 0.8s 0.3s var(--ease) both;
+}
+.btn-hero {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 32px;
+  background: var(--sky);
+  color: white;
+  border-radius: 10px;
+  font-size: 0.95rem; font-weight: 700;
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  transition: all 0.25s var(--ease);
+  position: relative; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(26,107,255,0.35);
+}
+.btn-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  opacity: 0; transition: opacity 0.2s;
+}
+.btn-hero:hover { transform: translateY(-2px); box-shadow: 0 16px 48px rgba(26,107,255,0.45); background: #0A4FCC; }
+.btn-hero:hover::before { opacity: 1; }
+.btn-hero-arrow { transition: transform 0.2s; }
+.btn-hero:hover .btn-hero-arrow { transform: translateX(4px); }
+
+.btn-outline-hero {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 28px;
+  border: 1.5px solid var(--border-2);
+  color: var(--steel-2);
+  border-radius: 10px;
+  font-size: 0.95rem; font-weight: 600;
+  transition: all 0.2s;
+  background: white;
+}
+.btn-outline-hero:hover { border-color: var(--sky); color: var(--sky); background: var(--sky-light); }
+
+.hero-stats {
+  display: flex; gap: 0;
+  margin-top: 60px;
+  border-top: 1px solid var(--border);
+  padding-top: 40px;
+  animation: fadeUp 0.8s 0.4s var(--ease) both;
+}
+.hero-stat {
+  flex: 1;
+  padding-right: 32px; margin-right: 32px;
+  border-right: 1px solid var(--border);
+}
+.hero-stat:last-child { border-right: none; padding-right: 0; margin-right: 0; }
+.stat-val {
+  font-family: var(--font-serif);
+  font-size: 2rem; font-weight: 700;
+  color: var(--navy); line-height: 1; margin-bottom: 6px;
+}
+.stat-val span { color: var(--sky); }
+.stat-lbl {
+  font-size: 0.75rem; color: var(--steel);
+  letter-spacing: 0.04em; font-weight: 500; text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+
+/* ── HERO CARD ── */
+.hero-card {
+  background: white;
+  border: 1px solid var(--border-2);
+  border-radius: 20px;
+  backdrop-filter: blur(24px);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(26,107,255,0.05);
+  animation: fadeLeft 0.9s 0.2s var(--ease) both;
+}
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(32px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  background: var(--sky-light);
+}
+.card-dots { display: flex; gap: 6px; }
+.card-dot { width: 10px; height: 10px; border-radius: 50%; }
+.card-url {
+  flex: 1;
+  background: white;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 0.72rem; color: var(--steel);
+  font-family: var(--font-mono); margin-left: 4px;
+  border: 1px solid var(--border);
+}
+.card-body { padding: 20px; background: var(--off-white); }
+
+.shop-banner {
+  position: relative; border-radius: 12px; overflow: hidden;
+  margin-bottom: 16px; height: 110px;
+}
+.shop-banner img {
+  width: 100%; height: 100%;
+  object-fit: cover; filter: brightness(0.55) saturate(0.8);
+}
+.shop-banner-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: flex-end; padding: 14px;
+  background: linear-gradient(0deg, rgba(11,31,58,0.8) 0%, transparent 60%);
+}
+.shop-name { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 700; color: white; }
+.shop-status {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(52,211,153,0.2);
+  border: 1px solid rgba(52,211,153,0.4);
+  border-radius: 999px; padding: 2px 8px;
+  font-size: 0.65rem; color: #34D399; margin-left: 10px;
+  font-family: var(--font-mono);
+}
+
+.products-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px;
+}
+.product-card-mini {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.product-card-mini:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-2);
+  box-shadow: var(--shadow);
+}
+.product-img { height: 68px; overflow: hidden; }
+.product-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.product-card-mini:hover .product-img img { transform: scale(1.08); }
+.product-info { padding: 8px; }
+.product-name { font-size: 0.68rem; font-weight: 600; color: var(--navy); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.product-price { font-size: 0.7rem; color: var(--sky); font-family: var(--font-mono); font-weight: 500; }
+
+.card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.metric {
+  background: white;
+  border: 1px solid var(--border); border-radius: 10px; padding: 12px;
+}
+.metric-label { font-size: 0.65rem; color: var(--steel); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; font-family: var(--font-mono); }
+.metric-value { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+.metric-up { font-size: 0.65rem; color: #34D399; margin-top: 2px; }
+
+/* Floating notifs */
+.notif {
+  position: absolute;
+  background: white;
+  border: 1px solid var(--border-2);
+  border-radius: 14px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: var(--shadow-lg);
+  z-index: 10; min-width: 200px;
+  animation: floatNotif 4s ease-in-out infinite;
+}
+.notif:nth-child(2) { animation-delay: 2s; }
+@keyframes floatNotif {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.notif-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.notif-text-label { font-size: 0.68rem; color: var(--steel); margin-bottom: 3px; }
+.notif-text-val { font-size: 0.88rem; font-weight: 700; color: var(--navy); font-family: var(--font-mono); }
+
+/* ═══════════════════════════════════════════
+   MARQUEE
+═══════════════════════════════════════════ */
+.marquee-section {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0; overflow: hidden;
+  background: white; z-index: 1; position: relative;
+}
+.marquee-track {
+  display: flex; gap: 48px;
+  animation: marquee 22s linear infinite;
+  width: max-content;
+}
+.marquee-track:hover { animation-play-state: paused; }
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.82rem; color: var(--steel-2);
+  white-space: nowrap; font-weight: 500;
+}
+.marquee-sep { width: 4px; height: 4px; background: var(--sky); border-radius: 50%; opacity: 0.4; }
+
+/* ═══════════════════════════════════════════
+   SOCIAL PROOF
+═══════════════════════════════════════════ */
+.proof-section {
+  padding: 100px 48px;
+  max-width: 1200px; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+.proof-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.proof-images { position: relative; height: 520px; }
+.proof-img-main {
+  position: absolute; right: 0; top: 0;
+  width: 75%; height: 380px;
+  border-radius: 20px; overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-2);
+}
+.proof-img-main img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9) saturate(0.95); }
+.proof-img-secondary {
+  position: absolute; left: 0; bottom: 0;
+  width: 58%; height: 260px;
+  border-radius: 16px; overflow: hidden;
+  border: 3px solid white;
+  box-shadow: var(--shadow-lg);
+}
+.proof-img-secondary img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9); }
+.proof-count-badge {
+  position: absolute; right: 20px; bottom: 140px;
+  background: var(--sky);
+  color: white; padding: 16px 20px;
+  border-radius: 14px; text-align: center;
+  box-shadow: 0 12px 32px rgba(26,107,255,0.4);
+  z-index: 5;
+}
+.proof-count-val { font-family: var(--font-serif); font-size: 1.8rem; font-weight: 900; line-height: 1; }
+.proof-count-lbl { font-size: 0.72rem; font-weight: 600; margin-top: 4px; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem; color: var(--sky);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-eyebrow::before {
+  content: ''; width: 28px; height: 2px;
+  background: var(--sky); border-radius: 1px;
+}
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+  font-weight: 900; line-height: 1.1;
+  letter-spacing: -0.03em; color: var(--navy); margin-bottom: 20px;
+}
+.section-title em { font-style: italic; color: var(--sky); }
+.section-body {
+  font-size: 1rem; line-height: 1.75; color: var(--steel-2);
+  font-weight: 300; margin-bottom: 36px;
+}
+.feature-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.feature-list li {
+  display: flex; align-items: flex-start; gap: 12px;
+  font-size: 0.9rem; color: var(--steel-2);
+}
+.feature-list li::before {
+  content: '◆'; color: var(--sky); font-size: 0.45rem; margin-top: 7px; flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   HOW IT WORKS
+═══════════════════════════════════════════ */
+.how-section {
+  padding: 100px 48px;
+  background: white;
+  position: relative; overflow: hidden; z-index: 1;
+}
+.how-section::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 50% 50%, rgba(26,107,255,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+.how-inner { max-width: 1200px; margin: 0 auto; }
+.how-header { text-align: center; margin-bottom: 72px; }
+
+.steps-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  position: relative;
+}
+.step-card {
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 36px 32px;
+  position: relative;
+  transition: border-color 0.3s, transform 0.3s var(--ease), box-shadow 0.3s;
+}
+.step-card:hover {
+  border-color: var(--border-2);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.step-num {
+  font-family: var(--font-mono); font-size: 0.68rem;
+  color: var(--sky); letter-spacing: 0.1em; margin-bottom: 20px; opacity: 0.8;
+}
+.step-icon-wrap {
+  width: 52px; height: 52px;
+  background: var(--sky-light);
+  border: 1.5px solid var(--border-2);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(26,107,255,0.1);
+}
+.step-title {
+  font-family: var(--font-serif); font-size: 1.2rem; font-weight: 700;
+  color: var(--navy); margin-bottom: 12px;
+}
+.step-desc { font-size: 0.87rem; line-height: 1.65; color: var(--steel-2); }
+.step-connector {
+  position: absolute; right: -18px; top: 50%;
+  transform: translateY(-50%);
+  width: 36px; height: 36px;
+  background: white;
+  border: 1.5px solid var(--border-2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--sky); font-size: 0.8rem; z-index: 2;
+  box-shadow: var(--shadow);
+}
+.step-card:last-child .step-connector { display: none; }
+
+/* ═══════════════════════════════════════════
+   FEATURES BENTO
+═══════════════════════════════════════════ */
+.bento-section {
+  padding: 100px 48px;
+  max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;
+}
+.bento-header { text-align: center; margin-bottom: 56px; }
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto auto;
+  gap: 16px;
+}
+.bento-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 32px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s var(--ease), box-shadow 0.3s;
+}
+.bento-card:hover {
+  border-color: var(--border-2);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.bento-card-1 { grid-column: span 5; }
+.bento-card-2 { grid-column: span 4; }
+.bento-card-3 { grid-column: span 3; }
+.bento-card-4 { grid-column: span 4; }
+.bento-card-5 { grid-column: span 5; }
+.bento-card-6 { grid-column: span 3; }
+
+.bento-icon { font-size: 2rem; margin-bottom: 20px; display: block; }
+.bento-title { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.bento-desc { font-size: 0.85rem; line-height: 1.65; color: var(--steel-2); }
+.bento-visual { margin-top: 24px; border-radius: 10px; overflow: hidden; height: 130px; }
+.bento-visual img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; filter: saturate(0.8); transition: opacity 0.3s, transform 0.5s; }
+.bento-card:hover .bento-visual img { opacity: 0.9; transform: scale(1.04); }
+.bento-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--sky-light);
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  font-size: 0.7rem; color: var(--sky);
+  font-family: var(--font-mono); margin-top: 12px;
+}
+
+/* ═══════════════════════════════════════════
+   TESTIMONIALS
+═══════════════════════════════════════════ */
+.testimonials-section {
+  padding: 100px 48px;
+  background: var(--navy);
+  position: relative; overflow: hidden; z-index: 1;
+}
+.testimonials-section::before {
+  content: '"';
+  position: absolute; top: -60px; left: 40px;
+  font-family: var(--font-serif); font-size: 400px; line-height: 1;
+  color: white; opacity: 0.02; pointer-events: none;
+}
+.testimonials-section .section-eyebrow { color: var(--sky-bright); }
+.testimonials-section .section-eyebrow::before { background: var(--sky-bright); }
+.testimonials-section .section-title { color: white; }
+.testimonials-section .section-title em { color: var(--sky-bright); }
+
+.testimonials-inner { max-width: 1200px; margin: 0 auto; }
+.testimonials-header { text-align: center; margin-bottom: 64px; }
+.testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+.testimonial-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px; padding: 28px;
+  transition: border-color 0.3s, transform 0.3s, background 0.3s;
+  position: relative;
+}
+.testimonial-card:hover {
+  border-color: rgba(26,107,255,0.4);
+  transform: translateY(-4px);
+  background: rgba(255,255,255,0.08);
+}
+.stars { color: #FACC15; font-size: 0.85rem; margin-bottom: 16px; letter-spacing: 3px; }
+.testimonial-text { font-size: 0.92rem; line-height: 1.7; color: rgba(255,255,255,0.7); margin-bottom: 24px; font-style: italic; }
+.testimonial-author {
+  display: flex; align-items: center; gap: 12px;
+  border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;
+}
+.author-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid rgba(26,107,255,0.4); }
+.author-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.author-name { font-weight: 600; font-size: 0.88rem; color: white; margin-bottom: 2px; }
+.author-role { font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+
+/* ═══════════════════════════════════════════
+   PRICING
+═══════════════════════════════════════════ */
+.pricing-section {
+  padding: 100px 48px;
+  max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;
+}
+.pricing-header { text-align: center; margin-bottom: 64px; }
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: start; }
+
+.plan-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 36px;
+  transition: border-color 0.3s, transform 0.3s var(--ease), box-shadow 0.3s;
+  position: relative;
+}
+.plan-card:hover { transform: translateY(-4px); border-color: var(--border-2); box-shadow: var(--shadow-lg); }
+.plan-card.featured {
+  border-color: var(--sky);
+  background: linear-gradient(160deg, var(--sky-light), white);
+  transform: scale(1.03);
+  box-shadow: 0 20px 60px rgba(26,107,255,0.2);
+}
+.plan-card.featured:hover { transform: scale(1.03) translateY(-4px); }
+.plan-badge {
+  position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+  background: var(--sky); color: white;
+  font-size: 0.72rem; font-weight: 700;
+  font-family: var(--font-mono); padding: 4px 16px;
+  border-radius: 999px; letter-spacing: 0.06em;
+  text-transform: uppercase; white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(26,107,255,0.4);
+}
+.plan-name { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.plan-desc { font-size: 0.83rem; color: var(--steel); margin-bottom: 24px; }
+.plan-price { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.plan-amount { font-family: var(--font-serif); font-size: 2.6rem; font-weight: 900; color: var(--navy); line-height: 1; }
+.plan-amount.free { font-size: 1.6rem; }
+.plan-period { font-size: 0.85rem; color: var(--steel); margin-top: 6px; }
+.plan-features { list-style: none; margin-bottom: 28px; }
+.plan-features li {
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  font-size: 0.86rem; color: var(--steel-2);
+  display: flex; align-items: center; gap: 10px;
+}
+.plan-features li.off { color: var(--steel); opacity: 0.6; }
+.feat-check { color: #34D399; font-size: 0.7rem; flex-shrink: 0; }
+.feat-x { color: var(--steel); font-size: 0.7rem; flex-shrink: 0; opacity: 0.5; }
+.plan-btn {
+  display: block; width: 100%; text-align: center;
+  padding: 13px; border-radius: 10px;
+  font-size: 0.92rem; font-weight: 700;
+  transition: all 0.2s; font-family: var(--font-sans);
+}
+.plan-btn-outline {
+  border: 1.5px solid var(--border-2); color: var(--sky); background: white;
+}
+.plan-btn-outline:hover { border-color: var(--sky); background: var(--sky-light); }
+.plan-btn-sky {
+  background: var(--sky); color: white;
+  border: 1.5px solid var(--sky);
+  box-shadow: 0 6px 20px rgba(26,107,255,0.3);
+}
+.plan-btn-sky:hover { background: #0A4FCC; box-shadow: 0 10px 30px rgba(26,107,255,0.45); }
+
+/* ═══════════════════════════════════════════
+   CTA SECTION
+═══════════════════════════════════════════ */
+.cta-section {
+  margin: 0 48px 80px;
+  border-radius: 24px; overflow: hidden; position: relative;
+  background: var(--navy);
+  box-shadow: 0 32px 80px rgba(11,31,58,0.25);
+  z-index: 1;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 30% 50%, rgba(26,107,255,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 80% 30%, rgba(0,194,255,0.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cta-bg { position: absolute; inset: 0; }
+.cta-bg img {
+  width: 100%; height: 100%;
+  object-fit: cover; filter: brightness(0.2) saturate(0.3);
+}
+.cta-content {
+  position: relative; z-index: 2;
+  text-align: center; padding: 100px 48px;
+}
+.cta-content .section-title { color: white; font-size: clamp(2.5rem, 4vw, 4rem); margin-bottom: 16px; }
+.cta-content .section-title em { color: var(--sky-bright); }
+.cta-content .section-eyebrow { color: var(--sky-bright); justify-content: center; }
+.cta-content .section-eyebrow::before { background: var(--sky-bright); }
+.cta-body { font-size: 1.05rem; color: rgba(255,255,255,0.6); margin-bottom: 40px; font-weight: 300; }
+.cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.btn-outline-hero-inv {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 28px;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.7);
+  border-radius: 10px; font-size: 0.95rem; font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-outline-hero-inv:hover { border-color: rgba(255,255,255,0.5); color: white; }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 48px; background: white; position: relative; z-index: 1;
+}
+.footer-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1.5fr repeat(3, 1fr);
+  gap: 48px; margin-bottom: 48px;
+}
+.footer-brand-name {
+  font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700;
+  color: var(--navy); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.footer-brand-desc { font-size: 0.85rem; line-height: 1.6; color: var(--steel); margin-bottom: 20px; max-width: 260px; }
+.footer-col-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--sky); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-links a { font-size: 0.87rem; color: var(--steel); transition: color 0.2s; }
+.footer-links a:hover { color: var(--navy); }
+.footer-bottom {
+  max-width: 1200px; margin: 0 auto;
+  padding-top: 24px; border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-copy { font-size: 0.8rem; color: var(--steel); }
+.footer-made { font-size: 0.8rem; color: var(--steel); display: flex; align-items: center; gap: 6px; }
+.footer-made span { color: var(--sky); }
+
+/* ═══════════════════════════════════════════
+   SCROLL ANIMATIONS
+═══════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal.delay-1 { transition-delay: 0.1s; }
+.reveal.delay-2 { transition-delay: 0.2s; }
+.reveal.delay-3 { transition-delay: 0.3s; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .hero-content { grid-template-columns: 1fr; }
+  .hero-card { display: none; }
+  .proof-grid { grid-template-columns: 1fr; }
+  .proof-images { display: none; }
+  .bento-card-1,.bento-card-2,.bento-card-3,
+  .bento-card-4,.bento-card-5,.bento-card-6 { grid-column: span 6; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .plan-card.featured { transform: none; }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  .hero-content { padding: 120px 24px 80px; }
+  .how-section,.bento-section,.testimonials-section,
+  .pricing-section,.proof-section { padding-left: 24px; padding-right: 24px; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .step-connector { display: none; }
+  .bento-grid { grid-template-columns: 1fr; }
+  .bento-card-1,.bento-card-2,.bento-card-3,
+  .bento-card-4,.bento-card-5,.bento-card-6 { grid-column: span 1; }
+  .cta-section { margin: 0 16px 48px; }
+  .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; gap: 8px; }
+}
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ═══════ NAV ═══════ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">E</div>
+    Easyfy
+  </a>
+  <div class="nav-links">
+    <a href="#features">Fonctionnalités</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#how">Comment ça marche</a>
+    <a href="#testimonials">Témoignages</a>
+  </div>
+  <div class="nav-cta">
+    <a href="login.html" class="btn-ghost">Connexion</a>
+    <a href="login.html" class="btn-primary">Créer ma boutique</a>
+  </div>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-blob blob-1"></div>
+  <div class="hero-blob blob-2"></div>
+  <div class="hero-blob blob-3"></div>
+  <div class="hero-dots">
+    <div class="hero-dot"></div>
+    <div class="hero-dot"></div>
+    <div class="hero-dot"></div>
+    <div class="hero-dot"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-badge">
+        <div class="badge-dot"></div>
+        Plateforme #1 en Afrique de l'Ouest
+      </div>
+      <h1 class="hero-title">
+        Votre boutique.<br>
+        Votre <em>empire</em>.<br>
+        Votre avenir.
+      </h1>
+      <p class="hero-sub">
+        Easyfy transforme votre idée en boutique professionnelle en 5 minutes. Vendez des produits digitaux ou physiques, acceptez les paiements à la livraison — conçu pour l'Afrique.
+      </p>
+      <div class="hero-actions">
+        <a href="login.html" class="btn-hero">
+          Créer ma boutique gratuite
+          <span class="btn-hero-arrow">→</span>
+        </a>
+        <a href="#" class="btn-outline-hero">
+          ▶ Voir la démo
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="stat-val">2<span>400+</span></div>
+          <div class="stat-lbl">Boutiques actives</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-val">18M <span>XOF</span></div>
+          <div class="stat-lbl">Transactions ce mois</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-val">99<span>.9%</span></div>
+          <div class="stat-lbl">Disponibilité</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card mockup -->
+    <div style="position:relative">
+      <div class="hero-card">
+        <div class="card-header">
+          <div class="card-dots">
+            <div class="card-dot" style="background:#EF4444"></div>
+            <div class="card-dot" style="background:#F59E0B"></div>
+            <div class="card-dot" style="background:#10B981"></div>
+          </div>
+          <div class="card-url">monshop.easyfy.bf</div>
+        </div>
+        <div class="card-body">
+          <div class="shop-banner">
+            <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=75&fit=crop" alt="Boutique" loading="lazy">
+            <div class="shop-banner-overlay">
+              <div style="display:flex;align-items:center;">
+                <div class="shop-name">Ma Boutique 🛍️</div>
+                <div class="shop-status">● EN LIGNE</div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:.68rem;color:var(--steel);margin-bottom:10px;font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase">Produits vedettes</div>
+          <div class="products-grid">
+            <div class="product-card-mini">
+              <div class="product-img">
+                <img src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=200&q=70&fit=crop" alt="Formation" loading="lazy">
+              </div>
+              <div class="product-info">
+                <div class="product-name">Formation</div>
+                <div class="product-price">15k XOF</div>
+              </div>
+            </div>
+            <div class="product-card-mini">
+              <div class="product-img">
+                <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&q=70&fit=crop" alt="T-Shirt" loading="lazy">
+              </div>
+              <div class="product-info">
+                <div class="product-name">T-Shirt</div>
+                <div class="product-price">8.5k XOF</div>
+              </div>
+            </div>
+            <div class="product-card-mini">
+              <div class="product-img">
+                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&q=70&fit=crop" alt="E-book" loading="lazy">
+              </div>
+              <div class="product-info">
+                <div class="product-name">E-book</div>
+                <div class="product-price">5k XOF</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-metrics">
+            <div class="metric">
+              <div class="metric-label">Revenu ce mois</div>
+              <div class="metric-value">847k XOF</div>
+              <div class="metric-up">↑ +23% vs mois dernier</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Commandes</div>
+              <div class="metric-value">124</div>
+              <div class="metric-up">↑ +18 cette semaine</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating notifs -->
+      <div class="notif" style="position:absolute;bottom:-24px;left:-40px;">
+        <div class="notif-icon" style="background:rgba(52,211,153,0.12)">✓</div>
+        <div>
+          <div class="notif-text-label">Nouvelle commande</div>
+          <div class="notif-text-val">+15 000 XOF</div>
+        </div>
+      </div>
+      <div class="notif" style="position:absolute;top:-20px;right:-40px;">
+        <div class="notif-icon" style="background:var(--sky-light)">🚚</div>
+        <div>
+          <div class="notif-text-label">Livraison confirmée</div>
+          <div class="notif-text-val">Ouagadougou</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ MARQUEE ═══════ -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <div class="marquee-item">🛍️ Boutiques en ligne</div><div class="marquee-sep"></div>
+    <div class="marquee-item">💳 Paiement à la livraison</div><div class="marquee-sep"></div>
+    <div class="marquee-item">📦 Produits digitaux & physiques</div><div class="marquee-sep"></div>
+    <div class="marquee-item">📊 Analytics en temps réel</div><div class="marquee-sep"></div>
+    <div class="marquee-item">🌍 Fait pour l'Afrique</div><div class="marquee-sep"></div>
+    <div class="marquee-item">⚡ Lancez en 5 minutes</div><div class="marquee-sep"></div>
+    <div class="marquee-item">🔒 Sécurisé & fiable</div><div class="marquee-sep"></div>
+    <div class="marquee-item">🛍️ Boutiques en ligne</div><div class="marquee-sep"></div>
+    <div class="marquee-item">💳 Paiement à la livraison</div><div class="marquee-sep"></div>
+    <div class="marquee-item">📦 Produits digitaux & physiques</div><div class="marquee-sep"></div>
+    <div class="marquee-item">📊 Analytics en temps réel</div><div class="marquee-sep"></div>
+    <div class="marquee-item">🌍 Fait pour l'Afrique</div><div class="marquee-sep"></div>
+    <div class="marquee-item">⚡ Lancez en 5 minutes</div><div class="marquee-sep"></div>
+    <div class="marquee-item">🔒 Sécurisé & fiable</div><div class="marquee-sep"></div>
+  </div>
+</div>
+
+<!-- ═══════ SOCIAL PROOF ═══════ -->
+<section class="proof-section">
+  <div class="proof-grid">
+    <div>
+      <div class="section-eyebrow reveal">La plateforme des entrepreneurs</div>
+      <h2 class="section-title reveal delay-1">Des milliers de vendeurs <em>nous font confiance</em></h2>
+      <p class="section-body reveal delay-2">De Ouagadougou à Abidjan, en passant par Dakar et Lomé — les entrepreneurs africains construisent leur commerce en ligne avec Easyfy, sans contraintes, sans bancarisation obligatoire.</p>
+      <ul class="feature-list reveal delay-3">
+        <li>Aucune carte bancaire requise pour commencer</li>
+        <li>Interface en français, adaptée au contexte local</li>
+        <li>Paiement à la livraison intégré nativement</li>
+        <li>Support client réactif en Français</li>
+        <li>Données hébergées localement en Afrique</li>
+      </ul>
+    </div>
+    <div class="proof-images reveal delay-1">
+      <div class="proof-img-main">
+        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=700&q=80&fit=crop" alt="Entrepreneur africain" loading="lazy">
+      </div>
+      <div class="proof-img-secondary">
+        <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&q=80&fit=crop" alt="Commerce en ligne" loading="lazy">
+      </div>
+      <div class="proof-count-badge">
+        <div class="proof-count-val">2,4k+</div>
+        <div class="proof-count-lbl">Boutiques actives</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ HOW IT WORKS ═══════ -->
+<section class="how-section" id="how">
+  <div class="how-inner">
+    <div class="how-header">
+      <div class="section-eyebrow reveal" style="justify-content:center">Simple & rapide</div>
+      <h2 class="section-title reveal delay-1">Ouvert en <em>3 étapes</em></h2>
+      <p class="section-body reveal delay-2" style="max-width:480px;margin:0 auto">Pas besoin de coder. Pas besoin d'un développeur. Juste votre idée.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal">
+        <div class="step-num">01 / 03</div>
+        <div class="step-icon-wrap">👤</div>
+        <div class="step-title">Créez votre compte</div>
+        <p class="step-desc">Inscription gratuite en 30 secondes. Aucune carte bancaire requise pour commencer votre aventure.</p>
+        <div class="step-connector">→</div>
+      </div>
+      <div class="step-card reveal delay-1">
+        <div class="step-num">02 / 03</div>
+        <div class="step-icon-wrap">🏪</div>
+        <div class="step-title">Configurez votre boutique</div>
+        <p class="step-desc">Personnalisez votre thème, ajoutez vos produits, définissez vos prix et méthodes de livraison.</p>
+        <div class="step-connector">→</div>
+      </div>
+      <div class="step-card reveal delay-2">
+        <div class="step-num">03 / 03</div>
+        <div class="step-icon-wrap">🚀</div>
+        <div class="step-title">Partagez & vendez</div>
+        <p class="step-desc">Votre boutique est en ligne instantanément. Partagez le lien et commencez à recevoir des commandes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FEATURES BENTO ═══════ -->
+<section class="bento-section" id="features">
+  <div class="bento-header">
+    <div class="section-eyebrow reveal" style="justify-content:center">Tout ce qu'il vous faut</div>
+    <h2 class="section-title reveal delay-1">Fonctionnalités <em>puissantes</em></h2>
+    <p class="section-body reveal delay-2" style="max-width:500px;margin:0 auto">Tout pour gérer, vendre, livrer et développer votre commerce — dans une seule plateforme.</p>
+  </div>
+  <div class="bento-grid reveal">
+    <div class="bento-card bento-card-1">
+      <span class="bento-icon">📦</span>
+      <div class="bento-title">Produits digitaux & physiques</div>
+      <div class="bento-desc">E-books, formations, templates, vêtements, artisanat, alimentation — gérez tout depuis une seule interface ultra-simple.</div>
+      <div class="bento-visual">
+        <img src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600&q=70&fit=crop" alt="Produits" loading="lazy">
+      </div>
+      <div class="bento-tag">Illimité sur Pro</div>
+    </div>
+    <div class="bento-card bento-card-2">
+      <span class="bento-icon">🚚</span>
+      <div class="bento-title">Paiement à la livraison</div>
+      <div class="bento-desc">Adapté au contexte africain. Vos clients paient à la réception, sans friction, sans bancarisation obligatoire.</div>
+      <div class="bento-visual">
+        <img src="https://images.unsplash.com/photo-1526367790999-0150786686a2?w=500&q=70&fit=crop" alt="Livraison" loading="lazy">
+      </div>
+    </div>
+    <div class="bento-card bento-card-3">
+      <span class="bento-icon">📊</span>
+      <div class="bento-title">Analytics temps réel</div>
+      <div class="bento-desc">Suivez vos ventes, revenus et commandes en temps réel.</div>
+      <div style="margin-top:20px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--steel-2)">
+            <div style="flex:1;height:7px;background:var(--mist);border-radius:4px;overflow:hidden"><div style="width:82%;height:100%;background:var(--sky);border-radius:4px"></div></div>
+            82%
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--steel-2)">
+            <div style="flex:1;height:7px;background:var(--mist);border-radius:4px;overflow:hidden"><div style="width:65%;height:100%;background:var(--sky);border-radius:4px;opacity:.7"></div></div>
+            65%
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--steel-2)">
+            <div style="flex:1;height:7px;background:var(--mist);border-radius:4px;overflow:hidden"><div style="width:44%;height:100%;background:var(--sky);border-radius:4px;opacity:.45"></div></div>
+            44%
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bento-card bento-card-4">
+      <span class="bento-icon">🎨</span>
+      <div class="bento-title">Boutique personnalisable</div>
+      <div class="bento-desc">Choisissez parmi plusieurs thèmes, personnalisez les couleurs, le contenu, votre nom de domaine. Votre boutique, votre image.</div>
+      <div class="bento-visual">
+        <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=500&q=70&fit=crop" alt="Design" loading="lazy">
+      </div>
+    </div>
+    <div class="bento-card bento-card-5">
+      <span class="bento-icon">🔗</span>
+      <div class="bento-title">Lien de boutique partageable</div>
+      <div class="bento-desc">Obtenez un lien unique monshop.easyfy.bf ou votre propre domaine. Partagez sur WhatsApp, Facebook, Instagram — partout où sont vos clients.</div>
+      <div class="bento-visual">
+        <img src="https://images.unsplash.com/photo-1611262588024-d12430b98920?w=600&q=70&fit=crop" alt="Partage" loading="lazy">
+      </div>
+      <div class="bento-tag">Domaine perso sur Pro</div>
+    </div>
+    <div class="bento-card bento-card-6">
+      <span class="bento-icon">🔔</span>
+      <div class="bento-title">Notifications instantanées</div>
+      <div class="bento-desc">Soyez alerté à chaque commande, partout, en temps réel.</div>
+      <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
+        <div style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:8px;padding:10px 12px;font-size:.75rem;color:#16A34A">✓ Commande #247 — 22 000 XOF</div>
+        <div style="background:var(--sky-light);border:1px solid var(--border-2);border-radius:8px;padding:10px 12px;font-size:.75rem;color:var(--sky)">🚚 Livraison confirmée · Kalgondin</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ TESTIMONIALS ═══════ -->
+<section class="testimonials-section" id="testimonials">
+  <div class="testimonials-inner">
+    <div class="testimonials-header">
+      <div class="section-eyebrow reveal" style="justify-content:center">Ce qu'ils disent</div>
+      <h2 class="section-title reveal delay-1">Ils ont lancé leur <em>empire</em></h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"J'ai ouvert ma boutique de pagnes en une heure. En deux semaines, j'avais déjà plus de 30 commandes. Easyfy a changé ma vie."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">
+            <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=80&q=70&fit=crop&crop=face" alt="Fatima" loading="lazy">
+          </div>
+          <div>
+            <div class="author-name">Fatima Ouédraogo</div>
+            <div class="author-role">Créatrice de mode · Ouagadougou</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal delay-1">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Je vends mes formations en ligne depuis 6 mois. Le système de paiement à la livraison était essentiel pour mes clients. Easyfy est parfait."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=70&fit=crop&crop=face" alt="Kofi" loading="lazy">
+          </div>
+          <div>
+            <div class="author-name">Kofi Asante</div>
+            <div class="author-role">Formateur digital · Abidjan</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal delay-2">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Le dashboard est incroyablement simple. Je sais exactement combien je gagne, quelles commandes sont en cours. C'est tout ce dont j'avais besoin."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">
+            <img src="https://images.unsplash.com/photo-1619895862022-09114b41f16f?w=80&q=70&fit=crop&crop=face" alt="Aminata" loading="lazy">
+          </div>
+          <div>
+            <div class="author-name">Aminata Diallo</div>
+            <div class="author-role">Artisanat & bijoux · Dakar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PRICING ═══════ -->
+<section class="pricing-section" id="pricing">
+  <div class="pricing-header">
+    <div class="section-eyebrow reveal" style="justify-content:center">Tarification</div>
+    <h2 class="section-title reveal delay-1">Simple & <em>transparent</em></h2>
+    <p class="section-body reveal delay-2" style="max-width:480px;margin:0 auto">Des forfaits adaptés à chaque étape de votre croissance.</p>
+  </div>
+  <div class="pricing-grid reveal">
+    <div class="plan-card">
+      <div class="plan-name">Starter</div>
+      <div class="plan-desc">Pour ceux qui démarrent</div>
+      <div class="plan-price">
+        <div class="plan-amount free">Gratuit</div>
+        <div class="plan-period">Pour toujours · Sans carte bancaire</div>
+      </div>
+      <ul class="plan-features">
+        <li><span class="feat-check">✓</span> 5 produits maximum</li>
+        <li><span class="feat-check">✓</span> Boutique en ligne</li>
+        <li><span class="feat-check">✓</span> Paiement à la livraison</li>
+        <li><span class="feat-check">✓</span> Sous-domaine Easyfy</li>
+        <li class="off"><span class="feat-x">×</span> Domaine personnalisé</li>
+        <li class="off"><span class="feat-x">×</span> Analytics avancés</li>
+        <li class="off"><span class="feat-x">×</span> Produits illimités</li>
+      </ul>
+      <a href="login.html" class="plan-btn plan-btn-outline">Commencer gratuitement</a>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-badge">★ Populaire</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-desc">Pour les vendeurs actifs</div>
+      <div class="plan-price">
+        <div class="plan-amount">9 900</div>
+        <div class="plan-period">XOF par mois</div>
+      </div>
+      <ul class="plan-features">
+        <li><span class="feat-check">✓</span> Produits illimités</li>
+        <li><span class="feat-check">✓</span> Boutique personnalisée</li>
+        <li><span class="feat-check">✓</span> Paiement à la livraison</li>
+        <li><span class="feat-check">✓</span> Domaine personnalisé</li>
+        <li><span class="feat-check">✓</span> Analytics complets</li>
+        <li><span class="feat-check">✓</span> Support prioritaire</li>
+        <li class="off"><span class="feat-x">×</span> API accès</li>
+      </ul>
+      <a href="login.html" class="plan-btn plan-btn-sky">Choisir Pro</a>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Business</div>
+      <div class="plan-desc">Pour les grandes boutiques</div>
+      <div class="plan-price">
+        <div class="plan-amount">24 900</div>
+        <div class="plan-period">XOF par mois</div>
+      </div>
+      <ul class="plan-features">
+        <li><span class="feat-check">✓</span> Tout Pro inclus</li>
+        <li><span class="feat-check">✓</span> API accès complet</li>
+        <li><span class="feat-check">✓</span> Multi-boutiques</li>
+        <li><span class="feat-check">✓</span> Tableau de bord avancé</li>
+        <li><span class="feat-check">✓</span> Intégrations tierces</li>
+        <li><span class="feat-check">✓</span> Support dédié 24/7</li>
+        <li><span class="feat-check">✓</span> SLA garanti 99.9%</li>
+      </ul>
+      <a href="#" class="plan-btn plan-btn-outline">Nous contacter</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ CTA ═══════ -->
+<section class="cta-section">
+  <div class="cta-bg">
+    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1600&q=80&fit=crop" alt="Succès" loading="lazy">
+  </div>
+  <div class="cta-content">
+    <div class="section-eyebrow reveal">Prêt à vous lancer ?</div>
+    <h2 class="section-title reveal delay-1">Votre boutique est à<br><em>quelques clics</em></h2>
+    <p class="cta-body reveal delay-2">Rejoignez 2 400 vendeurs qui font déjà confiance à Easyfy pour développer leur commerce en Afrique.</p>
+    <div class="cta-actions reveal delay-3">
+      <a href="login.html" class="btn-hero">
+        Créer ma boutique — c'est gratuit
+        <span class="btn-hero-arrow">→</span>
+      </a>
+      <a href="#" class="btn-outline-hero-inv">Voir une démo</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand-name">
+        <div class="nav-logo-icon">E</div>
+        Easyfy
+      </div>
+      <p class="footer-brand-desc">La plateforme de e-commerce conçue pour les entrepreneurs africains. Vendez partout, payez à la livraison.</p>
+      <div style="font-size:0.82rem;color:var(--steel)">Fait avec <span style="color:var(--sky)">♥</span> en Afrique</div>
+    </div>
+    <div>
+      <div class="footer-col-title">Produit</div>
+      <ul class="footer-links">
+        <li><a href="#">Fonctionnalités</a></li>
+        <li><a href="#">Tarifs</a></li>
+        <li><a href="#">Démo</a></li>
+        <li><a href="#">Mises à jour</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Ressources</div>
+      <ul class="footer-links">
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Tutoriels</a></li>
+        <li><a href="#">Support</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Légal</div>
+      <ul class="footer-links">
+        <li><a href="#">Confidentialité</a></li>
+        <li><a href="#">CGU</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Mentions légales</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2024 Easyfy Platform. Tous droits réservés.</div>
+    <div class="footer-made">Conçu pour l'Afrique <span>◆</span> Ouagadougou, BF</div>
+  </div>
+</footer>
+
+<script>
+// Custom cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+(function animateCursor() {
+  cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+  rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animateCursor);
+})();
+
+// Navbar scroll
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
