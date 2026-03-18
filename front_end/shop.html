@@ -1,1082 +1,668 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fatima Mode — Boutique Zora</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,600&family=Cabinet+Grotesk:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>eseafy — Créer un produit</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a;
+    --white: #ffffff;
+    --cream: #f9f9f8;
+    --gray-50: #f4f4f2;
+    --gray-100: #ebebea;
+    --gray-200: #dddcda;
+    --gray-400: #9e9b97;
+    --gray-600: #6a6760;
+    --gray-800: #2e2c29;
+    --accent: #c8a96e;
+    --accent-light: #f5edd9;
+    --success: #1c7a4a;
+    --sidebar-w: 228px;
+    --topbar-h: 54px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--black); min-height: 100vh; }
 
-:root {
-  --navy: #060D1C;
-  --navy-2: #0A1428;
-  --navy-3: #0F1D38;
-  --navy-4: #152244;
-  --blue: #1A4A8A;
-  --sapphire: #2E7CF6;
-  --sapphire-2: #4A8FF7;
-  --sapphire-bright: #7ABCFA;
-  --silver: #BDD0EF;
-  --silver-2: #7295C5;
-  --silver-3: #3A5880;
-  --white: #F2F7FF;
-  --white-2: #E8F0FC;
-  --border: rgba(46,124,246,0.12);
-  --border-2: rgba(46,124,246,0.28);
-  --success: #34D399;
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Cabinet Grotesk', sans-serif;
-  --font-mono: 'DM Mono', monospace;
-  --ease: cubic-bezier(0.16, 1, 0.3, 1);
-}
+  /* ── TOPBAR ── */
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: var(--topbar-h); background: var(--white); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; padding: 0 20px; gap: 14px; z-index: 100; }
+  .brand { font-family: 'DM Serif Display', serif; font-size: 19px; letter-spacing: -.5px; color: var(--black); text-decoration: none; cursor: pointer; }
+  .brand-dot { color: var(--accent); }
+  .topbar-sep { width: 1px; height: 18px; background: var(--gray-200); }
+  .topbar-crumb { font-size: 13px; color: var(--gray-600); }
+  .topbar-crumb strong { color: var(--black); font-weight: 500; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 9px; }
+  .btn-sm { padding: 7px 14px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; border: none; }
+  .btn-outline { border: 1.5px solid var(--gray-200) !important; background: var(--white); color: var(--gray-800); }
+  .btn-outline:hover { border-color: var(--gray-400) !important; background: var(--gray-50); }
+  .btn-solid { background: var(--black); color: var(--white); }
+  .btn-solid:hover { background: var(--gray-800); }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--gray-100); border: 1.5px solid var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--gray-600); cursor: pointer; }
 
-body {
-  background: var(--navy);
-  color: var(--white);
-  font-family: var(--font-sans);
-  cursor: none;
-  overflow-x: hidden;
-}
-a { text-decoration: none; color: inherit; }
+  /* ── LAYOUT ── */
+  .layout { margin-top: var(--topbar-h); display: flex; min-height: calc(100vh - var(--topbar-h)); }
 
-/* CURSOR */
-#cursor {
-  position: fixed; width: 8px; height: 8px;
-  background: var(--sapphire); border-radius: 50%;
-  pointer-events: none; z-index: 9999;
-  transform: translate(-50%,-50%);
-  mix-blend-mode: screen;
-}
-#cursor-ring {
-  position: fixed; width: 30px; height: 30px;
-  border: 1px solid rgba(46,124,246,0.35);
-  border-radius: 50%; pointer-events: none; z-index: 9998;
-  transform: translate(-50%,-50%);
-  transition: all 0.1s ease-out;
-}
+  /* ── SIDEBAR ── */
+  .sidebar { width: var(--sidebar-w); background: var(--white); border-right: 1px solid var(--gray-200); position: fixed; top: var(--topbar-h); left: 0; bottom: 0; display: flex; flex-direction: column; padding: 16px 0; overflow-y: auto; }
+  .sidebar-shop { display: flex; align-items: center; gap: 10px; padding: 8px 16px 16px; border-bottom: 1px solid var(--gray-100); margin-bottom: 6px; }
+  .shop-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--black); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .shop-name { font-size: 13px; font-weight: 600; }
+  .shop-plan { font-size: 11px; color: var(--gray-400); }
+  .nav-section { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--gray-400); padding: 14px 16px 5px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8.5px 16px; font-size: 13px; font-weight: 400; color: var(--gray-600); border: none; background: none; width: 100%; text-align: left; cursor: pointer; transition: all .12s; position: relative; }
+  .nav-item:hover { background: var(--gray-100); color: var(--black); }
+  .nav-item.active { background: var(--gray-100); color: var(--black); font-weight: 500; }
+  .nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--black); border-radius: 0 2px 2px 0; }
+  .nav-item svg { flex-shrink: 0; opacity: .65; }
+  .nav-item.active svg { opacity: 1; }
+  .sidebar-footer { margin-top: auto; padding: 12px 16px 0; border-top: 1px solid var(--gray-100); }
 
-/* BG */
-.bg-fixed {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(ellipse 50% 40% at 80% 10%, rgba(26,74,138,0.3) 0%, transparent 60%),
-    radial-gradient(ellipse 30% 40% at 20% 80%, rgba(46,124,246,0.1) 0%, transparent 60%);
-}
-.bg-noise {
-  position: fixed; inset: 0; z-index: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
-  pointer-events: none;
-}
+  /* ══════════════════════════════════════
+     PAGE : CHOIX DU TYPE
+  ══════════════════════════════════════ */
+  #pageChoix { display: flex; }
+  #pageCreation { display: none; }
 
-/* ─── TOP BAR (shop header) ─── */
-.shop-topbar {
-  position: fixed; top: 0; left: 0; right: 0;
-  z-index: 200;
-  height: 58px;
-  display: flex; align-items: center;
-  padding: 0 32px;
-  background: rgba(6,13,28,0.85);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(16px);
-  gap: 16px;
-  transition: background 0.3s;
-}
-.zora-badge {
-  display: flex; align-items: center; gap: 7px;
-  font-size: 0.78rem; color: var(--silver-3);
-  font-family: var(--font-mono);
-}
-.zora-badge-icon {
-  width: 22px; height: 22px;
-  background: var(--sapphire);
-  border-radius: 5px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.6rem; font-weight: 900; color: white;
-}
-.topbar-divider { width: 1px; height: 20px; background: var(--border-2); }
-.shop-topbar-name {
-  font-weight: 600; font-size: 0.88rem; color: var(--white);
-}
-.topbar-spacer { flex: 1; }
-.topbar-search {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--navy-3); border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px 14px; width: 220px;
-  transition: border-color 0.2s;
-}
-.topbar-search:focus-within { border-color: var(--border-2); }
-.topbar-search input {
-  background: none; border: none; outline: none;
-  font-size: 0.82rem; color: var(--white); flex: 1;
-  font-family: var(--font-sans);
-}
-.topbar-search input::placeholder { color: var(--silver-3); }
-.cart-btn {
-  display: flex; align-items: center; gap: 8px;
-  padding: 7px 18px;
-  background: var(--sapphire);
-  border-radius: 8px;
-  font-size: 0.84rem; font-weight: 600;
-  color: white; cursor: none;
-  transition: all 0.2s;
-  position: relative;
-}
-.cart-btn:hover {
-  background: var(--sapphire-2);
-  box-shadow: 0 6px 20px rgba(46,124,246,0.35);
-}
-.cart-count {
-  background: white; color: var(--sapphire);
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  font-size: 0.65rem; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-mono);
-}
+  .main-center { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 40px; min-height: calc(100vh - var(--topbar-h)); }
+  .select-wrap { width: 100%; max-width: 740px; }
+  .page-back { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--gray-600); border: none; background: none; cursor: pointer; padding: 0; margin-bottom: 36px; transition: color .12s; }
+  .page-back:hover { color: var(--black); }
+  .select-header { text-align: center; margin-bottom: 44px; }
+  .select-header h1 { font-family: 'DM Serif Display', serif; font-size: 34px; letter-spacing: -.7px; margin-bottom: 12px; line-height: 1.2; }
+  .select-header p { font-size: 14.5px; color: var(--gray-600); max-width: 440px; margin: 0 auto; line-height: 1.65; }
 
-/* ─── SHOP HERO ─── */
-.shop-hero {
-  padding-top: 58px;
-  position: relative;
-  z-index: 1;
-}
-.shop-banner {
-  height: 280px;
-  position: relative;
-  overflow: hidden;
-}
-.shop-banner img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center 40%;
-  filter: brightness(0.35) saturate(0.7);
-}
-.shop-banner::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, transparent 30%, var(--navy) 100%),
-              linear-gradient(0deg, rgba(46,124,246,0.08) 0%, transparent 50%);
-}
-.shop-banner-grid {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(46,124,246,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(46,124,246,0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
+  .cards-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .type-pick { border: 2px solid var(--gray-200); border-radius: 16px; background: var(--white); padding: 36px 30px; cursor: pointer; transition: all .22s cubic-bezier(.4,0,.2,1); position: relative; overflow: hidden; text-align: left; display: flex; flex-direction: column; gap: 20px; }
+  .type-pick::after { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .2s; border-radius: 14px; }
+  .type-pick.digital::after { background: radial-gradient(ellipse at top left, rgba(200,169,110,.1), transparent 65%); }
+  .type-pick.physical::after { background: radial-gradient(ellipse at top right, rgba(10,10,10,.04), transparent 65%); }
+  .type-pick:hover { border-color: var(--black); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,.1); }
+  .type-pick:hover::after { opacity: 1; }
+  .type-pick:hover .pick-arrow { transform: translateX(5px); opacity: 1; }
+  .type-pick:hover .pick-icon { transform: scale(1.08); }
+  .pick-icon { width: 58px; height: 58px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; transition: transform .2s; position: relative; z-index: 1; }
+  .digital .pick-icon { background: var(--accent-light); }
+  .physical .pick-icon { background: var(--gray-100); }
+  .pick-body { flex: 1; position: relative; z-index: 1; }
+  .pick-title { font-family: 'DM Serif Display', serif; font-size: 23px; letter-spacing: -.3px; margin-bottom: 8px; }
+  .pick-desc { font-size: 13.5px; color: var(--gray-600); line-height: 1.65; margin-bottom: 18px; }
+  .pick-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pick-tag { font-size: 11.5px; font-weight: 500; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--gray-200); color: var(--gray-600); background: var(--cream); }
+  .digital .pick-tag { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .pick-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; border-top: 1px solid var(--gray-100); position: relative; z-index: 1; }
+  .pick-cta { font-size: 13.5px; font-weight: 600; color: var(--black); }
+  .pick-arrow { display: flex; align-items: center; opacity: .35; transition: all .2s; }
+  .bottom-note { text-align: center; margin-top: 26px; font-size: 12.5px; color: var(--gray-400); }
 
-.shop-profile {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 32px;
-  position: relative;
-  z-index: 2;
-  margin-top: -60px;
-  display: flex;
-  align-items: flex-end;
-  gap: 24px;
-  margin-bottom: 40px;
-}
-.shop-logo {
-  width: 100px; height: 100px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, var(--blue), var(--sapphire));
-  border: 3px solid var(--navy);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2.5rem;
-  flex-shrink: 0;
-  box-shadow: 0 16px 40px rgba(46,124,246,0.25);
-}
-.shop-info { padding-bottom: 4px; }
-.shop-name-big {
-  font-family: var(--font-serif);
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 4px;
-  display: flex; align-items: center; gap: 12px;
-}
-.verified-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  background: rgba(46,124,246,0.15);
-  border: 1px solid rgba(46,124,246,0.3);
-  border-radius: 999px;
-  padding: 3px 10px;
-  font-size: 0.65rem; font-family: var(--font-mono);
-  color: var(--sapphire-bright);
-}
-.shop-desc-short {
-  font-size: 0.9rem; color: var(--silver-2);
-  font-weight: 300; max-width: 500px;
-}
-.shop-profile-right {
-  margin-left: auto;
-  display: flex;
-  gap: 24px;
-  align-items: center;
-  padding-bottom: 4px;
-}
-.shop-stat-mini { text-align: center; }
-.shop-stat-mini-val {
-  font-family: var(--font-serif);
-  font-size: 1.4rem; font-weight: 700;
-  color: var(--white); line-height: 1;
-}
-.shop-stat-mini-lbl {
-  font-size: 0.68rem; color: var(--silver-3);
-  font-family: var(--font-mono); text-transform: uppercase;
-  letter-spacing: 0.06em; margin-top: 3px;
-}
-.share-btn {
-  display: flex; align-items: center; gap: 8px;
-  padding: 9px 20px;
-  background: rgba(46,124,246,0.12);
-  border: 1px solid var(--border-2);
-  border-radius: 9px;
-  font-size: 0.84rem; font-weight: 500;
-  color: var(--sapphire-bright); cursor: none;
-  transition: all 0.2s;
-}
-.share-btn:hover { background: rgba(46,124,246,0.2); }
+  /* ── TRANSITION OVERLAY ── */
+  .overlay { position: fixed; inset: 0; background: rgba(255,255,255,.9); backdrop-filter: blur(6px); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .overlay.show { opacity: 1; pointer-events: all; }
+  .ov-spinner { width: 34px; height: 34px; border: 2.5px solid var(--gray-200); border-top-color: var(--black); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ov-text { font-size: 14px; font-weight: 500; text-align: center; }
+  .ov-sub { font-size: 12px; color: var(--gray-600); margin-top: 4px; text-align: center; }
 
-/* ─── FILTER TABS ─── */
-.filter-bar {
-  max-width: 1100px;
-  margin: 0 auto 32px;
-  padding: 0 32px;
-  position: relative; z-index: 1;
-}
-.filter-inner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 0;
-}
-.filter-tab {
-  padding: 10px 20px;
-  font-size: 0.86rem; font-weight: 500;
-  color: var(--silver-3); cursor: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-.filter-tab:hover { color: var(--white); }
-.filter-tab.active {
-  color: var(--sapphire-bright);
-  border-bottom-color: var(--sapphire);
-}
-.filter-spacer { flex: 1; }
-.sort-select {
-  background: var(--navy-3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 7px 14px;
-  font-family: var(--font-sans);
-  font-size: 0.82rem;
-  color: var(--silver);
-  outline: none; cursor: none;
-}
+  /* ══════════════════════════════════════
+     PAGE : CRÉATION PRODUIT
+  ══════════════════════════════════════ */
+  .main-create { margin-left: var(--sidebar-w); flex: 1; padding: 32px 40px; }
 
-/* ─── PRODUCTS GRID ─── */
-.products-section {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 32px 80px;
-  position: relative; z-index: 1;
-}
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
+  /* Steps */
+  .steps-wrap { display: flex; align-items: center; margin-bottom: 32px; }
+  .step { display: flex; align-items: center; gap: 8px; cursor: pointer; opacity: .4; transition: opacity .2s; }
+  .step.active { opacity: 1; }
+  .step.done { opacity: .65; }
+  .step-bubble { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--gray-400); background: var(--white); transition: all .2s; flex-shrink: 0; }
+  .step.active .step-bubble { background: var(--black); border-color: var(--black); color: var(--white); }
+  .step.done .step-bubble { background: var(--gray-800); border-color: var(--gray-800); color: var(--white); }
+  .step-name { font-size: 13px; font-weight: 500; color: var(--gray-600); white-space: nowrap; }
+  .step.active .step-name { color: var(--black); }
+  .step-line { flex: 1; height: 1px; background: var(--gray-200); margin: 0 10px; min-width: 16px; }
+  .step-line.done { background: var(--gray-800); }
 
-.product-card {
-  background: var(--navy-3);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  overflow: hidden;
-  transition: border-color 0.3s, transform 0.3s var(--ease), box-shadow 0.3s;
-  cursor: none;
-  animation: fadeUp 0.5s var(--ease) both;
-}
-.product-card:hover {
-  border-color: var(--border-2);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(46,124,246,0.12);
-}
-.product-card:nth-child(1) { animation-delay: 0.05s; }
-.product-card:nth-child(2) { animation-delay: 0.1s; }
-.product-card:nth-child(3) { animation-delay: 0.15s; }
-.product-card:nth-child(4) { animation-delay: 0.2s; }
-.product-card:nth-child(5) { animation-delay: 0.25s; }
-.product-card:nth-child(6) { animation-delay: 0.3s; }
-.product-card:nth-child(7) { animation-delay: 0.35s; }
-.product-card:nth-child(8) { animation-delay: 0.4s; }
+  /* Grid */
+  .grid { display: grid; grid-template-columns: 1fr 300px; gap: 22px; align-items: start; }
 
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(20px); }
-  to { opacity:1; transform:translateY(0); }
-}
+  /* Card */
+  .card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; overflow: hidden; }
+  .card + .card { margin-top: 16px; }
+  .card-head { padding: 18px 22px 14px; border-bottom: 1px solid var(--gray-100); }
+  .card-head h2 { font-family: 'DM Serif Display', serif; font-size: 16px; letter-spacing: -.2px; }
+  .card-head p { font-size: 12px; color: var(--gray-600); margin-top: 2px; }
+  .card-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 18px; }
 
-.product-img-wrap {
-  position: relative;
-  height: 200px;
-  overflow: hidden;
-}
-.product-img-wrap img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s var(--ease);
-  filter: brightness(0.85) saturate(0.9);
-}
-.product-card:hover .product-img-wrap img { transform: scale(1.06); }
+  /* Form */
+  .fg { display: flex; flex-direction: column; gap: 5px; }
+  .lbl { font-size: 12.5px; font-weight: 500; color: var(--gray-800); }
+  .req { color: var(--accent); font-size: 15px; }
+  .inp { width: 100%; padding: 9px 13px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--black); background: var(--white); outline: none; transition: border-color .14s, box-shadow .14s; }
+  .inp::placeholder { color: var(--gray-400); }
+  .inp:focus { border-color: var(--black); box-shadow: 0 0 0 3px rgba(10,10,10,.05); }
+  .sel { width: 100%; padding: 9px 34px 9px 13px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--black); background: var(--white) url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239e9b97' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center; appearance: none; outline: none; cursor: pointer; transition: border-color .14s; }
+  .sel:focus { border-color: var(--black); }
+  .hint { font-size: 11.5px; color: var(--gray-400); }
+  .info-box { background: var(--accent-light); border-radius: 8px; padding: 11px 14px; font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
 
-.product-type-badge {
-  position: absolute;
-  top: 12px; left: 12px;
-  background: rgba(6,13,28,0.8);
-  border: 1px solid var(--border-2);
-  border-radius: 6px;
-  padding: 3px 10px;
-  font-size: 0.62rem;
-  font-family: var(--font-mono);
-  color: var(--sapphire-bright);
-  backdrop-filter: blur(8px);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.product-wishlist {
-  position: absolute;
-  top: 12px; right: 12px;
-  width: 30px; height: 30px;
-  background: rgba(6,13,28,0.7);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.75rem;
-  backdrop-filter: blur(8px);
-  transition: all 0.2s;
-  cursor: none;
-}
-.product-wishlist:hover { background: rgba(46,124,246,0.2); border-color: var(--border-2); }
+  /* Editor */
+  .editor-box { border: 1.5px solid var(--gray-200); border-radius: 8px; overflow: hidden; transition: border-color .14s; }
+  .editor-box:focus-within { border-color: var(--black); }
+  .editor-bar { background: var(--gray-50); border-bottom: 1px solid var(--gray-200); padding: 7px 10px; display: flex; align-items: center; gap: 2px; }
+  .tb { width: 26px; height: 26px; border: none; background: none; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--gray-600); font-size: 12px; font-weight: 700; transition: all .1s; }
+  .tb:hover { background: var(--gray-200); color: var(--black); }
+  .tb-sep { width: 1px; height: 16px; background: var(--gray-200); margin: 0 4px; }
+  .editor-body { min-height: 130px; padding: 13px; font-size: 13.5px; line-height: 1.65; outline: none; }
+  .editor-body:empty::before { content: attr(placeholder); color: var(--gray-400); pointer-events: none; }
 
-.product-body { padding: 16px; }
-.product-category {
-  font-size: 0.65rem; font-family: var(--font-mono);
-  color: var(--silver-3); text-transform: uppercase; letter-spacing: 0.08em;
-  margin-bottom: 6px;
-}
-.product-title {
-  font-family: var(--font-serif);
-  font-size: 1.05rem; font-weight: 600;
-  color: var(--white); line-height: 1.3;
-  margin-bottom: 8px;
-}
-.product-desc {
-  font-size: 0.78rem; color: var(--silver-3); line-height: 1.5;
-  margin-bottom: 14px;
-  display: -webkit-box; -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical; overflow: hidden;
-}
-.product-footer {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-}
-.product-price {
-  font-family: var(--font-serif);
-  font-size: 1.15rem; font-weight: 700;
-  color: var(--white);
-}
-.product-price-sub {
-  font-size: 0.65rem; color: var(--silver-3); font-family: var(--font-mono);
-}
-.add-to-cart {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 14px;
-  background: var(--sapphire);
-  color: white; border-radius: 8px;
-  font-size: 0.78rem; font-weight: 600;
-  cursor: none; transition: all 0.2s;
-  font-family: var(--font-sans);
-  border: none;
-}
-.add-to-cart:hover {
-  background: var(--sapphire-2);
-  box-shadow: 0 6px 16px rgba(46,124,246,0.35);
-  transform: scale(1.03);
-}
+  /* Toggle */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 15px; background: var(--gray-50); border-radius: 9px; border: 1px solid var(--gray-100); }
+  .tl { font-size: 13px; font-weight: 500; }
+  .td { font-size: 11.5px; color: var(--gray-400); margin-top: 1px; }
+  .tgl { width: 38px; height: 21px; background: var(--gray-200); border-radius: 20px; border: none; cursor: pointer; position: relative; flex-shrink: 0; transition: background .2s; }
+  .tgl.on { background: var(--black); }
+  .tgl::after { content: ''; position: absolute; top: 2.5px; left: 2.5px; width: 16px; height: 16px; border-radius: 50%; background: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform .2s; }
+  .tgl.on::after { transform: translateX(17px); }
 
-/* ─── MODAL panier ─── */
-.cart-overlay {
-  position: fixed; inset: 0;
-  background: rgba(6,13,28,0.8);
-  z-index: 400;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.3s;
-  backdrop-filter: blur(4px);
-}
-.cart-overlay.open { opacity: 1; pointer-events: all; }
+  /* Upload */
+  .drop { border: 2px dashed var(--gray-200); border-radius: 10px; background: var(--gray-50); padding: 28px 16px; text-align: center; cursor: pointer; position: relative; transition: all .15s; }
+  .drop:hover { border-color: var(--black); background: var(--white); }
+  .drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .drop-ico { width: 40px; height: 40px; margin: 0 auto 10px; background: var(--gray-100); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .drop-t { font-size: 13.5px; font-weight: 500; margin-bottom: 3px; }
+  .drop-s { font-size: 12px; color: var(--gray-400); }
+  .img-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+  .img-th { aspect-ratio: 1; border-radius: 8px; background: var(--gray-100); border: 1.5px solid var(--gray-200); overflow: hidden; position: relative; }
+  .img-th img { width: 100%; height: 100%; object-fit: cover; }
+  .img-th .rm { position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; background: var(--black); color: var(--white); border: none; border-radius: 50%; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .15s; }
+  .img-th:hover .rm { opacity: 1; }
 
-.cart-drawer {
-  position: fixed;
-  top: 0; right: -440px; bottom: 0;
-  width: 420px;
-  background: var(--navy-2);
-  border-left: 1px solid var(--border-2);
-  z-index: 500;
-  display: flex; flex-direction: column;
-  transition: right 0.35s var(--ease);
-  overflow-y: auto;
-}
-.cart-drawer.open { right: 0; }
+  /* Tags */
+  .tags-box { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 42px; padding: 7px 11px; border: 1.5px solid var(--gray-200); border-radius: 8px; background: var(--white); cursor: text; transition: border-color .14s; }
+  .tags-box:focus-within { border-color: var(--black); }
+  .chip { display: flex; align-items: center; gap: 5px; background: var(--gray-100); padding: 3px 9px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+  .chip button { border: none; background: none; cursor: pointer; color: var(--gray-400); font-size: 13px; padding: 0; display: flex; align-items: center; }
+  .tag-inp { border: none; outline: none; flex: 1; min-width: 80px; font-family: 'DM Sans', sans-serif; font-size: 13px; background: transparent; color: var(--black); }
+  .tag-inp::placeholder { color: var(--gray-400); }
 
-.cart-header {
-  padding: 24px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.cart-title {
-  font-family: var(--font-serif);
-  font-size: 1.3rem; font-weight: 700; color: var(--white);
-}
-.cart-close {
-  width: 32px; height: 32px;
-  background: var(--navy-3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: none; font-size: 0.85rem; color: var(--silver-2);
-  transition: all 0.2s;
-}
-.cart-close:hover { border-color: var(--border-2); color: var(--white); }
+  /* Price */
+  .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .price-wrap { position: relative; }
+  .price-wrap .curr { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 600; color: var(--gray-600); pointer-events: none; }
+  .price-wrap .inp { padding-left: 42px; }
 
-.cart-items { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-.cart-item {
-  display: flex; gap: 12px;
-  padding: 12px;
-  background: var(--navy-3);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-.cart-item-img {
-  width: 60px; height: 60px;
-  border-radius: 8px; object-fit: cover;
-  flex-shrink: 0; border: 1px solid var(--border);
-}
-.cart-item-name { font-size: 0.88rem; font-weight: 600; color: var(--white); margin-bottom: 4px; }
-.cart-item-price { font-size: 0.8rem; color: var(--sapphire-bright); font-family: var(--font-mono); }
-.cart-item-qty {
-  margin-left: auto;
-  display: flex; align-items: center; gap: 8px;
-  font-family: var(--font-mono); font-size: 0.85rem;
-}
-.qty-btn {
-  width: 24px; height: 24px;
-  background: var(--navy-4);
-  border: 1px solid var(--border-2);
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: none; font-size: 0.85rem; color: var(--silver);
-  transition: all 0.2s;
-}
-.qty-btn:hover { background: rgba(46,124,246,0.15); border-color: var(--sapphire); }
+  /* SEO preview */
+  .seo-prev { background: var(--cream); border: 1px solid var(--gray-200); border-radius: 8px; padding: 13px; }
+  .seo-url { font-size: 12px; color: #1c7a4a; margin-bottom: 3px; }
+  .seo-ttl { font-size: 14px; color: #1a0dab; margin-bottom: 3px; font-weight: 500; }
+  .seo-dsc { font-size: 12px; color: var(--gray-600); line-height: 1.5; }
 
-.cart-empty {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; flex: 1; gap: 12px;
-  padding: 40px;
-}
-.cart-empty-icon { font-size: 3rem; opacity: 0.3; }
-.cart-empty-text { font-size: 0.88rem; color: var(--silver-3); text-align: center; }
+  /* Actions */
+  .actions { display: flex; justify-content: space-between; align-items: center; padding: 20px 0 0; border-top: 1px solid var(--gray-200); margin-top: 4px; }
+  .btn-back-step { display: flex; align-items: center; gap: 6px; border: 1.5px solid var(--gray-200); background: var(--white); padding: 9px 16px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--gray-600); cursor: pointer; transition: all .14s; }
+  .btn-back-step:hover { color: var(--black); border-color: var(--gray-400); }
+  .btn-next { display: flex; align-items: center; gap: 7px; border: none; background: var(--black); padding: 9px 22px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--white); cursor: pointer; transition: all .15s; }
+  .btn-next:hover { background: var(--gray-800); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.13); }
+  .btn-publish { background: var(--success) !important; }
+  .btn-publish:hover { background: #145e38 !important; }
 
-.cart-footer {
-  padding: 20px;
-  border-top: 1px solid var(--border);
-}
-.cart-total {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 16px;
-}
-.cart-total-label { font-size: 0.85rem; color: var(--silver-2); }
-.cart-total-value {
-  font-family: var(--font-serif);
-  font-size: 1.3rem; font-weight: 700; color: var(--white);
-}
-.checkout-btn {
-  display: block; width: 100%;
-  padding: 14px; text-align: center;
-  background: var(--sapphire);
-  color: white; border-radius: 10px;
-  font-size: 0.95rem; font-weight: 700;
-  cursor: none; transition: all 0.2s;
-  font-family: var(--font-sans);
-  border: none; margin-bottom: 10px;
-}
-.checkout-btn:hover {
-  background: var(--sapphire-2);
-  box-shadow: 0 10px 28px rgba(46,124,246,0.4);
-  transform: translateY(-1px);
-}
-.delivery-note {
-  font-size: 0.75rem; color: var(--silver-3); text-align: center;
-  font-family: var(--font-mono);
-}
+  /* Step panels */
+  .step-panel { display: none; animation: fadeUp .2s ease both; }
+  .step-panel.active { display: block; }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: none; } }
 
-/* ORDER MODAL */
-.order-overlay {
-  position: fixed; inset: 0;
-  background: rgba(6,13,28,0.9);
-  z-index: 600;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.3s;
-  backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center;
-}
-.order-overlay.open { opacity: 1; pointer-events: all; }
-.order-modal {
-  background: var(--navy-2);
-  border: 1px solid var(--border-2);
-  border-radius: 20px;
-  padding: 36px;
-  width: 100%; max-width: 480px;
-  animation: modalIn 0.4s var(--ease) both;
-  position: relative;
-}
-@keyframes modalIn {
-  from { opacity:0; transform:scale(0.95) translateY(16px); }
-  to { opacity:1; transform:scale(1) translateY(0); }
-}
-.modal-title {
-  font-family: var(--font-serif);
-  font-size: 1.6rem; font-weight: 700; color: var(--white);
-  margin-bottom: 6px;
-}
-.modal-sub { font-size: 0.85rem; color: var(--silver-2); margin-bottom: 28px; font-weight: 300; }
-.modal-field-group { margin-bottom: 16px; }
-.modal-label {
-  display: block;
-  font-size: 0.72rem; font-family: var(--font-mono);
-  color: var(--silver); letter-spacing: 0.08em; text-transform: uppercase;
-  margin-bottom: 7px;
-}
-.modal-input {
-  width: 100%;
-  padding: 11px 14px;
-  background: rgba(15,29,56,0.8);
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  font-family: var(--font-sans); font-size: 0.88rem; color: var(--white);
-  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-}
-.modal-input:focus {
-  border-color: var(--sapphire);
-  box-shadow: 0 0 0 3px rgba(46,124,246,0.12);
-}
-.modal-input::placeholder { color: var(--silver-3); }
-.modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.modal-submit {
-  width: 100%; padding: 14px;
-  background: var(--sapphire); color: white; border: none;
-  border-radius: 10px; font-size: 0.95rem; font-weight: 700;
-  cursor: none; transition: all 0.2s; font-family: var(--font-sans);
-  margin-top: 8px; margin-bottom: 12px;
-}
-.modal-submit:hover {
-  background: var(--sapphire-2);
-  box-shadow: 0 10px 28px rgba(46,124,246,0.4);
-}
-.modal-delivery-info {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 16px;
-  background: rgba(52,211,153,0.06);
-  border: 1px solid rgba(52,211,153,0.15);
-  border-radius: 10px;
-  font-size: 0.8rem; color: var(--silver-2);
-}
-.modal-close {
-  position: absolute; top: 20px; right: 20px;
-  width: 30px; height: 30px;
-  background: var(--navy-3); border: 1px solid var(--border);
-  border-radius: 8px; display: flex; align-items: center; justify-content: center;
-  cursor: none; color: var(--silver-2); transition: all 0.2s;
-}
-.modal-close:hover { border-color: var(--border-2); color: var(--white); }
+  /* Type badge */
+  .type-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; margin-bottom: 20px; }
+  .type-badge.digital { background: var(--accent-light); color: #a07c3a; border: 1px solid var(--accent); }
+  .type-badge.physical { background: var(--gray-100); color: var(--gray-800); border: 1px solid var(--gray-200); }
 
-/* ─── FOOTER ─── */
-.shop-footer {
-  border-top: 1px solid var(--border);
-  text-align: center;
-  padding: 24px;
-  position: relative; z-index: 1;
-}
-.powered-by {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 0.78rem; color: var(--silver-3);
-}
-.powered-by .zora-link {
-  display: inline-flex; align-items: center; gap: 5px;
-  color: var(--sapphire-bright); font-weight: 500;
-  transition: color 0.2s;
-}
-.powered-by .zora-link:hover { color: var(--white); }
-
-/* RESPONSIVE */
-@media (max-width: 1000px) {
-  .products-grid { grid-template-columns: repeat(3, 1fr); }
-  .shop-profile { flex-wrap: wrap; }
-  .shop-profile-right { width: 100%; justify-content: flex-start; }
-}
-@media (max-width: 700px) {
-  .products-grid { grid-template-columns: repeat(2, 1fr); }
-  .shop-topbar { padding: 0 16px; }
-  .topbar-search { display: none; }
-  .shop-profile { padding: 0 16px; margin-top: -40px; }
-  .products-section { padding: 0 16px 60px; }
-  .filter-bar { padding: 0 16px; }
-  .cart-drawer { width: 100%; }
-}
+  /* Animations page choix */
+  .select-header { animation: fadeUp .35s ease both; }
+  .cards-row .type-pick:nth-child(1) { animation: fadeUp .4s .05s ease both; }
+  .cards-row .type-pick:nth-child(2) { animation: fadeUp .4s .12s ease both; }
 </style>
 </head>
 <body>
 
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-<div class="bg-fixed"></div>
-<div class="bg-noise"></div>
-
-<!-- TOP BAR -->
-<header class="shop-topbar">
-  <div class="zora-badge">
-    <div class="zora-badge-icon">Z</div>
-    Zora
-  </div>
-  <div class="topbar-divider"></div>
-  <div class="shop-topbar-name">Fatima Mode</div>
-  <div class="topbar-spacer"></div>
-  <div class="topbar-search">
-    <span style="color:var(--silver-3);font-size:.8rem">🔍</span>
-    <input type="text" placeholder="Rechercher un produit...">
-  </div>
-  <div class="cart-btn" onclick="openCart()">
-    🛒 Panier
-    <span class="cart-count" id="cart-count">0</span>
+<!-- TOPBAR -->
+<header class="topbar">
+  <span class="brand" onclick="goBack()">eseafy<span class="brand-dot">.</span></span>
+  <div class="topbar-sep"></div>
+  <span class="topbar-crumb" id="topCrumb"><strong>Ma boutique</strong> &nbsp;/&nbsp; Nouveau produit</span>
+  <div class="topbar-right">
+    <button class="btn-sm btn-outline" id="draftBtn" style="display:none" onclick="saveDraft(this)">Enregistrer brouillon</button>
+    <div class="avatar">AB</div>
   </div>
 </header>
 
-<!-- SHOP HERO -->
-<div class="shop-hero">
-  <div class="shop-banner">
-    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400&q=80&fit=crop" alt="Fatima Mode" loading="eager">
-    <div class="shop-banner-grid"></div>
+<div class="layout">
+
+  <!-- SIDEBAR (partagée) -->
+  <aside class="sidebar">
+    <div class="sidebar-shop">
+      <div class="shop-icon">
+        <svg width="16" height="16" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div><div class="shop-name">Ma boutique</div><div class="shop-plan">Starter</div></div>
+    </div>
+    <div class="nav-section">Menu</div>
+    <button class="nav-item"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Accueil</button>
+    <button class="nav-item"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Ventes</button>
+    <button class="nav-item active"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Produits</button>
+    <button class="nav-item"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Clients</button>
+    <button class="nav-item"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Revenus</button>
+    <button class="nav-item"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Analytiques</button>
+    <button class="nav-item"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Marketing</button>
+    <button class="nav-item"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>Affiliation</button>
+    <div class="nav-section">Compte</div>
+    <button class="nav-item"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profil</button>
+    <button class="nav-item"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notifications</button>
+    <button class="nav-item"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Paramètres</button>
+    <div class="sidebar-footer">
+      <button class="nav-item" style="padding:8px 0;margin-top:4px;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Se déconnecter</button>
+    </div>
+  </aside>
+
+  <!-- ══ PAGE CHOIX ══ -->
+  <div id="pageChoix" style="flex:1;">
+    <main class="main-center">
+      <div class="select-wrap">
+
+        <button class="page-back">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Retour aux produits
+        </button>
+
+        <div class="select-header">
+          <h1>Quel type de produit<br>souhaitez-vous vendre ?</h1>
+          <p>Choisissez une catégorie pour commencer. Le type ne peut pas être modifié après la première publication.</p>
+        </div>
+
+        <div class="cards-row">
+          <div class="type-pick digital" onclick="startCreation('digital')">
+            <div class="pick-icon">📦</div>
+            <div class="pick-body">
+              <div class="pick-title">Produit digital</div>
+              <div class="pick-desc">Vendez des fichiers numériques téléchargeables ou un accès à du contenu en ligne. Livraison instantanée après paiement.</div>
+              <div class="pick-tags">
+                <span class="pick-tag">Ebook / PDF</span>
+                <span class="pick-tag">Cours en ligne</span>
+                <span class="pick-tag">Template</span>
+                <span class="pick-tag">Audio / Vidéo</span>
+                <span class="pick-tag">Logiciel</span>
+              </div>
+            </div>
+            <div class="pick-footer">
+              <span class="pick-cta">Commencer</span>
+              <span class="pick-arrow"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+            </div>
+          </div>
+
+          <div class="type-pick physical" onclick="startCreation('physical')">
+            <div class="pick-icon">🚚</div>
+            <div class="pick-body">
+              <div class="pick-title">Produit physique</div>
+              <div class="pick-desc">Vendez des articles tangibles expédiés ou disponibles en retrait. Gestion du stock et options de livraison incluses.</div>
+              <div class="pick-tags">
+                <span class="pick-tag">Vêtements</span>
+                <span class="pick-tag">Alimentation</span>
+                <span class="pick-tag">Artisanat</span>
+                <span class="pick-tag">Beauté</span>
+                <span class="pick-tag">Électronique</span>
+              </div>
+            </div>
+            <div class="pick-footer">
+              <span class="pick-cta">Commencer</span>
+              <span class="pick-arrow"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+            </div>
+          </div>
+        </div>
+
+        <p class="bottom-note">Vous pouvez créer autant de produits que vous souhaitez.</p>
+      </div>
+    </main>
   </div>
 
-  <div class="shop-profile">
-    <div class="shop-logo">👗</div>
-    <div class="shop-info">
-      <div class="shop-name-big">
-        Fatima Mode
-        <span class="verified-badge">✓ Vérifié</span>
+  <!-- ══ PAGE CRÉATION ══ -->
+  <div id="pageCreation" style="flex:1;">
+    <main class="main-create">
+
+      <button class="page-back" onclick="goBack()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Changer de type
+      </button>
+
+      <div id="typeBadge" class="type-badge digital" style="display:inline-flex;">📦 Produit digital</div>
+
+      <!-- Steps bar -->
+      <div class="steps-wrap">
+        <div class="step active" onclick="goStep(1)"><div class="step-bubble" id="b1">1</div><span class="step-name">Statut & Type</span></div>
+        <div class="step-line" id="l1"></div>
+        <div class="step" onclick="goStep(2)"><div class="step-bubble" id="b2">2</div><span class="step-name">Détails</span></div>
+        <div class="step-line" id="l2"></div>
+        <div class="step" onclick="goStep(3)"><div class="step-bubble" id="b3">3</div><span class="step-name">Médias</span></div>
+        <div class="step-line" id="l3"></div>
+        <div class="step" onclick="goStep(4)"><div class="step-bubble" id="b4">4</div><span class="step-name">Tarification & Publication</span></div>
       </div>
-      <div class="shop-desc-short">Mode africaine authentique — pagnes, bijoux, formations couture. Livraison partout au Burkina Faso.</div>
-    </div>
-    <div class="shop-profile-right">
-      <div class="shop-stat-mini">
-        <div class="shop-stat-mini-val">124</div>
-        <div class="shop-stat-mini-lbl">Commandes</div>
+
+      <!-- ─── ÉTAPE 1 : Statut ─── -->
+      <div class="step-panel active" id="panel1">
+        <div class="grid">
+          <div>
+            <div class="card">
+              <div class="card-head"><h2>Statut de la boutique</h2><p>Visible dès maintenant ou gardé en brouillon ?</p></div>
+              <div class="card-body">
+                <div class="toggle-row">
+                  <div><div class="tl">Visible en boutique</div><div class="td">Les clients peuvent voir et acheter ce produit</div></div>
+                  <button class="tgl on" onclick="this.classList.toggle('on')"></button>
+                </div>
+                <div class="fg">
+                  <label class="lbl">Date de publication</label>
+                  <input class="inp" type="datetime-local" />
+                  <span class="hint">Laissez vide pour publier immédiatement</span>
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+              <span></span>
+              <button class="btn-next" onclick="goStep(2)">Continuer : Détails <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head"><h2>À savoir</h2></div>
+              <div class="card-body">
+                <div class="info-box">Vous pouvez <strong>modifier le statut</strong> à tout moment depuis votre liste de produits, même après publication.</div>
+                <p style="font-size:12.5px;color:var(--gray-600);line-height:1.65;">Commencez en brouillon pour peaufiner votre fiche avant de la rendre visible à vos clients.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="shop-stat-mini">
-        <div class="shop-stat-mini-val">12</div>
-        <div class="shop-stat-mini-lbl">Produits</div>
+
+      <!-- ─── ÉTAPE 2 : Détails ─── -->
+      <div class="step-panel" id="panel2">
+        <div class="grid">
+          <div>
+            <div class="card">
+              <div class="card-head"><h2>Informations du produit</h2><p>Un nom clair et une bonne description augmentent vos ventes</p></div>
+              <div class="card-body">
+                <div class="fg">
+                  <label class="lbl">Nom du produit <span class="req">*</span></label>
+                  <input class="inp" id="pName" type="text" placeholder="Ex : Guide Facebook Ads 2025" oninput="updateSEO()" />
+                </div>
+                <div class="fg">
+                  <label class="lbl">Description <span class="req">*</span></label>
+                  <div class="editor-box">
+                    <div class="editor-bar">
+                      <button class="tb" onclick="fmt('bold')"><b>B</b></button>
+                      <button class="tb" onclick="fmt('italic')"><i>I</i></button>
+                      <button class="tb" onclick="fmt('underline')"><u>U</u></button>
+                      <div class="tb-sep"></div>
+                      <button class="tb" onclick="fmt('insertUnorderedList')"><svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5 11.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zM3 8a1 1 0 110-2 1 1 0 010 2zm0 4a1 1 0 110-2 1 1 0 010 2zm0-8a1 1 0 110-2 1 1 0 010 2z"/></svg></button>
+                    </div>
+                    <div class="editor-body" contenteditable="true" placeholder="Décrivez votre produit : contenu, cible, bénéfices…"></div>
+                  </div>
+                </div>
+                <div class="fg">
+                  <label class="lbl">Catégorie <span class="req">*</span></label>
+                  <select class="sel" id="catSelect"></select>
+                </div>
+                <div class="fg">
+                  <label class="lbl">Tags</label>
+                  <div class="tags-box" onclick="document.getElementById('tgInp').focus()">
+                    <input class="tag-inp" id="tgInp" placeholder="Ajouter un tag, Entrée pour valider…" onkeydown="addTag(event)" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn-back-step" onclick="goStep(1)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Retour</button>
+              <button class="btn-next" onclick="goStep(3)">Continuer : Médias <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head"><h2>Conseils</h2></div>
+              <div class="card-body">
+                <p style="font-size:12.5px;color:var(--gray-600);line-height:1.65;">Un bon nom est <strong>court, clair et précis</strong>. Dans la description, répondez à : <em>Pour qui ? Quel contenu ? Quel résultat ?</em></p>
+                <div class="info-box">💡 Les produits avec une description complète se vendent <strong>3× plus</strong>.</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="shop-stat-mini">
-        <div class="shop-stat-mini-val">4.9★</div>
-        <div class="shop-stat-mini-lbl">Note</div>
+
+      <!-- ─── ÉTAPE 3 : Médias ─── -->
+      <div class="step-panel" id="panel3">
+        <div class="grid">
+          <div>
+            <div class="card">
+              <div class="card-head"><h2>Images du produit</h2><p>La première image sera la couverture affichée en boutique</p></div>
+              <div class="card-body">
+                <div class="drop">
+                  <input type="file" accept="image/*" multiple onchange="handleImages(this)" />
+                  <div class="drop-ico"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+                  <div class="drop-t">Glissez vos images ici</div>
+                  <div class="drop-s">PNG, JPG, WEBP · Max 5 Mo</div>
+                </div>
+                <div class="img-grid" id="imgGrid"></div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn-back-step" onclick="goStep(2)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Retour</button>
+              <button class="btn-next" onclick="goStep(4)">Continuer : Tarification <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head"><h2>Recommandations</h2></div>
+              <div class="card-body">
+                <p style="font-size:12.5px;color:var(--gray-600);line-height:1.65;">Taille idéale : <strong>1200×1200 px</strong>. Jusqu'à <strong>8 images</strong>.</p>
+                <div class="info-box">💡 Un fond blanc ou neutre donne un rendu professionnel en boutique.</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="share-btn" onclick="shareShop()">📤 Partager</div>
-    </div>
+
+      <!-- ─── ÉTAPE 4 : Tarification ─── -->
+      <div class="step-panel" id="panel4">
+        <div class="grid">
+          <div>
+            <div class="card">
+              <div class="card-head"><h2>Tarification</h2><p>Définissez le prix et le modèle de vente</p></div>
+              <div class="card-body">
+                <div class="fg">
+                  <label class="lbl">Modèle de tarification <span class="req">*</span></label>
+                  <select class="sel">
+                    <option>Paiement unique</option>
+                    <option>Abonnement mensuel</option>
+                    <option>Paiement libre (Pay what you want)</option>
+                  </select>
+                </div>
+                <div class="price-grid">
+                  <div class="fg"><label class="lbl">Prix <span class="req">*</span></label><div class="price-wrap"><span class="curr">XOF</span><input class="inp" type="number" placeholder="0" min="0" /></div></div>
+                  <div class="fg"><label class="lbl">Prix barré</label><div class="price-wrap"><span class="curr">XOF</span><input class="inp" type="number" placeholder="0" min="0" /></div></div>
+                </div>
+                <div class="info-box">💰 Frais eseafy : <strong>5%</strong> par transaction. Minimum conseillé : <strong>1 500 XOF</strong>.</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h2>Référencement (SEO)</h2></div>
+              <div class="card-body">
+                <div class="fg"><label class="lbl">Titre SEO</label><input class="inp" id="seoTitle" type="text" placeholder="Titre pour Google…" oninput="updateSEO()" /></div>
+                <div class="fg"><label class="lbl">Description SEO</label><textarea class="inp" id="seoDescInp" rows="3" placeholder="Courte description…" style="resize:vertical;" oninput="updateSEO()"></textarea></div>
+                <div class="fg">
+                  <label class="lbl">Aperçu</label>
+                  <div class="seo-prev">
+                    <div class="seo-url" id="seoUrl">eseafy.com/boutique/produits/nom-du-produit</div>
+                    <div class="seo-ttl" id="seoTtl">Votre titre s'affichera ici</div>
+                    <div class="seo-dsc" id="seoDsc">La description courte s'affiche dans les résultats de recherche.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn-back-step" onclick="goStep(3)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Retour</button>
+              <button class="btn-next btn-publish" onclick="publish(this)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Publier le produit</button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head"><h2>Résumé</h2></div>
+              <div class="card-body">
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--gray-600);">Type</span><span id="sumType" style="font-weight:500;">—</span></div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--gray-600);">Nom</span><span id="sumName" style="font-weight:500;text-align:right;max-width:160px;">—</span></div>
+                </div>
+                <div style="border-top:1px solid var(--gray-100);padding-top:14px;">
+                  <div class="info-box">Vérifiez les informations avant de publier. Elles restent modifiables à tout moment.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
   </div>
+
 </div>
 
-<!-- FILTER BAR -->
-<div class="filter-bar">
-  <div class="filter-inner">
-    <span class="filter-tab active" onclick="filterProducts(this, 'all')">Tout (12)</span>
-    <span class="filter-tab" onclick="filterProducts(this, 'physique')">Physique (8)</span>
-    <span class="filter-tab" onclick="filterProducts(this, 'digital')">Digital (4)</span>
-    <span class="filter-tab" onclick="filterProducts(this, 'mode')">Mode</span>
-    <span class="filter-tab" onclick="filterProducts(this, 'bijoux')">Bijoux</span>
-    <div class="filter-spacer"></div>
-    <select class="sort-select">
-      <option>Trier : Popularité</option>
-      <option>Prix : croissant</option>
-      <option>Prix : décroissant</option>
-      <option>Nouveautés</option>
-    </select>
+<!-- OVERLAY -->
+<div class="overlay" id="overlay">
+  <div>
+    <div class="ov-spinner"></div>
+    <div class="ov-text" id="ovText">Chargement…</div>
+    <div class="ov-sub" id="ovSub"></div>
   </div>
 </div>
-
-<!-- PRODUCTS -->
-<section class="products-section">
-  <div class="products-grid" id="products-grid">
-
-    <!-- Product 1 -->
-    <div class="product-card" data-category="physique mode">
-      <div class="product-img-wrap">
-        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=75&fit=crop" alt="Pagne wax" loading="lazy">
-        <span class="product-type-badge">Physique</span>
-        <div class="product-wishlist">♡</div>
-      </div>
-      <div class="product-body">
-        <div class="product-category">Mode · Tissus</div>
-        <div class="product-title">Pagne Wax Premium Bogolan</div>
-        <div class="product-desc">Tissu authentique 6 yards, motifs traditionnels du Burkina. Qualité supérieure.</div>
-        <div class="product-footer">
-          <div>
-            <div class="product-price">22 500 XOF</div>
-            <div class="product-price-sub">Livraison incluse</div>
-          </div>
-          <button class="add-to-cart" onclick="addToCart('Pagne Wax Premium', 22500, this)">+ Panier</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Product 2 -->
-    <div class="product-card" data-category="digital">
-      <div class="product-img-wrap">
-        <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=400&q=75&fit=crop" alt="Formation" loading="lazy">
-        <span class="product-type-badge" style="color:#A78BFA;border-color:rgba(167,139,250,0.3)">Digital</span>
-        <div class="product-wishlist">♡</div>
-      </div>
-      <div class="product-body">
-        <div class="product-category">Formation · Couture</div>
-        <div class="product-title">Formation Couture Africaine Complète</div>
-        <div class="product-desc">20 vidéos HD, PDF patrons, accès à vie. Du débutant au niveau pro.</div>
-        <div class="product-footer">
-          <div>
-            <div class="product-price">15 000 XOF</div>
-            <div class="product-price-sub">Accès immédiat</div>
-          </div>
-          <button class="add-to-cart" onclick="addToCart('Formation Couture', 15000, this)">+ Panier</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Product 3 -->
-    <div class="product-card" data-category="physique bijoux">
-      <div class="product-img-wrap">
-        <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=75&fit=crop" alt="Collier" loading="lazy">
-        <span class="product-type-badge">Physique</span>
-        <div class="product-wishlist">♡</div>
-      </div>
-      <div class="product-body">
-        <div class="product-category">Bijoux · Artisanat</div>
-        <div class="product-title">Collier Perles Royales</div>
-        <div class="product-desc">Perles naturelles, fabrication artisanale à Ouagadougou. Pièce unique.</div>
-        <div class="product-footer">
-          <div>
-            <div class="product-price">8 500 XOF</div>
-            <div class="product-price-sub">+ Livraison</div>
-          </div>
-          <button class="add-to-cart" onclick="addToCart('Collier Perles Royales', 8500, this)">+ Panier</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Product 4 -->
-    <div class="product-card" data-category="digital">
-      <div class="product-img-wrap">
-        <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=75&fit=crop" alt="E-book" loading="lazy">
-        <span class="product-type-badge" style="color:#A78BFA;border-color:rgba(167,139,250,0.3)">Digital</span>
-        <div class="product-wishlist">♡</div>
-      </div>
-      <div class="product-body">
-        <div class="product-category">E-book · Mode</div>
-        <div class="product-title">Guide Mode Africaine 2024</div>
-        <div class="product-desc">100 pages, tendances, conseils stylisme, adresses créateurs. PDF + EPUB.</div>
-        <div class="product-footer">
-          <div>
-            <div class="product-price">5 000 XOF</div>
-            <div class="product-price-sub">Téléchargement instantané</div>
-          </div>
-          <button class="add-to-cart" onclick="addToCart('Guide Mode Africaine', 5000, this)">+ Panier</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Product 5 -->
-    <div class="product-card" data-category="physique mode">
-      <div class="product-img-wrap">
-        <img src="https://images.unsplash.com/photo-1571513722275-4b41940f54b8?w=400&q=75&fit=crop" alt="Boubou" loading="lazy">
-        <span class="product-type-badge">Physique</span>
-        <div class="product-wishlist">♡</div>
-      </div>
-      <div class="product-body">
-        <div class="product-category">Mode · Tenue</div>
-        <div class="product-title">Boubou Grand Kaftan</div>
-        <div class="product-desc">Taille unique ajustable. Broderies à la main, tissu coton léger. Cérémonie & quotidien.</div>
-        <div class="product-footer">
-          <div>
-            <div class="product-price">35 000 XOF</div>
-            <div class="product-price-sub">Livraison incluse</div>
-          </div>
-          <button class="add-to-cart" onclick="addToCart('Boubou Grand Kaftan', 35000, this)">+ Panier</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Product 6 -->
-    <div class="product-card" data-category="physique bijoux">
-      <div class="product-img-wrap">
-        <img src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=400&q=75&fit=crop" alt="Bracelet" loading="lazy">
-        <span class="product-type-badge">Physique</span>
-        <div class="product-wishlist">♡</div>
-      </div>
-      <div class="product-body">
-        <div class="product-category">Bijoux · Artisanat</div>
-        <div class="product-title">Set Bracelets Cuivre</div>
-        <div class="product-desc">Lot de 3 bracelets tressés, cuivre et or. Symboles africains gravés à la main.</div>
-        <div class="product-footer">
-          <div>
-            <div class="product-price">12 000 XOF</div>
-            <div class="product-price-sub">+ Livraison</div>
-          </div>
-          <button class="add-to-cart" onclick="addToCart('Set Bracelets Cuivre', 12000, this)">+ Panier</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Product 7 -->
-    <div class="product-card" data-category="digital">
-      <div class="product-img-wrap">
-        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&q=75&fit=crop" alt="Templates" loading="lazy">
-        <span class="product-type-badge" style="color:#A78BFA;border-color:rgba(167,139,250,0.3)">Digital</span>
-        <div class="product-wishlist">♡</div>
-      </div>
-      <div class="product-body">
-        <div class="product-category">Templates · Business</div>
-        <div class="product-title">Pack Templates Réseaux Sociaux</div>
-        <div class="product-desc">50 templates Canva pour promouvoir votre boutique. Instagram, Facebook, WhatsApp.</div>
-        <div class="product-footer">
-          <div>
-            <div class="product-price">7 500 XOF</div>
-            <div class="product-price-sub">Accès Canva inclus</div>
-          </div>
-          <button class="add-to-cart" onclick="addToCart('Pack Templates', 7500, this)">+ Panier</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Product 8 -->
-    <div class="product-card" data-category="physique mode">
-      <div class="product-img-wrap">
-        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=75&fit=crop" alt="Sneakers" loading="lazy">
-        <span class="product-type-badge">Physique</span>
-        <div class="product-wishlist">♡</div>
-      </div>
-      <div class="product-body">
-        <div class="product-category">Chaussures · Mode</div>
-        <div class="product-title">Sneakers Tissu Kente</div>
-        <div class="product-desc">Chaussures artisanales, semelle caoutchouc. Tissu kente du Ghana. Pointures 36–45.</div>
-        <div class="product-footer">
-          <div>
-            <div class="product-price">28 000 XOF</div>
-            <div class="product-price-sub">Livraison incluse</div>
-          </div>
-          <button class="add-to-cart" onclick="addToCart('Sneakers Kente', 28000, this)">+ Panier</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- CART DRAWER -->
-<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
-<div class="cart-drawer" id="cart-drawer">
-  <div class="cart-header">
-    <div class="cart-title">Mon panier 🛒</div>
-    <div class="cart-close" onclick="closeCart()">✕</div>
-  </div>
-  <div class="cart-items" id="cart-items">
-    <div class="cart-empty">
-      <div class="cart-empty-icon">🛒</div>
-      <div class="cart-empty-text">Votre panier est vide.<br>Ajoutez des produits pour commencer.</div>
-    </div>
-  </div>
-  <div class="cart-footer" id="cart-footer" style="display:none">
-    <div class="cart-total">
-      <div class="cart-total-label">Total</div>
-      <div class="cart-total-value" id="cart-total-val">0 XOF</div>
-    </div>
-    <button class="checkout-btn" onclick="openOrder()">Commander — Paiement à la livraison →</button>
-    <div class="delivery-note">🚚 Paiement à la réception · Livraison 24-48h</div>
-  </div>
-</div>
-
-<!-- ORDER MODAL -->
-<div class="order-overlay" id="order-overlay">
-  <div class="order-modal">
-    <div class="modal-close" onclick="closeOrder()">✕</div>
-    <div class="modal-title">Finaliser la commande</div>
-    <div class="modal-sub">Paiement à la livraison — aucune carte bancaire requise</div>
-    <form onsubmit="submitOrder(event)">
-      <div class="modal-row">
-        <div class="modal-field-group">
-          <label class="modal-label">Prénom</label>
-          <input type="text" class="modal-input" placeholder="Fatima" required>
-        </div>
-        <div class="modal-field-group">
-          <label class="modal-label">Nom</label>
-          <input type="text" class="modal-input" placeholder="Ouédraogo" required>
-        </div>
-      </div>
-      <div class="modal-field-group">
-        <label class="modal-label">Téléphone</label>
-        <input type="tel" class="modal-input" placeholder="+226 70 00 00 00" required>
-      </div>
-      <div class="modal-field-group">
-        <label class="modal-label">Adresse de livraison</label>
-        <input type="text" class="modal-input" placeholder="Secteur 15, Ouagadougou" required>
-      </div>
-      <div class="modal-field-group">
-        <label class="modal-label">Note (optionnel)</label>
-        <input type="text" class="modal-input" placeholder="Taille, couleur, instructions...">
-      </div>
-      <button type="submit" class="modal-submit">✓ Confirmer ma commande →</button>
-    </form>
-    <div class="modal-delivery-info">
-      <span>🚚</span>
-      <span>Livraison sous 24–48h · Paiement uniquement à la réception</span>
-    </div>
-  </div>
-</div>
-
-<!-- FOOTER -->
-<footer class="shop-footer">
-  <div class="powered-by">
-    Boutique propulsée par
-    <a href="index.html" class="zora-link">
-      <span style="width:16px;height:16px;background:var(--sapphire);border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:900;color:white">Z</span>
-      Zora
-    </a>
-    · Créez votre boutique gratuitement
-  </div>
-</footer>
+<style>
+  .ov-spinner { width: 34px; height: 34px; border: 2.5px solid var(--gray-200); border-top-color: var(--black); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 14px; }
+  .ov-text { font-size: 14px; font-weight: 500; text-align: center; }
+  .ov-sub { font-size: 12px; color: var(--gray-600); margin-top: 4px; text-align: center; }
+  .overlay { position: fixed; inset: 0; background: rgba(255,255,255,.9); backdrop-filter: blur(6px); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .overlay.show { opacity: 1; pointer-events: all; }
+</style>
 
 <script>
-// Cursor
-const cursor = document.getElementById('cursor');
-const ring = document.getElementById('cursor-ring');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
-(function anim() {
-  cursor.style.left=mx+'px'; cursor.style.top=my+'px';
-  rx+=(mx-rx)*0.1; ry+=(my-ry)*0.1;
-  ring.style.left=rx+'px'; ring.style.top=ry+'px';
-  requestAnimationFrame(anim);
-})();
+  let productType = 'digital';
 
-// Cart state
-let cart = [];
+  const cats = {
+    digital: ['📚 Ebooks & Guides','🎓 Formation & Cours','🎨 Design & Graphisme','💻 Développement & Tech','📈 Marketing & Business','🎵 Audio & Musique','🔧 Templates & Outils'],
+    physical: ['👗 Vêtements & Mode','🍽 Alimentation','🌿 Beauté & Bien-être','🏠 Maison & Déco','⚡ Électronique','🎨 Artisanat & Art','🧸 Jouets & Loisirs']
+  };
 
-function addToCart(name, price, btn) {
-  const existing = cart.find(i => i.name === name);
-  if (existing) existing.qty++;
-  else cart.push({ name, price, qty: 1 });
-  updateCartUI();
-  const orig = btn.textContent;
-  btn.textContent = '✓ Ajouté !';
-  btn.style.background = '#34D399';
-  setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
-}
+  function startCreation(type) {
+    productType = type;
+    const ov = document.getElementById('overlay');
+    document.getElementById('ovText').textContent = type === 'digital' ? 'Produit digital' : 'Produit physique';
+    document.getElementById('ovSub').textContent = 'Préparation du formulaire…';
+    ov.classList.add('show');
 
-function updateCartUI() {
-  const count = cart.reduce((s,i) => s+i.qty, 0);
-  document.getElementById('cart-count').textContent = count;
-  const total = cart.reduce((s,i) => s + i.price*i.qty, 0);
-  document.getElementById('cart-total-val').textContent = total.toLocaleString('fr-FR') + ' XOF';
-  const itemsEl = document.getElementById('cart-items');
-  const footer = document.getElementById('cart-footer');
-  if (cart.length === 0) {
-    itemsEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><div class="cart-empty-text">Votre panier est vide.<br>Ajoutez des produits pour commencer.</div></div>`;
-    footer.style.display = 'none';
-  } else {
-    footer.style.display = 'block';
-    itemsEl.innerHTML = cart.map((item,i) => `
-      <div class="cart-item">
-        <div style="width:60px;height:60px;border-radius:8px;background:var(--navy-4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:1px solid var(--border);flex-shrink:0">🛍</div>
-        <div style="flex:1;min-width:0">
-          <div class="cart-item-name">${item.name}</div>
-          <div class="cart-item-price">${(item.price*item.qty).toLocaleString('fr-FR')} XOF</div>
-        </div>
-        <div class="cart-item-qty">
-          <div class="qty-btn" onclick="changeQty(${i},-1)">−</div>
-          <span>${item.qty}</span>
-          <div class="qty-btn" onclick="changeQty(${i},1)">+</div>
-        </div>
-      </div>`).join('');
+    setTimeout(() => {
+      // Update badge
+      const badge = document.getElementById('typeBadge');
+      badge.className = 'type-badge ' + type;
+      badge.textContent = type === 'digital' ? '📦 Produit digital' : '🚚 Produit physique';
+
+      // Update crumb
+      document.getElementById('topCrumb').innerHTML = '<strong>Ma boutique</strong> &nbsp;/&nbsp; Nouveau produit ' + (type === 'digital' ? 'digital' : 'physique');
+
+      // Show draft btn
+      document.getElementById('draftBtn').style.display = '';
+
+      // Update categories
+      const sel = document.getElementById('catSelect');
+      sel.innerHTML = '<option value="">Choisir une catégorie</option>' + cats[type].map(c => `<option>${c}</option>`).join('');
+
+      // Update summary
+      document.getElementById('sumType').textContent = type === 'digital' ? 'Produit digital' : 'Produit physique';
+
+      // Switch pages
+      document.getElementById('pageChoix').style.display = 'none';
+      document.getElementById('pageCreation').style.display = 'flex';
+
+      // Reset to step 1
+      goStep(1);
+
+      ov.classList.remove('show');
+      window.scrollTo({ top: 0 });
+    }, 700);
   }
-}
 
-function changeQty(i, d) {
-  cart[i].qty += d;
-  if (cart[i].qty <= 0) cart.splice(i, 1);
-  updateCartUI();
-}
-
-function openCart() {
-  document.getElementById('cart-drawer').classList.add('open');
-  document.getElementById('cart-overlay').classList.add('open');
-}
-function closeCart() {
-  document.getElementById('cart-drawer').classList.remove('open');
-  document.getElementById('cart-overlay').classList.remove('open');
-}
-function openOrder() {
-  document.getElementById('order-overlay').classList.add('open');
-  closeCart();
-}
-function closeOrder() {
-  document.getElementById('order-overlay').classList.remove('open');
-}
-
-function submitOrder(e) {
-  e.preventDefault();
-  const btn = e.target.querySelector('.modal-submit');
-  btn.textContent = '⏳ Traitement...';
-  setTimeout(() => {
-    btn.textContent = '✓ Commande confirmée !';
-    btn.style.background = '#34D399';
-    cart = [];
-    updateCartUI();
-    setTimeout(() => closeOrder(), 2500);
-  }, 1200);
-}
-
-function filterProducts(el, cat) {
-  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('.product-card').forEach(card => {
-    const cats = card.dataset.category || '';
-    card.style.display = (cat === 'all' || cats.includes(cat)) ? '' : 'none';
-  });
-}
-
-function shareShop() {
-  if (navigator.share) {
-    navigator.share({ title: 'Fatima Mode', url: window.location.href });
-  } else {
-    navigator.clipboard.writeText(window.location.href).catch(()=>{});
-    alert('Lien copié !');
+  function goBack() {
+    document.getElementById('pageCreation').style.display = 'none';
+    document.getElementById('pageChoix').style.display = 'flex';
+    document.getElementById('draftBtn').style.display = 'none';
+    document.getElementById('topCrumb').innerHTML = '<strong>Ma boutique</strong> &nbsp;/&nbsp; Nouveau produit';
+    window.scrollTo({ top: 0 });
   }
-}
+
+  function goStep(n) {
+    document.querySelectorAll('.step-panel').forEach((p, i) => p.classList.toggle('active', i + 1 === n));
+    for (let i = 1; i <= 4; i++) {
+      const b = document.getElementById('b' + i);
+      const step = b.closest('.step');
+      step.classList.remove('active', 'done');
+      if (i < n) { step.classList.add('done'); b.innerHTML = '✓'; }
+      else if (i === n) { step.classList.add('active'); b.textContent = i; }
+      else { b.textContent = i; }
+      if (i < 4) document.getElementById('l' + i).classList.toggle('done', i < n);
+    }
+    if (n === 4) {
+      const name = document.getElementById('pName').value;
+      document.getElementById('sumName').textContent = name || '—';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function fmt(cmd) { document.execCommand(cmd, false, null); }
+
+  function addTag(e) {
+    if (e.key !== 'Enter' && e.key !== ',') return;
+    e.preventDefault();
+    const v = e.target.value.trim().replace(/,$/, '');
+    if (!v) return;
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.innerHTML = v + ' <button onclick="this.parentElement.remove()">×</button>';
+    document.getElementById('tgInp').before(chip);
+    e.target.value = '';
+  }
+
+  function handleImages(input) {
+    const grid = document.getElementById('imgGrid');
+    Array.from(input.files).slice(0, 8).forEach(file => {
+      const r = new FileReader();
+      r.onload = e => {
+        const d = document.createElement('div'); d.className = 'img-th';
+        d.innerHTML = `<img src="${e.target.result}"/><button class="rm" onclick="this.parentElement.remove()">×</button>`;
+        grid.appendChild(d);
+      };
+      r.readAsDataURL(file);
+    });
+  }
+
+  function updateSEO() {
+    const name = (document.getElementById('pName') || {}).value || '';
+    const title = (document.getElementById('seoTitle') || {}).value || '';
+    const desc = (document.getElementById('seoDescInp') || {}).value || '';
+    const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'') || 'nom-du-produit';
+    const u = document.getElementById('seoUrl'); if (u) u.textContent = `eseafy.com/boutique/produits/${slug}`;
+    const t = document.getElementById('seoTtl'); if (t) t.textContent = title || name || "Votre titre s'affichera ici";
+    const d = document.getElementById('seoDsc'); if (d) d.textContent = desc || "La description s'affiche dans les résultats de recherche.";
+  }
+
+  function saveDraft(btn) {
+    btn.textContent = '✓ Brouillon sauvegardé';
+    btn.style.color = 'var(--success)';
+    setTimeout(() => { btn.textContent = 'Enregistrer brouillon'; btn.style.color = ''; }, 2000);
+  }
+
+  function publish(btn) {
+    btn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Publié !';
+  }
 </script>
 </body>
 </html>
