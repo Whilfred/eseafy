@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>eseafy — Revenus</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--black:#0a0a0a;--white:#fff;--cream:#f9f9f8;--g50:#f4f4f2;--g100:#ebebea;--g200:#dddcda;--g400:#9e9b97;--g600:#6a6760;--g800:#2e2c29;--accent:#c8a96e;--success:#1c7a4a;--sw:228px;--th:54px;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--black);min-height:100vh;}
+  .topbar{position:fixed;top:0;left:0;right:0;height:var(--th);background:var(--white);border-bottom:1px solid var(--g200);display:flex;align-items:center;padding:0 20px;gap:14px;z-index:100;}
+  .brand{font-family:'DM Serif Display',serif;font-size:19px;letter-spacing:-.5px;color:var(--black);text-decoration:none;}
+  .brand span{color:var(--accent);}
+  .topbar-sep{width:1px;height:18px;background:var(--g200);}
+  .crumb{font-size:13px;color:var(--g600);}
+  .crumb strong{color:var(--black);font-weight:500;}
+  .topbar-r{margin-left:auto;display:flex;align-items:center;gap:10px;}
+  .store-badge{display:flex;align-items:center;gap:7px;padding:5px 10px;border:1px solid var(--g200);border-radius:8px;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .14s;background:var(--white);text-decoration:none;color:var(--black);}
+  .store-badge:hover{border-color:var(--g400);background:var(--g50);}
+  .store-dot{width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0;}
+  .avatar{width:30px;height:30px;border-radius:50%;background:var(--g100);border:1.5px solid var(--g200);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--g600);}
+  .layout{margin-top:var(--th);display:flex;min-height:calc(100vh - var(--th));}
+  .sidebar{width:var(--sw);background:var(--white);border-right:1px solid var(--g200);position:fixed;top:var(--th);left:0;bottom:0;display:flex;flex-direction:column;padding:16px 0;overflow-y:auto;}
+  .sidebar-shop{display:flex;align-items:center;gap:10px;padding:8px 16px 16px;border-bottom:1px solid var(--g100);margin-bottom:6px;}
+  .shop-icon{width:32px;height:32px;border-radius:8px;background:var(--black);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .shop-name{font-size:13px;font-weight:600;}
+  .shop-plan{font-size:11px;color:var(--g400);}
+  .ns{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--g400);padding:14px 16px 5px;}
+  .ni{display:flex;align-items:center;gap:10px;padding:8.5px 16px;font-size:13px;color:var(--g600);text-decoration:none;width:100%;transition:all .12s;position:relative;}
+  .ni:hover{background:var(--g100);color:var(--black);}
+  .ni.active{background:var(--g100);color:var(--black);font-weight:500;}
+  .ni.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:2.5px;background:var(--black);border-radius:0 2px 2px 0;}
+  .ni svg{flex-shrink:0;opacity:.65;}
+  .ni.active svg{opacity:1;}
+  .sf{margin-top:auto;padding:12px 16px 0;border-top:1px solid var(--g100);}
+  .main{margin-left:var(--sw);flex:1;padding:32px 40px;}
+  h1{font-family:'DM Serif Display',serif;font-size:26px;letter-spacing:-.5px;margin-bottom:6px;}
+  .sub-title{font-size:13px;color:var(--g600);margin-bottom:28px;}
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+  .sc{border-radius:12px;padding:20px 22px;}
+  .sc.dark{background:var(--black);}
+  .sc.light{background:var(--white);border:1px solid var(--g200);}
+  .sk{font-size:11px;font-weight:500;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;}
+  .dark .sk{color:rgba(255,255,255,.5);}
+  .light .sk{color:var(--g400);}
+  .sv{font-size:26px;font-weight:700;letter-spacing:-.5px;}
+  .dark .sv{color:var(--white);}
+  .sd{font-size:11.5px;margin-top:3px;color:var(--g400);}
+  .dark .sd{color:rgba(255,255,255,.4);}
+  .sd.up{color:var(--success);}
+  .card{background:var(--white);border:1px solid var(--g200);border-radius:12px;overflow:hidden;}
+  .card-head{padding:16px 22px;border-bottom:1px solid var(--g100);}
+  .card-head h2{font-family:'DM Serif Display',serif;font-size:15px;letter-spacing:-.2px;}
+  table{width:100%;border-collapse:collapse;}
+  th{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--g400);padding:10px 22px;text-align:left;border-bottom:1px solid var(--g100);}
+  td{padding:13px 22px;font-size:13px;border-bottom:1px solid var(--g50);color:var(--g800);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:var(--g50);}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .main>*{animation:fadeUp .3s ease both;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="eseafy-dashboard.html">eseafy<span>.</span></a>
+  <div class="topbar-sep"></div>
+  <span class="crumb"><strong id="crumbStore">—</strong> &nbsp;/&nbsp; Revenus</span>
+  <div class="topbar-r">
+    <a class="store-badge" href="eseafy-stores.html">
+      <div class="store-dot"></div>
+      <span id="badgeStore">—</span>
+      <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </a>
+    <div class="avatar">AB</div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-shop">
+      <div class="shop-icon"><svg width="16" height="16" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div><div class="shop-name" id="sidebarStore">—</div><div class="shop-plan">Starter</div></div>
+    </div>
+    <div class="ns">Menu</div>
+    <a class="ni" href="eseafy-dashboard.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Accueil</a>
+    <a class="ni" href="eseafy-ventes.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Ventes</a>
+    <a class="ni" href="eseafy-produits.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Produits</a>
+    <a class="ni" href="eseafy-clients.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Clients</a>
+    <a class="ni active" href="eseafy-revenus.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Revenus</a>
+    <a class="ni" href="eseafy-analytiques.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Analytiques</a>
+    <a class="ni" href="eseafy-marketing.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Marketing</a>
+    <a class="ni" href="eseafy-affiliation.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>Affiliation</a>
+    <div class="ns">Compte</div>
+    <a class="ni" href="eseafy-profil.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profil</a>
+    <a class="ni" href="eseafy-notifications.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notifications</a>
+    <a class="ni" href="eseafy-parametres.html"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Paramètres</a>
+    <div class="sf">
+      <a class="ni" href="eseafy-stores.html" style="padding:8px 0;margin-top:4px;">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Changer de boutique
+      </a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <h1>Revenus</h1>
+    <p class="sub-title">Résumé financier de votre boutique.</p>
+
+    <div class="stats-grid">
+      <div class="sc dark">
+        <div class="sk">Ce mois</div>
+        <div class="sv">2 400 000</div>
+        <div class="sd">XOF</div>
+      </div>
+      <div class="sc light">
+        <div class="sk">Mois dernier</div>
+        <div class="sv">1 900 000</div>
+        <div class="sd">XOF</div>
+      </div>
+      <div class="sc light">
+        <div class="sk">Total 2025</div>
+        <div class="sv">8 750 000</div>
+        <div class="sd up">↑ +26% vs 2024</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Historique des paiements</h2></div>
+      <table>
+        <thead><tr><th>Date</th><th>Description</th><th>Brut</th><th>Frais (5%)</th><th>Net</th></tr></thead>
+        <tbody>
+          <tr><td>18/03</td><td>Guide FB Ads 2025 × 5</td><td>25 000 XOF</td><td>1 250 XOF</td><td>23 750 XOF</td></tr>
+          <tr><td>17/03</td><td>Template Canva × 3</td><td>10 500 XOF</td><td>525 XOF</td><td>9 975 XOF</td></tr>
+          <tr><td>16/03</td><td>Cours E-commerce × 1</td><td>25 000 XOF</td><td>1 250 XOF</td><td>23 750 XOF</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Lecture boutique — aucune dépendance externe
+  var store = null;
+  try { store = JSON.parse(localStorage.getItem('eseafy_current_store')); } catch(e){}
+  if (!store) {
+    window.location.href = 'eseafy-stores.html';
+  } else {
+    document.getElementById('crumbStore').textContent   = store.name;
+    document.getElementById('badgeStore').textContent   = store.name;
+    document.getElementById('sidebarStore').textContent = store.name;
+  }
+</script>
+</body>
+</html>
