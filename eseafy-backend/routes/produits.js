@@ -36,17 +36,19 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { nom, description, prix, prix_barre, type, categorie, tags, statut, visible, stock, seo_titre, seo_desc } = req.body;
+  console.log('📦 Body reçu :', JSON.stringify(req.body, null, 2));
+  const { nom, description, prix, prix_barre, type, categorie, tags, statut, visible, stock, seo_titre, seo_desc, images } = req.body;
   if (!nom || !type || prix === undefined) return res.status(400).json({ message: 'Nom, type et prix sont requis.' });
   try {
     const boutiqueResult = await pool.query('SELECT id, slug FROM boutiques WHERE user_id = $1 LIMIT 1', [req.user.id]);
     if (boutiqueResult.rows.length === 0) return res.status(404).json({ message: 'Boutique non trouvée.' });
     const boutique = boutiqueResult.rows[0];
-    const slug = nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-' + Date.now();
+    const slug = (nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 50) + '-' + Date.now()).slice(0, 200);
+    console.log('📦 Images à sauvegarder :', images);
     const result = await pool.query(
-      `INSERT INTO produits (boutique_id, user_id, nom, description, prix, prix_barre, type, categorie, tags, statut, visible, stock, seo_titre, seo_desc, slug)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *`,
-      [boutique.id, req.user.id, nom, description || null, prix, prix_barre || null, type, categorie || null, tags || [], statut || 'brouillon', visible !== false, stock || null, seo_titre || null, seo_desc || null, slug]
+      `INSERT INTO produits (boutique_id, user_id, nom, description, prix, prix_barre, type, categorie, tags, statut, visible, stock, seo_titre, seo_desc, slug, images)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *`,
+      [boutique.id, req.user.id, nom, description || null, prix, prix_barre || null, type, categorie || null, tags || [], statut || 'brouillon', visible !== false, stock || null, seo_titre || null, seo_desc || null, slug, images || []]
     );
     const lien_public = `http://localhost:3001/boutique/${boutique.slug}/${slug}`;
     return res.status(201).json({ message: 'Produit créé.', produit: result.rows[0], lien_public });
