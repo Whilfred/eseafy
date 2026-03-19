@@ -197,15 +197,54 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 .prod-subview { display: none; }
 .prod-subview.active { display: block; }
 
-.main-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 40px; min-height: calc(100vh - var(--topbar-h)); }
-.select-wrap { width: 100%; max-width: 740px; }
+/* ── CORRECTION : centrage + largeur du conteneur de sélection ── */
+.main-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;   /* ← était center, causait le débordement vertical */
+  padding: 48px 40px;
+  min-height: calc(100vh - var(--topbar-h));
+  overflow-x: hidden;            /* ← empêche le scroll horizontal */
+}
+
+.select-wrap {
+  width: 100%;
+  max-width: 900px;              /* ← était 740px, trop étroit pour 2 cartes */
+}
+
 .page-back { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--gray-600); border: none; background: none; cursor: pointer; padding: 0; margin-bottom: 36px; transition: color .12s; }
 .page-back:hover { color: var(--black); }
 .select-header { text-align: center; margin-bottom: 44px; animation: fadeUp .35s ease both; }
 .select-header h1 { font-family: 'DM Serif Display', serif; font-size: 34px; letter-spacing: -.7px; margin-bottom: 12px; line-height: 1.2; }
 .select-header p { font-size: 14.5px; color: var(--gray-600); max-width: 440px; margin: 0 auto; line-height: 1.65; }
-.cards-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.type-pick { border: 2px solid var(--gray-200); border-radius: 16px; background: var(--white); padding: 36px 30px; cursor: pointer; transition: all .22s cubic-bezier(.4,0,.2,1); position: relative; overflow: hidden; text-align: left; display: flex; flex-direction: column; gap: 20px; }
+
+/* ── CORRECTION : grille des cartes de sélection ── */
+.cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;  /* toujours 2 colonnes égales */
+  gap: 18px;
+  width: 100%;                      /* ← prend toute la largeur du parent */
+}
+
+.type-pick {
+  border: 2px solid var(--gray-200);
+  border-radius: 16px;
+  background: var(--white);
+  padding: 36px 30px;
+  cursor: pointer;
+  transition: all .22s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;                     /* ← corrige le débordement dans CSS Grid */
+  width: 100%;                      /* ← force la carte à remplir sa cellule */
+}
+
 .type-pick::after { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .2s; border-radius: 14px; }
 .type-pick.digital::after { background: radial-gradient(ellipse at top left, rgba(200,169,110,.1), transparent 65%); }
 .type-pick.physical::after { background: radial-gradient(ellipse at top right, rgba(10,10,10,.04), transparent 65%); }
@@ -216,7 +255,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 .pick-icon { width: 58px; height: 58px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; transition: transform .2s; position: relative; z-index: 1; }
 .digital .pick-icon { background: var(--accent-light); }
 .physical .pick-icon { background: var(--gray-100); }
-.pick-body { flex: 1; position: relative; z-index: 1; }
+.pick-body { flex: 1; position: relative; z-index: 1; min-width: 0; }  /* ← min-width: 0 aussi sur le body */
 .pick-title { font-family: 'DM Serif Display', serif; font-size: 23px; letter-spacing: -.3px; margin-bottom: 8px; }
 .pick-desc { font-size: 13.5px; color: var(--gray-600); line-height: 1.65; margin-bottom: 18px; }
 .pick-tags { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -318,3 +357,16 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 .notif-title { font-size: 13.5px; font-weight: 500; margin-bottom: 3px; }
 .notif-sub { font-size: 12.5px; color: var(--gray-600); }
 .notif-time { font-size: 11.5px; color: var(--gray-400); white-space: nowrap; }
+
+/* ── RESPONSIVE : sur petits écrans, passer en colonne ── */
+@media (max-width: 720px) {
+  .cards-row {
+    grid-template-columns: 1fr;
+  }
+  .select-wrap {
+    max-width: 100%;
+  }
+  .main-center {
+    padding: 32px 20px;
+  }
+}
