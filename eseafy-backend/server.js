@@ -13,6 +13,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes privées
 app.use('/api/auth',     require('./routes/auth'));
 app.use('/api/produits', require('./routes/produits'));
+app.use('/api/stats',     require('./routes/stats'));
+app.use('/api/commandes', require('./routes/commandes'));
 
 // Routes publiques
 app.use('/boutique',     require('./routes/boutique'));

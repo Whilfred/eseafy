@@ -1,0 +1,110 @@
+const express = require('express');
+const pool    = require('../config/db');
+const auth    = require('../middleware/auth');
+
+const router = express.Router();
+router.use(auth);
+
+// ══════════════════════════════════════
+//  GET /api/commandes
+//  Lister les commandes
+// ══════════════════════════════════════
+router.get('/', async (req, res) => {
+  const { statut } = req.query;
+  try {
+    let query  = `SELECT c.*, COUNT(v.id) as nb_produits FROM commandes c LEFT JOIN ventes v ON v.commande_id = c.id WHERE c.user_id = $1`;
+    let params = [req.user.id];
+    if (statut) { query += ` AND c.statut = $2`; params.push(statut); }
+    query += ` GROUP BY c.id ORDER BY c.created_at DESC`;
+    const result = await pool.query(query, params);
+    return res.json({ commandes: result.rows, total: result.rowCount });
+  } catch (err) {
+    console.error('Erreur GET /commandes :', err.message);
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
+// ══════════════════════════════════════
+//  POST /api/commandes
+//  Créer une commande (utilisé par le client)
+// ══════════════════════════════════════
+router.post('/', async (req, res) => {
+  const { produit_id, nom_client, email_client, telephone, adresse, quantite = 1 } = req.body;
+
+  if (!produit_id || !nom_client) {
+    return res.status(400).json({ message: 'Produit et nom client requis.' });
+  }
+
+  try {
+    // Récupérer le produit
+    const prodResult = await pool.query(
+      'SELECT * FROM produits WHERE id = $1 AND statut = $2',
+      [produit_id, 'publie']
+    );
+
+    if (prodResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Produit introuvable ou non disponible.' });
+    }
+
+    const produit = prodResult.rows[0];
+    const total   = produit.prix * quantite;
+
+    // Générer une référence unique
+    const reference = 'ESF-' + Date.now().toString().slice(-6);
+
+    // Créer la commande
+    const commande = await pool.query(`
+      INSERT INTO commandes (boutique_id, user_id, reference, total, nom_client, email_client, telephone, adresse)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+    `, [produit.boutique_id, produit.user_id, reference, total, nom_client, email_client || null, telephone || null, adresse || null]);
+
+    // Créer la ligne de vente
+    await pool.query(`
+      INSERT INTO ventes (commande_id, produit_id, boutique_id, user_id, nom_produit, prix_unitaire, quantite, total)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `, [commande.rows[0].id, produit_id, produit.boutique_id, produit.user_id, produit.nom, produit.prix, quantite, total]);
+
+    return res.status(201).json({
+      message: 'Commande créée avec succès.',
+      commande: commande.rows[0],
+      reference,
+    });
+
+  } catch (err) {
+    console.error('Erreur POST /commandes :', err.message);
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
+// ══════════════════════════════════════
+//  PUT /api/commandes/:id/statut
+//  Mettre à jour le statut d'une commande
+// ══════════════════════════════════════
+router.put('/:id/statut', async (req, res) => {
+  const { statut } = req.body;
+  const validStatuts = ['en_attente', 'paye', 'rembourse', 'annule'];
+
+  if (!validStatuts.includes(statut)) {
+    return res.status(400).json({ message: 'Statut invalide.' });
+  }
+
+  try {
+    const result = await pool.query(`
+      UPDATE commandes SET statut = $1, updated_at = NOW()
+      WHERE id = $2 AND user_id = $3
+      RETURNING *
+    `, [statut, req.params.id, req.user.id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Commande introuvable.' });
+    }
+
+    return res.json({ message: 'Statut mis à jour.', commande: result.rows[0] });
+  } catch (err) {
+    console.error('Erreur PUT /commandes/:id/statut :', err.message);
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
+module.exports = router;
