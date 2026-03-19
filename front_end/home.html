@@ -358,6 +358,7 @@
           <div class="kpi"><div class="kpi-label">Frais eseafy (5%)</div><div class="kpi-val">24 375 <span style="font-size:14px;font-family:'DM Sans'">XOF</span></div></div>
           <div class="kpi"><div class="kpi-label">Net disponible</div><div class="kpi-val">463 125 <span style="font-size:14px;font-family:'DM Sans'">XOF</span></div><div class="kpi-delta up">Solde actuel</div></div>
         </div>
+        <div id="revDetail"></div>
       </div>
     </div>
 
@@ -481,7 +482,6 @@ function loadUserInfo() {
   const pn = document.getElementById('profilNom');    if(pn) pn.value = user.nom   ||'';
   const pe = document.getElementById('profilEmail');  if(pe) pe.value = user.email ||'';
 }
-
 // ══ CHARGER LES STATS DU DASHBOARD ══
 async function loadDashboardStats() {
   console.log('📊 Chargement des stats...');
@@ -496,39 +496,65 @@ async function loadDashboardStats() {
 
     const k = data.kpis;
 
-    // ── KPIs ──
+    // ── KPI 1 : Revenus payés ce mois ──
     document.querySelector('#page-accueil .kpi:nth-child(1) .kpi-val').innerHTML =
-      Number(k.revenus_mois).toLocaleString('fr-FR') + ' <span style="font-size:16px;font-family:\'DM Sans\'">XOF</span>';
+      Number(k.revenus_paye).toLocaleString('fr-FR') + ' <span style="font-size:16px;font-family:\'DM Sans\'">XOF</span>';
+    const deltaRev = document.querySelector('#page-accueil .kpi:nth-child(1) .kpi-delta');
+    deltaRev.innerHTML = k.variation_revenus !== null
+      ? `${k.variation_revenus >= 0 ? '↑' : '↓'} ${k.variation_revenus >= 0 ? '+' : ''}${k.variation_revenus}% vs mois dernier`
+      : 'Premier mois';
+    deltaRev.className = 'kpi-delta ' + (k.variation_revenus >= 0 ? 'up' : 'down');
 
-    document.querySelector('#page-accueil .kpi:nth-child(1) .kpi-delta').innerHTML =
-      k.variation_revenus !== null
-        ? `${k.variation_revenus > 0 ? '↑' : '↓'} ${k.variation_revenus > 0 ? '+' : ''}${k.variation_revenus}% vs mois dernier`
-        : 'Pas encore de données';
-    document.querySelector('#page-accueil .kpi:nth-child(1) .kpi-delta').className =
-      'kpi-delta ' + (k.variation_revenus >= 0 ? 'up' : 'down');
+    // ── KPI 2 : Total ventes ce mois (tous statuts) ──
+    const totalVentes = k.ventes_paye + k.ventes_en_attente + k.ventes_rembourse + k.ventes_annule;
+    document.querySelector('#page-accueil .kpi:nth-child(2) .kpi-val').textContent = totalVentes;
+    document.querySelector('#page-accueil .kpi:nth-child(2) .kpi-delta').innerHTML =
+      `✅ ${k.ventes_paye} payées &nbsp;⏳ ${k.ventes_en_attente} en attente`;
+    document.querySelector('#page-accueil .kpi:nth-child(2) .kpi-delta').className = 'kpi-delta';
 
-    document.querySelector('#page-accueil .kpi:nth-child(2) .kpi-val').textContent = k.ventes_mois;
-    document.querySelector('#page-accueil .kpi:nth-child(2) .kpi-delta').textContent =
-      k.variation_ventes !== null ? `↑ +${k.variation_ventes} cette semaine` : 'Pas encore de données';
-
+    // ── KPI 3 : Clients ──
     document.querySelector('#page-accueil .kpi:nth-child(3) .kpi-val').textContent = k.clients_total;
     document.querySelector('#page-accueil .kpi:nth-child(3) .kpi-delta').textContent =
-      `↑ +${k.nouveaux_clients} nouveaux`;
+      `↑ +${k.nouveaux_clients} cette semaine`;
+    document.querySelector('#page-accueil .kpi:nth-child(3) .kpi-delta').className = 'kpi-delta up';
 
-      const kpiProd = document.getElementById('kpiProduits');
-if (kpiProd) kpiProd.textContent = k.produits_publies;
+    // ── KPI 4 : Produits publiés ──
+    const kpiProd = document.getElementById('kpiProduits');
+    if (kpiProd) kpiProd.textContent = k.produits_publies;
+    const kpiProdTotal = document.getElementById('kpiProduitsTotal');
+    if (kpiProdTotal) kpiProdTotal.textContent = `${k.produits_total} au total`;
 
-const kpiProdTotal = document.getElementById('kpiProduitsTotal');
-if (kpiProdTotal) kpiProdTotal.textContent = `${k.produits_total} au total`;
-    // ── Revenus page revenus ──
-    const revEl = document.querySelector('#page-revenus .kpi:nth-child(1) .kpi-val');
-    if (revEl) revEl.innerHTML = Number(k.revenus_mois).toLocaleString('fr-FR') + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
-
+    // ── Page Revenus ──
+    const revEl   = document.querySelector('#page-revenus .kpi:nth-child(1) .kpi-val');
     const fraisEl = document.querySelector('#page-revenus .kpi:nth-child(2) .kpi-val');
-    if (fraisEl) fraisEl.innerHTML = Number(k.frais_eseafy).toLocaleString('fr-FR') + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
+    const netEl   = document.querySelector('#page-revenus .kpi:nth-child(3) .kpi-val');
+    if (revEl)   revEl.innerHTML   = Number(k.total_paye).toLocaleString('fr-FR')        + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
+    if (fraisEl) fraisEl.innerHTML = Number(k.frais_eseafy).toLocaleString('fr-FR')      + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
+    if (netEl)   netEl.innerHTML   = Number(k.net_disponible).toLocaleString('fr-FR')    + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
 
-    const netEl = document.querySelector('#page-revenus .kpi:nth-child(3) .kpi-val');
-    if (netEl) netEl.innerHTML = Number(k.net_disponible).toLocaleString('fr-FR') + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
+    // ── Détail revenus par statut sur page revenus ──
+    const revDetail = document.getElementById('revDetail');
+    if (revDetail) {
+      revDetail.innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;">
+          <div class="kpi"><div class="kpi-label">En attente</div>
+            <div class="kpi-val" style="font-size:20px;">${Number(k.total_en_attente).toLocaleString('fr-FR')} <span style="font-size:12px">XOF</span></div>
+            <div class="kpi-delta" style="color:var(--gray-400);">${k.nb_total_en_attente} commande(s)</div>
+          </div>
+          <div class="kpi"><div class="kpi-label">Remboursé</div>
+            <div class="kpi-val" style="font-size:20px;">${Number(k.total_rembourse).toLocaleString('fr-FR')} <span style="font-size:12px">XOF</span></div>
+            <div class="kpi-delta" style="color:var(--gray-400);">${k.nb_total_rembourse} commande(s)</div>
+          </div>
+          <div class="kpi"><div class="kpi-label">Annulé</div>
+            <div class="kpi-val" style="font-size:20px;">${Number(k.total_annule).toLocaleString('fr-FR')} <span style="font-size:12px">XOF</span></div>
+            <div class="kpi-delta" style="color:var(--gray-400);">${k.nb_total_annule} commande(s)</div>
+          </div>
+          <div class="kpi"><div class="kpi-label">Total commandes</div>
+            <div class="kpi-val" style="font-size:20px;">${k.nb_total_paye + k.nb_total_en_attente + k.nb_total_rembourse + k.nb_total_annule}</div>
+            <div class="kpi-delta up">Toutes périodes</div>
+          </div>
+        </div>`;
+    }
 
     // ── Dernières ventes ──
     const recentList = document.querySelector('#page-accueil .recent-list');
@@ -536,10 +562,10 @@ if (kpiProdTotal) kpiProdTotal.textContent = `${k.produits_total} au total`;
       recentList.innerHTML = '';
       data.dernieres_ventes.forEach(v => {
         const statutClass = v.statut === 'paye' ? 'green' : v.statut === 'en_attente' ? 'orange' : 'gray';
-        const statutLabel = v.statut === 'paye' ? 'Payé' : v.statut === 'en_attente' ? 'En attente' : v.statut;
-        const date = new Date(v.created_at);
-        const now  = new Date();
-        const diff = Math.floor((now - date) / 60000);
+        const statutLabel = v.statut === 'paye' ? 'Payé' : v.statut === 'en_attente' ? 'En attente' : v.statut === 'rembourse' ? 'Remboursé' : 'Annulé';
+        const date  = new Date(v.created_at);
+        const now   = new Date();
+        const diff  = Math.floor((now - date) / 60000);
         const quand = diff < 60 ? `il y a ${diff}min` : diff < 1440 ? `il y a ${Math.floor(diff/60)}h` : 'hier';
         recentList.innerHTML += `
           <div class="recent-item">
@@ -555,14 +581,17 @@ if (kpiProdTotal) kpiProdTotal.textContent = `${k.produits_total} au total`;
       recentList.innerHTML = `<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Aucune vente pour l'instant.</div>`;
     }
 
-    // ── Graphe barres (30 jours) ──
+    // ── Graphe barres (30 jours — payées seulement) ──
     const chartBars = document.querySelector('#page-accueil .chart-bars');
-    if (chartBars && data.graph_revenus.length > 0) {
-      const maxVal = Math.max(...data.graph_revenus.map(r => parseFloat(r.total)));
-      chartBars.innerHTML = data.graph_revenus.map(r => {
-        const pct = maxVal > 0 ? Math.round((parseFloat(r.total) / maxVal) * 100) : 10;
-        return `<div class="bar" style="height:${pct}%" title="${r.jour} : ${Number(r.total).toLocaleString('fr-FR')} XOF"></div>`;
-      }).join('');
+    if (chartBars) {
+      const payees = data.graph_revenus.filter(r => r.statut === 'paye');
+      if (payees.length > 0) {
+        const maxVal = Math.max(...payees.map(r => parseFloat(r.total)));
+        chartBars.innerHTML = payees.map(r => {
+          const pct = maxVal > 0 ? Math.max(Math.round((parseFloat(r.total) / maxVal) * 100), 5) : 10;
+          return `<div class="bar accent" style="height:${pct}%" title="${r.jour} : ${Number(r.total).toLocaleString('fr-FR')} XOF"></div>`;
+        }).join('');
+      }
     }
 
   } catch (err) {
