@@ -86,8 +86,7 @@
           <div class="kpi"><div class="kpi-label">Revenus ce mois</div><div class="kpi-val">487 500 <span style="font-size:16px;font-family:'DM Sans'">XOF</span></div><div class="kpi-delta up">↑ +12,4%</div></div>
           <div class="kpi"><div class="kpi-label">Ventes</div><div class="kpi-val">34</div><div class="kpi-delta up">↑ +5 cette semaine</div></div>
           <div class="kpi"><div class="kpi-label">Clients</div><div class="kpi-val">128</div><div class="kpi-delta up">↑ +8 nouveaux</div></div>
-          <div class="kpi"><div class="kpi-label">Taux conversion</div><div class="kpi-val">3,2%</div><div class="kpi-delta down">↓ -0,3%</div></div>
-        </div>
+<div class="kpi"><div class="kpi-label">Produits publiés</div><div class="kpi-val" id="kpiProduits">—</div><div class="kpi-delta up" id="kpiProduitsTotal"></div></div>        </div>
         <div class="dash-grid">
           <div>
             <div class="card">
@@ -483,6 +482,94 @@ function loadUserInfo() {
   const pe = document.getElementById('profilEmail');  if(pe) pe.value = user.email ||'';
 }
 
+// ══ CHARGER LES STATS DU DASHBOARD ══
+async function loadDashboardStats() {
+  console.log('📊 Chargement des stats...');
+  try {
+    const res  = await fetch(`${API_URL}/stats/dashboard`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    console.log('📊 Stats reçues :', data);
+
+    if (!res.ok) { console.error('❌', data.message); return; }
+
+    const k = data.kpis;
+
+    // ── KPIs ──
+    document.querySelector('#page-accueil .kpi:nth-child(1) .kpi-val').innerHTML =
+      Number(k.revenus_mois).toLocaleString('fr-FR') + ' <span style="font-size:16px;font-family:\'DM Sans\'">XOF</span>';
+
+    document.querySelector('#page-accueil .kpi:nth-child(1) .kpi-delta').innerHTML =
+      k.variation_revenus !== null
+        ? `${k.variation_revenus > 0 ? '↑' : '↓'} ${k.variation_revenus > 0 ? '+' : ''}${k.variation_revenus}% vs mois dernier`
+        : 'Pas encore de données';
+    document.querySelector('#page-accueil .kpi:nth-child(1) .kpi-delta').className =
+      'kpi-delta ' + (k.variation_revenus >= 0 ? 'up' : 'down');
+
+    document.querySelector('#page-accueil .kpi:nth-child(2) .kpi-val').textContent = k.ventes_mois;
+    document.querySelector('#page-accueil .kpi:nth-child(2) .kpi-delta').textContent =
+      k.variation_ventes !== null ? `↑ +${k.variation_ventes} cette semaine` : 'Pas encore de données';
+
+    document.querySelector('#page-accueil .kpi:nth-child(3) .kpi-val').textContent = k.clients_total;
+    document.querySelector('#page-accueil .kpi:nth-child(3) .kpi-delta').textContent =
+      `↑ +${k.nouveaux_clients} nouveaux`;
+
+      const kpiProd = document.getElementById('kpiProduits');
+if (kpiProd) kpiProd.textContent = k.produits_publies;
+
+const kpiProdTotal = document.getElementById('kpiProduitsTotal');
+if (kpiProdTotal) kpiProdTotal.textContent = `${k.produits_total} au total`;
+    // ── Revenus page revenus ──
+    const revEl = document.querySelector('#page-revenus .kpi:nth-child(1) .kpi-val');
+    if (revEl) revEl.innerHTML = Number(k.revenus_mois).toLocaleString('fr-FR') + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
+
+    const fraisEl = document.querySelector('#page-revenus .kpi:nth-child(2) .kpi-val');
+    if (fraisEl) fraisEl.innerHTML = Number(k.frais_eseafy).toLocaleString('fr-FR') + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
+
+    const netEl = document.querySelector('#page-revenus .kpi:nth-child(3) .kpi-val');
+    if (netEl) netEl.innerHTML = Number(k.net_disponible).toLocaleString('fr-FR') + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
+
+    // ── Dernières ventes ──
+    const recentList = document.querySelector('#page-accueil .recent-list');
+    if (recentList && data.dernieres_ventes.length > 0) {
+      recentList.innerHTML = '';
+      data.dernieres_ventes.forEach(v => {
+        const statutClass = v.statut === 'paye' ? 'green' : v.statut === 'en_attente' ? 'orange' : 'gray';
+        const statutLabel = v.statut === 'paye' ? 'Payé' : v.statut === 'en_attente' ? 'En attente' : v.statut;
+        const date = new Date(v.created_at);
+        const now  = new Date();
+        const diff = Math.floor((now - date) / 60000);
+        const quand = diff < 60 ? `il y a ${diff}min` : diff < 1440 ? `il y a ${Math.floor(diff/60)}h` : 'hier';
+        recentList.innerHTML += `
+          <div class="recent-item">
+            <div class="ri-icon">📦</div>
+            <div>
+              <div class="ri-name">${v.nom_produit || 'Produit'}</div>
+              <div class="ri-sub">${quand} · <span class="badge ${statutClass}">${statutLabel}</span></div>
+            </div>
+            <div class="ri-price">${Number(v.total).toLocaleString('fr-FR')} XOF</div>
+          </div>`;
+      });
+    } else if (recentList) {
+      recentList.innerHTML = `<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Aucune vente pour l'instant.</div>`;
+    }
+
+    // ── Graphe barres (30 jours) ──
+    const chartBars = document.querySelector('#page-accueil .chart-bars');
+    if (chartBars && data.graph_revenus.length > 0) {
+      const maxVal = Math.max(...data.graph_revenus.map(r => parseFloat(r.total)));
+      chartBars.innerHTML = data.graph_revenus.map(r => {
+        const pct = maxVal > 0 ? Math.round((parseFloat(r.total) / maxVal) * 100) : 10;
+        return `<div class="bar" style="height:${pct}%" title="${r.jour} : ${Number(r.total).toLocaleString('fr-FR')} XOF"></div>`;
+      }).join('');
+    }
+
+  } catch (err) {
+    console.error('❌ Erreur stats :', err);
+  }
+}
+
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
@@ -520,6 +607,7 @@ function navigate(page) {
   } else {
     const el = document.getElementById('page-' + page);
     if (el) el.classList.add('active');
+    if (page === 'accueil') loadDashboardStats();
     else console.warn('⚠️ Page introuvable : page-' + page);
   }
   currentPage = page;
@@ -753,6 +841,7 @@ function initFilters() {
 loadUserInfo();
 initFilters();
 navigate('accueil');
+loadDashboardStats(); // ← ajoute cette ligne
 console.log('🚀 Dashboard eseafy prêt');
 </script>
 </body>
