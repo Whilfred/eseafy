@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produit — eseafy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:  #0a0a0a;
+      --white:  #ffffff;
+      --cream:  #f9f9f8;
+      --gray-100: #ebebea;
+      --gray-200: #dddcda;
+      --gray-400: #9e9b97;
+      --gray-600: #6a6760;
+      --gray-800: #2e2c29;
+      --accent:   #c8a96e;
+      --accent-light: #f5edd9;
+      --success:  #1c7a4a;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--black); min-height: 100vh; }
+
+    /* ── NAV ── */
+    .nav { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 0 40px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .nav-brand { font-family: 'DM Serif Display', serif; font-size: 20px; text-decoration: none; color: var(--black); }
+    .nav-brand span { color: var(--accent); }
+    .nav-boutique { font-size: 13px; color: var(--gray-600); }
+    .nav-boutique strong { color: var(--black); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .btn-share { padding: 8px 16px; border: 1.5px solid var(--gray-200); border-radius: 8px; background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--gray-600); cursor: pointer; transition: all .15s; }
+    .btn-share:hover { border-color: var(--black); color: var(--black); }
+
+    /* ── LOADING ── */
+    .loading { display: flex; align-items: center; justify-content: center; min-height: 60vh; }
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--gray-200); border-top-color: var(--black); border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── ERROR ── */
+    .error-wrap { text-align: center; padding: 80px 24px; }
+    .error-wrap h2 { font-family: 'DM Serif Display', serif; font-size: 28px; margin-bottom: 12px; }
+    .error-wrap p { color: var(--gray-600); font-size: 14px; margin-bottom: 24px; }
+    .btn-back { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: var(--black); color: var(--white); border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 500; }
+
+    /* ── PRODUIT ── */
+    .container { max-width: 1080px; margin: 0 auto; padding: 48px 24px 80px; }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-400); margin-bottom: 32px; }
+    .breadcrumb a { color: var(--gray-400); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--black); }
+    .breadcrumb span { color: var(--gray-200); }
+
+    .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+
+    /* Images */
+    .product-images { position: sticky; top: 72px; }
+    .main-img { width: 100%; aspect-ratio: 1; border-radius: 16px; background: var(--gray-100); border: 1px solid var(--gray-200); overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 80px; }
+    .main-img img { width: 100%; height: 100%; object-fit: cover; }
+    .thumbs { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .thumb { width: 64px; height: 64px; border-radius: 8px; background: var(--gray-100); border: 2px solid transparent; overflow: hidden; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: border-color .15s; }
+    .thumb.active { border-color: var(--black); }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Infos */
+    .product-info { display: flex; flex-direction: column; gap: 20px; }
+    .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+    .badge-digital  { background: var(--accent-light); color: #a07c3a; border: 1px solid var(--accent); }
+    .badge-physical { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+    .badge-cat      { background: var(--gray-100); color: var(--gray-600); }
+    .product-name { font-family: 'DM Serif Display', serif; font-size: 34px; letter-spacing: -.5px; line-height: 1.2; }
+    .seller { font-size: 13px; color: var(--gray-600); }
+    .seller strong { color: var(--black); }
+    .price-row { display: flex; align-items: baseline; gap: 12px; }
+    .price { font-family: 'DM Serif Display', serif; font-size: 38px; letter-spacing: -.5px; color: var(--black); }
+    .price-old { font-size: 18px; color: var(--gray-400); text-decoration: line-through; }
+    .price-currency { font-size: 18px; color: var(--gray-600); font-family: 'DM Sans'; }
+    .divider { height: 1px; background: var(--gray-200); }
+    .description { font-size: 14.5px; line-height: 1.8; color: var(--gray-600); }
+    .description p { margin-bottom: 12px; }
+
+    /* Formulaire commande */
+    .order-form { background: var(--white); border: 1px solid var(--gray-200); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+    .order-form h3 { font-family: 'DM Serif Display', serif; font-size: 17px; margin-bottom: 4px; }
+    .fg { display: flex; flex-direction: column; gap: 5px; }
+    .lbl { font-size: 12.5px; font-weight: 500; color: var(--gray-800); }
+    .inp { width: 100%; padding: 10px 13px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--black); background: var(--white); outline: none; transition: border-color .14s; }
+    .inp:focus { border-color: var(--black); box-shadow: 0 0 0 3px rgba(10,10,10,.05); }
+    .inp::placeholder { color: var(--gray-400); }
+    .btn-buy { width: 100%; padding: 16px; background: var(--black); color: var(--white); border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .btn-buy:hover { background: var(--gray-800); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+    .btn-buy:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
+    .trust-row { display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 12px; color: var(--gray-400); }
+    .trust-item { display: flex; align-items: center; gap: 5px; }
+
+    /* Succès commande */
+    .success-box { background: #d4edda; border: 1px solid #b2dfca; border-radius: 12px; padding: 20px; text-align: center; display: none; }
+    .success-box h3 { color: var(--success); font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 6px; }
+    .success-box p { color: #155724; font-size: 13px; line-height: 1.6; }
+    .success-ref { font-family: monospace; font-size: 15px; font-weight: 700; color: var(--success); background: rgba(28,122,74,.1); padding: 6px 14px; border-radius: 6px; display: inline-block; margin-top: 8px; }
+
+    /* Error banner */
+    .error-box { background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #721c24; display: none; }
+
+    /* Tags */
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { font-size: 12px; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--gray-200); color: var(--gray-600); background: var(--cream); }
+
+    /* Footer */
+    .page-footer { background: var(--white); border-top: 1px solid var(--gray-200); padding: 24px 40px; text-align: center; font-size: 12.5px; color: var(--gray-400); margin-top: 60px; }
+    .page-footer a { color: var(--accent); text-decoration: none; font-weight: 500; }
+
+    @media (max-width: 768px) {
+      .product-grid { grid-template-columns: 1fr; gap: 32px; }
+      .product-images { position: static; }
+      .product-name { font-size: 26px; }
+      .price { font-size: 28px; }
+      .container { padding: 24px 16px 60px; }
+      .nav { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-brand">eseafy<span>.</span></a>
+  <div class="nav-boutique" id="navBoutique"></div>
+  <div class="nav-right">
+    <button class="btn-share" onclick="sharePage()">🔗 Partager</button>
+  </div>
+</nav>
+
+<!-- CONTENU PRINCIPAL -->
+<div id="loadingView" class="loading"><div class="spinner"></div></div>
+
+<div id="errorView" class="error-wrap" style="display:none">
+  <h2>Produit introuvable</h2>
+  <p>Ce produit n'existe pas ou n'est plus disponible.</p>
+  <a href="/" class="btn-back">← Retour à l'accueil</a>
+</div>
+
+<div id="productView" style="display:none">
+  <div class="container">
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <div class="product-grid">
+
+      <!-- Images -->
+      <div class="product-images">
+        <div class="main-img" id="mainImg">📦</div>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+
+      <!-- Infos + Formulaire -->
+      <div class="product-info">
+        <div class="badges" id="badges"></div>
+        <h1 class="product-name" id="productName"></h1>
+        <div class="seller" id="sellerInfo"></div>
+        <div class="price-row" id="priceRow"></div>
+        <div class="divider"></div>
+        <div class="description" id="productDesc"></div>
+        <div class="tags" id="productTags"></div>
+
+        <!-- Formulaire de commande -->
+        <div class="order-form">
+          <h3>Commander ce produit</h3>
+
+          <div class="error-box" id="orderError"></div>
+          <div class="success-box" id="orderSuccess">
+            <h3>✅ Commande reçue !</h3>
+            <p>Merci pour votre commande. Le vendeur vous contactera bientôt.</p>
+            <div class="success-ref" id="successRef"></div>
+          </div>
+
+          <div id="orderFormFields">
+            <div class="fg" style="margin-bottom:10px;">
+              <label class="lbl">Nom complet *</label>
+              <input class="inp" type="text" id="clientNom" placeholder="Ex : Amadou Barro" />
+            </div>
+            <div class="fg" style="margin-bottom:10px;">
+              <label class="lbl">Téléphone *</label>
+              <input class="inp" type="tel" id="clientTel" placeholder="Ex : +226 70 00 00 00" />
+            </div>
+            <div class="fg" style="margin-bottom:10px;">
+              <label class="lbl">Email</label>
+              <input class="inp" type="email" id="clientEmail" placeholder="votre@email.com" />
+            </div>
+            <div class="fg" style="margin-bottom:16px;">
+              <label class="lbl">Adresse de livraison</label>
+              <input class="inp" type="text" id="clientAdresse" placeholder="Ex : Ouagadougou, Secteur 15" />
+            </div>
+
+            <button class="btn-buy" id="btnCommander" onclick="passerCommande()">
+              🛒 Commander maintenant
+            </button>
+
+            <div class="trust-row" style="margin-top:12px;">
+              <div class="trust-item">🔒 Paiement sécurisé</div>
+              <div class="trust-item">🚚 Livraison rapide</div>
+              <div class="trust-item">✅ Vendeur vérifié</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  Propulsé par <a href="/">eseafy</a> · La plateforme e-commerce made in Africa 🌍
+</footer>
+
+<script>
+  const API_URL = 'http://localhost:3001/api';
+  let produitData = null;
+
+  // ── Extraire slugs depuis l'URL ──
+  // URL : /boutique/boutique-2/guide-facebook-ads-2025-xxx
+  function getSlugsFromURL() {
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    // parts = ['boutique', 'boutique-2', 'guide-facebook-ads-2025-xxx']
+    return { slugBoutique: parts[1], slugProduit: parts[2] };
+  }
+
+  // ── Charger le produit ──
+  async function loadProduit() {
+    const { slugBoutique, slugProduit } = getSlugsFromURL();
+    console.log('🔍 Chargement produit :', slugBoutique, slugProduit);
+
+    if (!slugBoutique || !slugProduit) {
+      showError();
+      return;
+    }
+
+    try {
+      const res  = await fetch(`${API_URL.replace('/api', '')}/boutique/${slugBoutique}/${slugProduit}`);
+      const data = await res.json();
+
+      console.log('📦 Produit reçu :', data);
+
+      if (!res.ok || !data.produit) {
+        showError();
+        return;
+      }
+
+      produitData = data.produit;
+      renderProduit(produitData);
+
+    } catch (err) {
+      console.error('❌ Erreur :', err);
+      showError();
+    }
+  }
+
+  // ── Afficher le produit ──
+  function renderProduit(p) {
+    document.title = `${p.nom} — eseafy`;
+
+    // Nav boutique
+    document.getElementById('navBoutique').innerHTML =
+      `Boutique : <strong>${p.boutique_nom || 'Ma boutique'}</strong>`;
+
+    // Breadcrumb
+    document.getElementById('breadcrumb').innerHTML = `
+      <a href="/">Accueil</a><span>/</span>
+      <a href="/boutique/${p.boutique_slug}">${p.boutique_nom || 'Boutique'}</a><span>/</span>
+      <span>${p.nom}</span>`;
+
+    // Badges
+    const typeLabel = p.type === 'digital' ? 'Digital' : 'Physique';
+    const typeClass = p.type === 'digital' ? 'badge-digital' : 'badge-physical';
+    document.getElementById('badges').innerHTML = `
+      <span class="badge ${typeClass}">${typeLabel}</span>
+      ${p.categorie ? `<span class="badge badge-cat">${p.categorie}</span>` : ''}`;
+
+    // Nom
+    document.getElementById('productName').textContent = p.nom;
+
+    // Vendeur
+    const vendeur = [p.vendeur_prenom, p.vendeur_nom].filter(Boolean).join(' ') || 'Vendeur';
+    document.getElementById('sellerInfo').innerHTML = `Vendu par <strong>${vendeur}</strong>`;
+
+    // Prix
+    const prix = Number(p.prix).toLocaleString('fr-FR');
+    const prixBarre = p.prix_barre ? `<span class="price-old">${Number(p.prix_barre).toLocaleString('fr-FR')} XOF</span>` : '';
+    document.getElementById('priceRow').innerHTML = `
+      <span class="price">${prix}</span>
+      <span class="price-currency">XOF</span>
+      ${prixBarre}`;
+
+    // Description
+    const descEl = document.getElementById('productDesc');
+    if (p.description && p.description.trim()) {
+      descEl.innerHTML = p.description;
+    } else {
+      descEl.innerHTML = '<p style="color:var(--gray-400);font-style:italic;">Aucune description disponible.</p>';
+    }
+
+    // Tags
+    const tagsEl = document.getElementById('productTags');
+    if (p.tags && p.tags.length > 0) {
+      tagsEl.innerHTML = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+    }
+
+    // Images
+    const mainImg = document.getElementById('mainImg');
+    const thumbs  = document.getElementById('thumbs');
+    if (p.images && p.images.length > 0) {
+      mainImg.innerHTML = `<img src="${p.images[0]}" alt="${p.nom}" />`;
+      p.images.forEach((img, i) => {
+        const t = document.createElement('div');
+        t.className = 'thumb' + (i === 0 ? ' active' : '');
+        t.innerHTML = `<img src="${img}" alt="" />`;
+        t.onclick = () => {
+          mainImg.innerHTML = `<img src="${img}" alt="${p.nom}" />`;
+          document.querySelectorAll('.thumb').forEach(th => th.classList.remove('active'));
+          t.classList.add('active');
+        };
+        thumbs.appendChild(t);
+      });
+    } else {
+      // Emoji selon la catégorie
+      const emojis = { 'Ebooks & Guides':'📚', 'Formation & Cours':'🎓', 'Design & Graphisme':'🎨', 'Vêtements & Mode':'👗', 'Alimentation':'🍽', 'Électronique':'⚡' };
+      const emoji = Object.entries(emojis).find(([k]) => p.categorie?.includes(k))?.[1] || (p.type === 'digital' ? '📦' : '🚚');
+      mainImg.textContent = emoji;
+    }
+
+    // Afficher
+    document.getElementById('loadingView').style.display  = 'none';
+    document.getElementById('productView').style.display  = 'block';
+  }
+
+  function showError() {
+    document.getElementById('loadingView').style.display = 'none';
+    document.getElementById('errorView').style.display   = 'block';
+  }
+
+  // ── Passer une commande ──
+  async function passerCommande() {
+    const nom     = document.getElementById('clientNom').value.trim();
+    const tel     = document.getElementById('clientTel').value.trim();
+    const email   = document.getElementById('clientEmail').value.trim();
+    const adresse = document.getElementById('clientAdresse').value.trim();
+    const errBox  = document.getElementById('orderError');
+    const btn     = document.getElementById('btnCommander');
+
+    errBox.style.display = 'none';
+
+    if (!nom)  { errBox.textContent = 'Veuillez saisir votre nom.';       errBox.style.display = 'block'; return; }
+    if (!tel)  { errBox.textContent = 'Veuillez saisir votre téléphone.'; errBox.style.display = 'block'; return; }
+
+    btn.disabled  = true;
+    btn.innerHTML = '⏳ Commande en cours…';
+
+    try {
+      const res  = await fetch(`${API_URL}/commandes`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          produit_id:   produitData.id,
+          nom_client:   nom,
+          telephone:    tel,
+          email_client: email || null,
+          adresse:      adresse || null,
+          quantite:     1,
+        })
+      });
+
+      const data = await res.json();
+      console.log('✅ Commande :', data);
+
+      if (res.ok) {
+        document.getElementById('orderFormFields').style.display = 'none';
+        document.getElementById('successRef').textContent        = '#' + data.reference;
+        document.getElementById('orderSuccess').style.display    = 'block';
+      } else {
+        errBox.textContent   = '❌ ' + data.message;
+        errBox.style.display = 'block';
+        btn.disabled  = false;
+        btn.innerHTML = '🛒 Commander maintenant';
+      }
+
+    } catch (err) {
+      console.error('❌', err);
+      errBox.textContent   = 'Erreur serveur. Réessayez.';
+      errBox.style.display = 'block';
+      btn.disabled  = false;
+      btn.innerHTML = '🛒 Commander maintenant';
+    }
+  }
+
+  // ── Partager ──
+  function sharePage() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      alert('✅ Lien copié !');
+    });
+  }
+
+  // ── Démarrage ──
+  loadProduit();
+</script>
+
+</body>
+</html>
