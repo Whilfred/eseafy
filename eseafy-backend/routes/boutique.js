@@ -1,10 +1,17 @@
 const express = require('express');
+const path    = require('path');
 const pool    = require('../config/db');
 
 const router = express.Router();
 
 router.get('/:slugBoutique/:slugProduit', async (req, res) => {
   const { slugBoutique, slugProduit } = req.params;
+  const acceptsHTML = req.headers.accept && req.headers.accept.includes('text/html');
+
+  if (acceptsHTML) {
+    return res.sendFile(path.join(__dirname, '..', 'public', 'produit.html'));
+  }
+
   try {
     const result = await pool.query(
       `SELECT p.*, b.nom AS boutique_nom, b.slug AS boutique_slug, u.prenom AS vendeur_prenom, u.nom AS vendeur_nom
