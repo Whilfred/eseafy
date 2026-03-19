@@ -732,15 +732,15 @@ function startCreation(type) {
   const sel = document.getElementById('catSelect');
   sel.innerHTML = '<option value="">Choisir une catégorie</option>' + cats[type].map(c=>`<option>${c}</option>`).join('');
   document.getElementById('sumType').textContent = type === 'digital' ? 'Produit digital' : 'Produit physique';
-  document.getElementById('pName').value        = '';
+  document.getElementById('pName').value         = '';
   document.getElementById('editorBody').innerHTML = '';
-  document.getElementById('prixInput').value    = '';
+  document.getElementById('prixInput').value     = '';
   document.getElementById('prixBarreInput').value = '';
+  selectedFiles = []; // ← ajout
   showProdSubview('subProdCreate');
   goStep(1);
   window.scrollTo({ top:0 });
 }
-
 function goStep(n) {
   document.querySelectorAll('.step-panel').forEach((p,i) => p.classList.toggle('active', i+1===n));
   for (let i=1; i<=4; i++) {
@@ -772,9 +772,15 @@ function addTag(e) {
 
 function handleImages(input) {
   const grid = document.getElementById('imgGrid');
-  Array.from(input.files).slice(0,8).forEach(file => {
+  selectedFiles = Array.from(input.files).slice(0, 8); // ← sauvegarder les fichiers
+  selectedFiles.forEach(file => {
     const r = new FileReader();
-    r.onload = e => { const d=document.createElement('div'); d.className='img-th'; d.innerHTML=`<img src="${e.target.result}"/><button class="rm" onclick="this.parentElement.remove()">×</button>`; grid.appendChild(d); };
+    r.onload = e => {
+      const d = document.createElement('div');
+      d.className = 'img-th';
+      d.innerHTML = `<img src="${e.target.result}"/><button class="rm" onclick="this.parentElement.remove()">×</button>`;
+      grid.appendChild(d);
+    };
     r.readAsDataURL(file);
   });
 }
@@ -809,45 +815,75 @@ async function saveDraft(btn) {
 }
 
 async function publishProduct(btn) {
-  const nom        = document.getElementById('pName').value.trim();
-  const description= document.getElementById('editorBody')?.innerHTML||'';
-  const categorie  = document.getElementById('catSelect').value;
-  const prix       = parseFloat(document.getElementById('prixInput')?.value);
-  const prix_barre = parseFloat(document.getElementById('prixBarreInput')?.value)||null;
-  const seo_titre  = document.getElementById('seoTitle')?.value||'';
-  const seo_desc   = document.getElementById('seoDescInp')?.value||'';
-  const visible    = document.getElementById('visibleToggle')?.classList.contains('on')??true;
-  const tags       = Array.from(document.querySelectorAll('.chip')).map(c=>c.textContent.replace('×','').trim()).filter(Boolean);
+  const nom         = document.getElementById('pName').value.trim();
+  const description = document.getElementById('editorBody')?.innerHTML || '';
+  const categorie   = document.getElementById('catSelect').value;
+  const prix        = parseFloat(document.getElementById('prixInput')?.value);
+  const prix_barre  = parseFloat(document.getElementById('prixBarreInput')?.value) || null;
+  const seo_titre   = document.getElementById('seoTitle')?.value   || '';
+  const seo_desc    = document.getElementById('seoDescInp')?.value || '';
+  const visible     = document.getElementById('visibleToggle')?.classList.contains('on') ?? true;
+  const tags        = Array.from(document.querySelectorAll('.chip')).map(c => c.textContent.replace('×','').trim()).filter(Boolean);
 
-  console.log('🚀 Publication :', {nom, prix, type:productType, categorie, visible});
-
-  if (!nom)        { alert('Veuillez saisir un nom.'); goStep(2); return; }
+  if (!nom)         { alert('Veuillez saisir un nom.'); goStep(2); return; }
   if (!prix||prix<=0){ alert('Veuillez saisir un prix valide.'); goStep(4); return; }
 
-  btn.disabled=true;
-  btn.innerHTML='⏳ Publication…';
+  btn.disabled  = true;
+  btn.innerHTML = '⏳ Upload images…';
 
+// ── 1. Uploader les images ──
+let imageUrls = [];
+if (selectedFiles.length > 0) {
+  const formData = new FormData();
+  selectedFiles.forEach(file => formData.append('images', file));
+  try {
+    const uploadRes  = await fetch(`${API_URL}/upload/images`, {
+      method:  'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body:    formData
+    });
+    const uploadData = await uploadRes.json();
+    console.log('📸 Images :', uploadData);
+    if (uploadRes.ok) imageUrls = uploadData.urls;
+  } catch (err) {
+    console.warn('⚠️ Upload échoué :', err);
+  }
+}
+
+  btn.innerHTML = '⏳ Publication…';
+
+  // ── 2. Créer le produit avec les URLs ──
   try {
     const res  = await fetch(`${API_URL}/produits`, {
-      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({nom,description,prix,prix_barre,type:productType,categorie,tags,statut:'publie',visible,seo_titre,seo_desc})
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        nom, description, prix, prix_barre,
+        type: productType, categorie, tags,
+        statut: 'publie', visible,
+        seo_titre, seo_desc,
+        images: imageUrls   // ← URLs des images
+      })
     });
     const data = await res.json();
-    console.log('🚀 Réponse :', data);
+    console.log('🚀 Produit créé :', data);
+
     if (res.ok) {
-      console.log('✅ Produit créé ! Lien :', data.lien_public);
-      btn.innerHTML='✅ Publié !';
-      setTimeout(()=>{ if(data.lien_public) alert(`✅ Produit publié !\n\n🔗 Lien public :\n${data.lien_public}`); navigate('produits'); },800);
+      btn.innerHTML = '✅ Publié !';
+      setTimeout(() => {
+        if (data.lien_public) alert(`✅ Produit publié !\n\n🔗 Lien :\n${data.lien_public}`);
+        navigate('produits');
+      }, 800);
     } else {
-      console.error('❌',data.message);
-      alert('❌ '+data.message);
-      btn.disabled=false;
-      btn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Publier le produit';
+      alert('❌ ' + data.message);
+      btn.disabled  = false;
+      btn.innerHTML = '✅ Publier le produit';
     }
-  } catch(err) {
-    console.error('❌ Erreur réseau :', err);
-    alert('Erreur serveur. Vérifiez la console F12.');
-    btn.disabled=false; btn.innerHTML='Publier le produit';
+  } catch (err) {
+    console.error('❌', err);
+    alert('Erreur serveur.');
+    btn.disabled  = false;
+    btn.innerHTML = 'Publier le produit';
   }
 }
 
