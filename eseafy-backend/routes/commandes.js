@@ -12,10 +12,14 @@ router.use(auth);
 router.get('/', async (req, res) => {
   const { statut } = req.query;
   try {
-    let query  = `SELECT c.*, COUNT(v.id) as nb_produits FROM commandes c LEFT JOIN ventes v ON v.commande_id = c.id WHERE c.user_id = $1`;
+    let query  = `
+      SELECT c.*, v.nom_produit
+      FROM commandes c
+      LEFT JOIN ventes v ON v.commande_id = c.id
+      WHERE c.user_id = $1`;
     let params = [req.user.id];
     if (statut) { query += ` AND c.statut = $2`; params.push(statut); }
-    query += ` GROUP BY c.id ORDER BY c.created_at DESC`;
+    query += ` ORDER BY c.created_at DESC`;
     const result = await pool.query(query, params);
     return res.json({ commandes: result.rows, total: result.rowCount });
   } catch (err) {
