@@ -1,0 +1,321 @@
+<div class="page-view" id="page-produits">
+
+  <!-- ── Sous-vue : liste ── -->
+  <div class="prod-subview active" id="subProdList">
+    <div class="produits-wrap">
+      <div class="page-header">
+        <div><h1>Produits</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">6 produits dans votre catalogue</p></div>
+        <button class="btn-primary" onclick="navigate('nouveau-produit')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nouveau produit
+        </button>
+      </div>
+      <div class="filters-bar">
+        <div class="search-box">
+          <svg width="14" height="14" fill="none" stroke="var(--gray-400)" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input placeholder="Rechercher un produit…" />
+        </div>
+        <button class="filter-btn active-filter">Tous</button>
+        <button class="filter-btn">Digital</button>
+        <button class="filter-btn">Physique</button>
+        <button class="filter-btn">Brouillon</button>
+      </div>
+      <div class="products-table">
+        <div class="pt-head"><span>Produit</span><span>Type</span><span>Prix</span><span>Statut</span><span></span></div>
+        <div class="pt-row">
+          <div class="pt-prod"><div class="pt-thumb">📚</div><div><div class="pt-name">Guide Facebook Ads 2025</div><div class="pt-type">📚 Ebooks & Guides</div></div></div>
+          <span class="pt-val"><span class="badge" style="background:var(--accent-light);color:#a07c3a;border:1px solid var(--accent)">Digital</span></span>
+          <span class="pt-val" style="font-weight:600">15 000 XOF</span>
+          <span><span class="badge green">Publié</span></span>
+          <div class="pt-actions">
+            <button class="icon-btn"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="icon-btn"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+        </div>
+        <div class="pt-row">
+          <div class="pt-prod"><div class="pt-thumb">🎓</div><div><div class="pt-name">Formation Canva Pro</div><div class="pt-type">🎓 Formation & Cours</div></div></div>
+          <span class="pt-val"><span class="badge" style="background:var(--accent-light);color:#a07c3a;border:1px solid var(--accent)">Digital</span></span>
+          <span class="pt-val" style="font-weight:600">25 000 XOF</span>
+          <span><span class="badge green">Publié</span></span>
+          <div class="pt-actions">
+            <button class="icon-btn"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="icon-btn"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+        </div>
+        <div class="pt-row">
+          <div class="pt-prod"><div class="pt-thumb">🎨</div><div><div class="pt-name">Pack Templates Instagram</div><div class="pt-type">🎨 Design & Graphisme</div></div></div>
+          <span class="pt-val"><span class="badge" style="background:var(--accent-light);color:#a07c3a;border:1px solid var(--accent)">Digital</span></span>
+          <span class="pt-val" style="font-weight:600">8 500 XOF</span>
+          <span><span class="badge orange">Brouillon</span></span>
+          <div class="pt-actions">
+            <button class="icon-btn"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="icon-btn"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+        </div>
+        <div class="pt-row">
+          <div class="pt-prod"><div class="pt-thumb">👗</div><div><div class="pt-name">T-shirt Afrobeat Vibes</div><div class="pt-type">👗 Vêtements & Mode</div></div></div>
+          <span class="pt-val"><span class="badge gray">Physique</span></span>
+          <span class="pt-val" style="font-weight:600">12 000 XOF</span>
+          <span><span class="badge green">Publié</span></span>
+          <div class="pt-actions">
+            <button class="icon-btn"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="icon-btn"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Sous-vue : choix type ── -->
+  <div class="prod-subview" id="subProdChoix">
+    <div class="main-center">
+      <div class="select-wrap">
+        <button class="page-back" onclick="showProdSubview('subProdList')">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Retour aux produits
+        </button>
+        <div class="select-header">
+          <h1>Quel type de produit<br>souhaitez-vous vendre ?</h1>
+          <p>Choisissez une catégorie pour commencer. Le type ne peut pas être modifié après la première publication.</p>
+        </div>
+        <div class="cards-row">
+          <div class="type-pick digital" onclick="startCreation('digital')">
+            <div class="pick-icon">📦</div>
+            <div class="pick-body">
+              <div class="pick-title">Produit digital</div>
+              <div class="pick-desc">Vendez des fichiers numériques téléchargeables ou un accès à du contenu en ligne. Livraison instantanée après paiement.</div>
+              <div class="pick-tags">
+                <span class="pick-tag">Ebook / PDF</span><span class="pick-tag">Cours en ligne</span>
+                <span class="pick-tag">Template</span><span class="pick-tag">Audio / Vidéo</span><span class="pick-tag">Logiciel</span>
+              </div>
+            </div>
+            <div class="pick-footer">
+              <span class="pick-cta">Commencer</span>
+              <span class="pick-arrow"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+            </div>
+          </div>
+          <div class="type-pick physical" onclick="startCreation('physical')">
+            <div class="pick-icon">🚚</div>
+            <div class="pick-body">
+              <div class="pick-title">Produit physique</div>
+              <div class="pick-desc">Vendez des articles tangibles expédiés ou disponibles en retrait. Gestion du stock et options de livraison incluses.</div>
+              <div class="pick-tags">
+                <span class="pick-tag">Vêtements</span><span class="pick-tag">Alimentation</span>
+                <span class="pick-tag">Artisanat</span><span class="pick-tag">Beauté</span><span class="pick-tag">Électronique</span>
+              </div>
+            </div>
+            <div class="pick-footer">
+              <span class="pick-cta">Commencer</span>
+              <span class="pick-arrow"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+            </div>
+          </div>
+        </div>
+        <p class="bottom-note">Vous pouvez créer autant de produits que vous souhaitez.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Sous-vue : formulaire création ── -->
+  <div class="prod-subview" id="subProdCreate">
+    <div class="main-create">
+      <button class="page-back" onclick="showProdSubview('subProdChoix')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Changer de type
+      </button>
+      <div id="typeBadge" class="type-badge digital">📦 Produit digital</div>
+
+      <!-- Stepper -->
+      <div class="steps-wrap">
+        <div class="step active" onclick="goStep(1)"><div class="step-bubble" id="b1">1</div><span class="step-name">Statut & Type</span></div>
+        <div class="step-line" id="l1"></div>
+        <div class="step" onclick="goStep(2)"><div class="step-bubble" id="b2">2</div><span class="step-name">Détails</span></div>
+        <div class="step-line" id="l2"></div>
+        <div class="step" onclick="goStep(3)"><div class="step-bubble" id="b3">3</div><span class="step-name">Médias</span></div>
+        <div class="step-line" id="l3"></div>
+        <div class="step" onclick="goStep(4)"><div class="step-bubble" id="b4">4</div><span class="step-name">Tarification & Publication</span></div>
+      </div>
+
+      <!-- Étape 1 -->
+      <div class="step-panel active" id="panel1">
+        <div class="create-grid">
+          <div>
+            <div class="card">
+              <div class="card-head"><div><h2>Statut de la boutique</h2><p>Visible dès maintenant ou gardé en brouillon ?</p></div></div>
+              <div class="card-body-p">
+                <div class="toggle-row">
+                  <div><div class="tl">Visible en boutique</div><div class="td">Les clients peuvent voir et acheter ce produit</div></div>
+                  <button class="tgl on" onclick="this.classList.toggle('on')"></button>
+                </div>
+                <div class="fg">
+                  <label class="lbl">Date de publication</label>
+                  <input class="inp" type="datetime-local" />
+                  <span class="hint">Laissez vide pour publier immédiatement</span>
+                </div>
+              </div>
+            </div>
+            <div class="actions-bar">
+              <span></span>
+              <button class="btn-next" onclick="goStep(2)">Continuer : Détails <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head"><div><h2>À savoir</h2></div></div>
+              <div class="card-body-p">
+                <div class="info-box">Vous pouvez <strong>modifier le statut</strong> à tout moment depuis votre liste de produits, même après publication.</div>
+                <p style="font-size:12.5px;color:var(--gray-600);line-height:1.65;">Commencez en brouillon pour peaufiner votre fiche avant de la rendre visible à vos clients.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Étape 2 -->
+      <div class="step-panel" id="panel2">
+        <div class="create-grid">
+          <div>
+            <div class="card">
+              <div class="card-head"><div><h2>Informations du produit</h2><p>Un nom clair et une bonne description augmentent vos ventes</p></div></div>
+              <div class="card-body-p">
+                <div class="fg">
+                  <label class="lbl">Nom du produit <span class="req">*</span></label>
+                  <input class="inp" id="pName" type="text" placeholder="Ex : Guide Facebook Ads 2025" oninput="updateSEO()" />
+                </div>
+                <div class="fg">
+                  <label class="lbl">Description <span class="req">*</span></label>
+                  <div class="editor-box">
+                    <div class="editor-bar">
+                      <button class="tb" onclick="fmt('bold')"><b>B</b></button>
+                      <button class="tb" onclick="fmt('italic')"><i>I</i></button>
+                      <button class="tb" onclick="fmt('underline')"><u>U</u></button>
+                      <div class="tb-sep"></div>
+                      <button class="tb" onclick="fmt('insertUnorderedList')">
+                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5 11.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zM3 8a1 1 0 110-2 1 1 0 010 2zm0 4a1 1 0 110-2 1 1 0 010 2zm0-8a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                      </button>
+                    </div>
+                    <div class="editor-body" contenteditable="true" placeholder="Décrivez votre produit : contenu, cible, bénéfices…"></div>
+                  </div>
+                </div>
+                <div class="fg">
+                  <label class="lbl">Catégorie <span class="req">*</span></label>
+                  <select class="sel" id="catSelect"></select>
+                </div>
+                <div class="fg">
+                  <label class="lbl">Tags</label>
+                  <div class="tags-box" onclick="document.getElementById('tgInp').focus()">
+                    <input class="tag-inp" id="tgInp" placeholder="Ajouter un tag, Entrée pour valider…" onkeydown="addTag(event)" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="actions-bar">
+              <button class="btn-back-step" onclick="goStep(1)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Retour</button>
+              <button class="btn-next" onclick="goStep(3)">Continuer : Médias <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head"><div><h2>Conseils</h2></div></div>
+              <div class="card-body-p">
+                <p style="font-size:12.5px;color:var(--gray-600);line-height:1.65;">Un bon nom est <strong>court, clair et précis</strong>. Dans la description, répondez à : <em>Pour qui ? Quel contenu ? Quel résultat ?</em></p>
+                <div class="info-box">💡 Les produits avec une description complète se vendent <strong>3× plus</strong>.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Étape 3 -->
+      <div class="step-panel" id="panel3">
+        <div class="create-grid">
+          <div>
+            <div class="card">
+              <div class="card-head"><div><h2>Images du produit</h2><p>La première image sera la couverture affichée en boutique</p></div></div>
+              <div class="card-body-p">
+                <div class="drop">
+                  <input type="file" accept="image/*" multiple onchange="handleImages(this)" />
+                  <div class="drop-ico"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+                  <div class="drop-t">Glissez vos images ici</div>
+                  <div class="drop-s">PNG, JPG, WEBP · Max 5 Mo</div>
+                </div>
+                <div class="img-grid-p" id="imgGrid"></div>
+              </div>
+            </div>
+            <div class="actions-bar">
+              <button class="btn-back-step" onclick="goStep(2)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Retour</button>
+              <button class="btn-next" onclick="goStep(4)">Continuer : Tarification <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head"><div><h2>Recommandations</h2></div></div>
+              <div class="card-body-p">
+                <p style="font-size:12.5px;color:var(--gray-600);line-height:1.65;">Taille idéale : <strong>1200×1200 px</strong>. Jusqu'à <strong>8 images</strong>.</p>
+                <div class="info-box">💡 Un fond blanc ou neutre donne un rendu professionnel en boutique.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Étape 4 -->
+      <div class="step-panel" id="panel4">
+        <div class="create-grid">
+          <div>
+            <div class="card">
+              <div class="card-head"><div><h2>Tarification</h2><p>Définissez le prix et le modèle de vente</p></div></div>
+              <div class="card-body-p">
+                <div class="fg">
+                  <label class="lbl">Modèle de tarification <span class="req">*</span></label>
+                  <select class="sel"><option>Paiement unique</option><option>Abonnement mensuel</option><option>Paiement libre (Pay what you want)</option></select>
+                </div>
+                <div class="price-grid">
+                  <div class="fg"><label class="lbl">Prix <span class="req">*</span></label><div class="price-wrap"><span class="curr">XOF</span><input class="inp" type="number" placeholder="0" min="0" /></div></div>
+                  <div class="fg"><label class="lbl">Prix barré</label><div class="price-wrap"><span class="curr">XOF</span><input class="inp" type="number" placeholder="0" min="0" /></div></div>
+                </div>
+                <div class="info-box">💰 Frais eseafy : <strong>5%</strong> par transaction. Minimum conseillé : <strong>1 500 XOF</strong>.</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h2>Référencement (SEO)</h2></div></div>
+              <div class="card-body-p">
+                <div class="fg"><label class="lbl">Titre SEO</label><input class="inp" id="seoTitle" type="text" placeholder="Titre pour Google…" oninput="updateSEO()" /></div>
+                <div class="fg"><label class="lbl">Description SEO</label><textarea class="inp" id="seoDescInp" rows="3" placeholder="Courte description…" style="resize:vertical;" oninput="updateSEO()"></textarea></div>
+                <div class="fg">
+                  <label class="lbl">Aperçu</label>
+                  <div class="seo-prev">
+                    <div class="seo-url" id="seoUrl">eseafy.com/boutique/produits/nom-du-produit</div>
+                    <div class="seo-ttl" id="seoTtl">Votre titre s'affichera ici</div>
+                    <div class="seo-dsc" id="seoDsc">La description courte s'affiche dans les résultats de recherche.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="actions-bar">
+              <button class="btn-back-step" onclick="goStep(3)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Retour</button>
+              <button class="btn-next btn-publish" onclick="publishProduct(this)">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                Publier le produit
+              </button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head"><div><h2>Résumé</h2></div></div>
+              <div class="card-body-p">
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--gray-600);">Type</span><span id="sumType" style="font-weight:500;">—</span></div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--gray-600);">Nom</span><span id="sumName" style="font-weight:500;text-align:right;max-width:160px;">—</span></div>
+                </div>
+                <div style="border-top:1px solid var(--gray-100);padding-top:14px;">
+                  <div class="info-box">Vérifiez les informations avant de publier. Elles restent modifiables à tout moment.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-create -->
+  </div><!-- /subProdCreate -->
+</div><!-- /page-produits -->

@@ -1,41 +1,72 @@
 // ══════════════════════════════════════
+//  CHARGEMENT DES PAGES (partials)
+// ══════════════════════════════════════
+
+const PAGES = [
+  './assets/partials/page-accueil.html',
+  './assets/partials/page-ventes.html',
+  './assets/partials/page-produits.html',
+  './assets/partials/page-clients.html',
+  './assets/partials/page-revenus.html',
+  './assets/partials/page-analytiques.html',
+  './assets/partials/page-marketing.html',
+  './assets/partials/page-affiliation.html',
+  './assets/partials/page-profil.html',
+  './assets/partials/page-notifications.html',
+  './assets/partials/page-parametres.html',
+];
+
+async function loadPages() {
+  const container = document.getElementById('main-container');
+  try {
+    for (const url of PAGES) {
+      const res  = await fetch(url);
+      const html = await res.text();
+      container.insertAdjacentHTML('beforeend', html);
+    }
+  } catch (err) {
+    console.error('Erreur chargement page :', err);
+    console.warn('Utilisez Live Server — fetch() ne fonctionne pas en file://');
+    return;
+  }
+  initApp();
+}
+
+// ══════════════════════════════════════
 //  NAVIGATION SPA
 // ══════════════════════════════════════
 let currentPage = 'accueil';
 let productType = 'digital';
 
 const pageTitles = {
-  'accueil':       '<strong>Ma boutique</strong>',
-  'ventes':        '<strong>Ma boutique</strong> &nbsp;/&nbsp; Ventes',
-  'produits':      '<strong>Ma boutique</strong> &nbsp;/&nbsp; Produits',
+  'accueil':        '<strong>Ma boutique</strong>',
+  'ventes':         '<strong>Ma boutique</strong> &nbsp;/&nbsp; Ventes',
+  'produits':       '<strong>Ma boutique</strong> &nbsp;/&nbsp; Produits',
   'nouveau-produit':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Nouveau produit',
-  'clients':       '<strong>Ma boutique</strong> &nbsp;/&nbsp; Clients',
-  'revenus':       '<strong>Ma boutique</strong> &nbsp;/&nbsp; Revenus',
-  'analytiques':   '<strong>Ma boutique</strong> &nbsp;/&nbsp; Analytiques',
-  'marketing':     '<strong>Ma boutique</strong> &nbsp;/&nbsp; Marketing',
-  'affiliation':   '<strong>Ma boutique</strong> &nbsp;/&nbsp; Affiliation',
-  'profil':        '<strong>Ma boutique</strong> &nbsp;/&nbsp; Profil',
-  'notifications': '<strong>Ma boutique</strong> &nbsp;/&nbsp; Notifications',
-  'parametres':    '<strong>Ma boutique</strong> &nbsp;/&nbsp; Paramètres',
+  'clients':        '<strong>Ma boutique</strong> &nbsp;/&nbsp; Clients',
+  'revenus':        '<strong>Ma boutique</strong> &nbsp;/&nbsp; Revenus',
+  'analytiques':    '<strong>Ma boutique</strong> &nbsp;/&nbsp; Analytiques',
+  'marketing':      '<strong>Ma boutique</strong> &nbsp;/&nbsp; Marketing',
+  'affiliation':    '<strong>Ma boutique</strong> &nbsp;/&nbsp; Affiliation',
+  'profil':         '<strong>Ma boutique</strong> &nbsp;/&nbsp; Profil',
+  'notifications':  '<strong>Ma boutique</strong> &nbsp;/&nbsp; Notifications',
+  'parametres':     '<strong>Ma boutique</strong> &nbsp;/&nbsp; Param\u00e8tres',
 };
 
 function navigate(page) {
-  // Masquer toutes les pages
   document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-
-  // Mettre à jour nav active (on mappe nouveau-produit → produits pour la sidebar)
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const navKey = page === 'nouveau-produit' ? 'produits' : page;
+
+  const navKey    = page === 'nouveau-produit' ? 'produits' : page;
   const activeNav = document.getElementById('nav-' + navKey);
   if (activeNav) activeNav.classList.add('active');
 
-  // Mettre à jour le breadcrumb
-  document.getElementById('topCrumb').innerHTML = pageTitles[page] || '<strong>Ma boutique</strong>';
+  document.getElementById('topCrumb').innerHTML =
+    pageTitles[page] || '<strong>Ma boutique</strong>';
 
-  // Bouton brouillon
-  document.getElementById('draftBtn').style.display = page === 'nouveau-produit' ? '' : 'none';
+  document.getElementById('draftBtn').style.display =
+    page === 'nouveau-produit' ? '' : 'none';
 
-  // Gérer la page produits avec ses sous-vues
   if (page === 'nouveau-produit') {
     document.getElementById('page-produits').classList.add('active');
     showProdSubview('subProdChoix');
@@ -68,7 +99,7 @@ const cats = {
     '💻 Développement & Tech',
     '📈 Marketing & Business',
     '🎵 Audio & Musique',
-    '🔧 Templates & Outils'
+    '🔧 Templates & Outils',
   ],
   physical: [
     '👗 Vêtements & Mode',
@@ -77,20 +108,21 @@ const cats = {
     '🏠 Maison & Déco',
     '⚡ Électronique',
     '🎨 Artisanat & Art',
-    '🧸 Jouets & Loisirs'
-  ]
+    '🧸 Jouets & Loisirs',
+  ],
 };
 
 function startCreation(type) {
   productType = type;
   const ov = document.getElementById('overlay');
-  document.getElementById('ovText').textContent = type === 'digital' ? 'Produit digital' : 'Produit physique';
+  document.getElementById('ovText').textContent =
+    type === 'digital' ? 'Produit digital' : 'Produit physique';
   document.getElementById('ovSub').textContent = 'Préparation du formulaire…';
   ov.classList.add('show');
 
   setTimeout(() => {
-    const badge = document.getElementById('typeBadge');
-    badge.className = 'type-badge ' + type;
+    const badge      = document.getElementById('typeBadge');
+    badge.className  = 'type-badge ' + type;
     badge.textContent = type === 'digital' ? '📦 Produit digital' : '🚚 Produit physique';
 
     document.getElementById('topCrumb').innerHTML =
@@ -116,38 +148,23 @@ function goStep(n) {
   document.querySelectorAll('.step-panel').forEach((p, i) =>
     p.classList.toggle('active', i + 1 === n)
   );
-
   for (let i = 1; i <= 4; i++) {
     const b    = document.getElementById('b' + i);
     const step = b.closest('.step');
     step.classList.remove('active', 'done');
-
-    if (i < n) {
-      step.classList.add('done');
-      b.innerHTML = '✓';
-    } else if (i === n) {
-      step.classList.add('active');
-      b.textContent = i;
-    } else {
-      b.textContent = i;
-    }
-
-    if (i < 4) {
-      document.getElementById('l' + i).classList.toggle('done', i < n);
-    }
+    if (i < n)        { step.classList.add('done');   b.innerHTML   = '✓'; }
+    else if (i === n) { step.classList.add('active'); b.textContent = i;   }
+    else              { b.textContent = i; }
+    if (i < 4) document.getElementById('l' + i).classList.toggle('done', i < n);
   }
-
   if (n === 4) {
     const name = document.getElementById('pName').value;
     document.getElementById('sumName').textContent = name || '—';
   }
-
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function fmt(cmd) {
-  document.execCommand(cmd, false, null);
-}
+function fmt(cmd) { document.execCommand(cmd, false, null); }
 
 function addTag(e) {
   if (e.key !== 'Enter' && e.key !== ',') return;
@@ -168,7 +185,8 @@ function handleImages(input) {
     r.onload = e => {
       const d = document.createElement('div');
       d.className = 'img-th';
-      d.innerHTML = `<img src="${e.target.result}"/><button class="rm" onclick="this.parentElement.remove()">×</button>`;
+      d.innerHTML = `<img src="${e.target.result}"/>
+        <button class="rm" onclick="this.parentElement.remove()">×</button>`;
       grid.appendChild(d);
     };
     r.readAsDataURL(file);
@@ -179,31 +197,19 @@ function updateSEO() {
   const name  = (document.getElementById('pName')      || {}).value || '';
   const title = (document.getElementById('seoTitle')   || {}).value || '';
   const desc  = (document.getElementById('seoDescInp') || {}).value || '';
-
-  const slug = name
+  const slug  = name
     .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '') || 'nom-du-produit';
-
-  const u = document.getElementById('seoUrl');
-  if (u) u.textContent = `eseafy.com/boutique/produits/${slug}`;
-
-  const t = document.getElementById('seoTtl');
-  if (t) t.textContent = title || name || "Votre titre s'affichera ici";
-
-  const d = document.getElementById('seoDsc');
-  if (d) d.textContent = desc || "La description s'affiche dans les résultats de recherche.";
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 'nom-du-produit';
+  const u = document.getElementById('seoUrl');  if (u) u.textContent = `eseafy.com/boutique/produits/${slug}`;
+  const t = document.getElementById('seoTtl');  if (t) t.textContent = title || name || "Votre titre s'affichera ici";
+  const d = document.getElementById('seoDsc');  if (d) d.textContent = desc  || "La description s'affiche dans les résultats de recherche.";
 }
 
 function saveDraft(btn) {
   btn.textContent = '✓ Brouillon sauvegardé';
   btn.style.color = 'var(--success)';
-  setTimeout(() => {
-    btn.textContent = 'Enregistrer brouillon';
-    btn.style.color = '';
-  }, 2000);
+  setTimeout(() => { btn.textContent = 'Enregistrer brouillon'; btn.style.color = ''; }, 2000);
 }
 
 function publishProduct(btn) {
@@ -221,15 +227,23 @@ function saveShopName() {
 // ══════════════════════════════════════
 //  FILTRES
 // ══════════════════════════════════════
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', function () {
-    const parent = this.closest('.filters-bar');
-    parent.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
-    this.classList.add('active-filter');
+function initFilters() {
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const parent = this.closest('.filters-bar');
+      parent.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
+      this.classList.add('active-filter');
+    });
   });
-});
+}
 
 // ══════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════
-navigate('accueil');
+function initApp() {
+  initFilters();
+  navigate('accueil');
+}
+
+// Démarrage
+loadPages();

@@ -1,0 +1,28 @@
+<div class="page-view" id="page-parametres">
+  <div class="settings-wrap">
+    <div class="page-header" style="margin-bottom:28px;"><div><h1>Paramètres</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Configuration de votre boutique</p></div></div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-head"><div><h2>Informations de la boutique</h2></div></div>
+      <div style="padding:22px;">
+        <div class="fg"><label class="lbl">Nom de la boutique</label><input class="inp" type="text" value="Ma boutique" id="shopNameInp" /></div>
+        <div class="fg"><label class="lbl">URL personnalisée</label><input class="inp" type="text" value="eseafy.com/ma-boutique" /></div>
+        <div class="fg">
+          <label class="lbl">Devise</label>
+          <select class="sel"><option selected>XOF — Franc CFA</option><option>EUR — Euro</option><option>USD — Dollar</option></select>
+        </div>
+        <button class="btn-primary" onclick="saveShopName()">Sauvegarder</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2>Paiement & Retrait</h2></div></div>
+      <div style="padding:22px;">
+        <div class="fg"><label class="lbl">Numéro Mobile Money</label><input class="inp" type="tel" placeholder="Ex : +226 70 00 00 00" /></div>
+        <div class="fg">
+          <label class="lbl">Opérateur</label>
+          <select class="sel"><option>Orange Money</option><option>Moov Money</option><option>Wave</option></select>
+        </div>
+        <button class="btn-primary">Enregistrer le compte</button>
+      </div>
+    </div>
+  </div>
+</div>
