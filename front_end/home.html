@@ -120,21 +120,34 @@
       </div>
     </div>
 
-    <!-- VENTES -->
-    <div class="page-view" id="page-ventes">
-      <div class="ventes-wrap">
-        <div class="page-header"><div><h1>Ventes</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">34 ventes ce mois</p></div></div>
-        <div class="filters-bar">
-          <div class="search-box"><svg width="14" height="14" fill="none" stroke="var(--gray-400)" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input placeholder="Rechercher une vente…" /></div>
-          <button class="filter-btn active-filter">Tous</button><button class="filter-btn">Payé</button><button class="filter-btn">En attente</button>
-        </div>
-        <div class="ventes-table">
-          <div class="vt-head"><span>Commande</span><span>Produit</span><span>Client</span><span>Montant</span><span>Statut</span></div>
-          <div class="vt-row"><span class="vt-id">#ESF-0034</span><span class="vt-val">Guide Facebook Ads 2025</span><span class="vt-val">Amadou B.</span><span class="vt-val" style="font-weight:600">15 000 XOF</span><span><span class="badge green">Payé</span></span></div>
-          <div class="vt-row"><span class="vt-id">#ESF-0033</span><span class="vt-val">Formation Canva Pro</span><span class="vt-val">Fatoumata K.</span><span class="vt-val" style="font-weight:600">25 000 XOF</span><span><span class="badge green">Payé</span></span></div>
-        </div>
+<!-- VENTES -->
+<div class="page-view" id="page-ventes">
+  <div class="ventes-wrap">
+    <div class="page-header">
+      <div>
+        <h1>Ventes</h1>
+        <p id="ventesCount" style="font-size:14px;color:var(--gray-600);margin-top:4px;">Chargement…</p>
       </div>
     </div>
+    <div class="filters-bar">
+      <div class="search-box">
+        <svg width="14" height="14" fill="none" stroke="var(--gray-400)" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input placeholder="Rechercher une vente…" oninput="searchVentes(this.value)" />
+      </div>
+      <button class="filter-btn active-filter" data-statut="tous">Tous</button>
+      <button class="filter-btn" data-statut="paye">Payé</button>
+      <button class="filter-btn" data-statut="en_attente">En attente</button>
+      <button class="filter-btn" data-statut="rembourse">Remboursé</button>
+      <button class="filter-btn" data-statut="annule">Annulé</button>
+    </div>
+    <div class="ventes-table" id="ventesTable">
+      <div class="vt-head">
+        <span>Commande</span><span>Produit</span><span>Client</span><span>Montant</span><span>Statut</span><span></span>
+      </div>
+      <div style="padding:40px;text-align:center;color:var(--gray-400);">Chargement…</div>
+    </div>
+  </div>
+</div>
 
     <!-- PRODUITS -->
     <div class="page-view" id="page-produits">
@@ -624,7 +637,7 @@ function navigate(page) {
   const navKey = page === 'nouveau-produit' ? 'produits' : page;
   const nav    = document.getElementById('nav-' + navKey);
   if (nav) nav.classList.add('active');
-  document.getElementById('topCrumb').innerHTML    = pageTitles[page] || '<strong>Ma boutique</strong>';
+  document.getElementById('topCrumb').innerHTML     = pageTitles[page] || '<strong>Ma boutique</strong>';
   document.getElementById('draftBtn').style.display = page === 'nouveau-produit' ? '' : 'none';
   if (page === 'nouveau-produit') {
     document.getElementById('page-produits').classList.add('active');
@@ -637,7 +650,7 @@ function navigate(page) {
     const el = document.getElementById('page-' + page);
     if (el) el.classList.add('active');
     if (page === 'accueil') loadDashboardStats();
-    else console.warn('⚠️ Page introuvable : page-' + page);
+    if (page === 'ventes')  loadVentes();        // ← ajout
   }
   currentPage = page;
   window.scrollTo({ top: 0 });
@@ -895,10 +908,109 @@ function saveShopName() {
 function initFilters() {
   document.querySelectorAll('.filter-btn[data-filtre]').forEach(btn => {
     btn.addEventListener('click', function() {
-      this.closest('.filters-bar').querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active-filter'));
+      this.closest('.filters-bar').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
       this.classList.add('active-filter');
-      if (currentPage==='produits') loadProduits(this.dataset.filtre);
+      if (currentPage === 'produits') loadProduits(this.dataset.filtre);
     });
+  });
+
+  document.querySelectorAll('.filter-btn[data-statut]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.closest('.filters-bar').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
+      this.classList.add('active-filter');
+      if (currentPage === 'ventes') loadVentes(this.dataset.statut);
+    });
+  });
+}
+
+// ══ CHARGER LES VENTES ══
+async function loadVentes(statut = 'tous') {
+  const table = document.getElementById('ventesTable');
+  if (!table) return;
+
+  let url = `${API_URL}/commandes`;
+  if (statut !== 'tous') url += `?statut=${statut}`;
+
+  console.log('📋 Chargement ventes → ' + url);
+
+  try {
+    const res  = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    console.log('📋 Ventes reçues :', data);
+
+    if (!res.ok) { console.error('❌', data.message); return; }
+
+    const commandes = data.commandes;
+    const count     = document.getElementById('ventesCount');
+    if (count) count.textContent = `${commandes.length} commande${commandes.length > 1 ? 's' : ''} au total`;
+
+    const header = table.querySelector('.vt-head');
+    table.innerHTML = '';
+    table.appendChild(header);
+
+    if (commandes.length === 0) {
+      table.innerHTML += `<div style="padding:40px;text-align:center;color:var(--gray-400);font-size:14px;">Aucune commande trouvée.</div>`;
+      return;
+    }
+
+    commandes.forEach(c => {
+      const statutMap = {
+        paye:       { label: 'Payé',       cls: 'green'  },
+        en_attente: { label: 'En attente', cls: 'orange' },
+        rembourse:  { label: 'Remboursé',  cls: 'gray'   },
+        annule:     { label: 'Annulé',     cls: 'gray'   },
+      };
+      const s     = statutMap[c.statut] || { label: c.statut, cls: 'gray' };
+      const date  = new Date(c.created_at);
+      const dateStr = date.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
+      const total = Number(c.total).toLocaleString('fr-FR');
+
+      table.innerHTML += `
+        <div class="vt-row">
+          <span class="vt-id">#${c.reference}</span>
+          <span class="vt-val">${c.nom_produit || '—'}</span>
+          <span class="vt-val">${c.nom_client || '—'}</span>
+          <span class="vt-val" style="font-weight:600">${total} XOF</span>
+          <span><span class="badge ${s.cls}">${s.label}</span></span>
+          <span>
+<span>
+  <button onclick="updateStatutCommande(${c.id}, '${c.statut}')" 
+    style="font-size:11px;padding:4px 10px;border:1px solid var(--gray-200);border-radius:6px;background:var(--white);cursor:pointer;color:var(--gray-600);">
+    ✏️ Modifier
+  </button>
+</span>
+          </span>
+        </div>`;
+    });
+
+  } catch (err) {
+    console.error('❌ Erreur ventes :', err);
+  }
+}
+
+// ══ CHANGER LE STATUT D'UNE COMMANDE ══
+async function updateStatutCommande(id, statut) {
+  console.log('🔄 Changement statut commande', id, '→', statut);
+  try {
+    const res  = await fetch(`${API_URL}/commandes/${id}/statut`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ statut })
+    });
+    const data = await res.json();
+    console.log('🔄 Résultat :', data);
+    if (res.ok) loadVentes(); // recharger
+    else alert('❌ ' + data.message);
+  } catch (err) {
+    console.error('❌', err);
+  }
+}
+
+// ══ RECHERCHE VENTES ══
+function searchVentes(val) {
+  const rows = document.querySelectorAll('#ventesTable .vt-row');
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(val.toLowerCase()) ? '' : 'none';
   });
 }
 
