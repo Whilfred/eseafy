@@ -3,13 +3,11 @@ const pool    = require('../config/db');
 const auth    = require('../middleware/auth');
 
 const router = express.Router();
-router.use(auth);
 
 // ══════════════════════════════════════
-//  GET /api/commandes
-//  Lister les commandes
+//  GET /api/commandes — PROTÉGÉ (vendeur)
 // ══════════════════════════════════════
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   const { statut } = req.query;
   try {
     let query  = `
@@ -29,11 +27,10 @@ router.get('/', async (req, res) => {
 });
 
 // ══════════════════════════════════════
-//  POST /api/commandes
-//  Créer une commande (utilisé par le client)
+//  POST /api/commandes — PUBLIC (client)
 // ══════════════════════════════════════
 router.post('/', async (req, res) => {
-  const { produit_id, nom_client, email_client, telephone, adresse, quantite = 1 } = req.body;
+  const { produit_id, nom_client, email_client, telephone, adresse, quantite = 1, code_promo, prix_final } = req.body;
 
   if (!produit_id || !nom_client) {
     return res.status(400).json({ message: 'Produit et nom client requis.' });
@@ -51,7 +48,12 @@ router.post('/', async (req, res) => {
     }
 
     const produit = prodResult.rows[0];
-    const total   = produit.prix * quantite;
+
+    // Calculer le total (avec réduction si code promo)
+    let total = produit.prix * quantite;
+    if (prix_final && prix_final > 0 && prix_final < total) {
+      total = prix_final;
+    }
 
     // Générer une référence unique
     const reference = 'ESF-' + Date.now().toString().slice(-6);
@@ -69,6 +71,17 @@ router.post('/', async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     `, [commande.rows[0].id, produit_id, produit.boutique_id, produit.user_id, produit.nom, produit.prix, quantite, total]);
 
+    // Incrémenter nb_utilisations du code promo
+    if (code_promo) {
+      await pool.query(
+        `UPDATE codes_promo SET nb_utilisations = nb_utilisations + 1 WHERE code = $1 AND boutique_id = $2`,
+        [code_promo.toUpperCase(), produit.boutique_id]
+      );
+      console.log('🎟 Code promo utilisé :', code_promo);
+    }
+
+    console.log(`✅ Commande : ${reference} | ${total} XOF | ${nom_client}`);
+
     return res.status(201).json({
       message: 'Commande créée avec succès.',
       commande: commande.rows[0],
@@ -82,10 +95,9 @@ router.post('/', async (req, res) => {
 });
 
 // ══════════════════════════════════════
-//  PUT /api/commandes/:id/statut
-//  Mettre à jour le statut d'une commande
+//  PUT /api/commandes/:id/statut — PROTÉGÉ
 // ══════════════════════════════════════
-router.put('/:id/statut', async (req, res) => {
+router.put('/:id/statut', auth, async (req, res) => {
   const { statut } = req.body;
   const validStatuts = ['en_attente', 'paye', 'rembourse', 'annule'];
 

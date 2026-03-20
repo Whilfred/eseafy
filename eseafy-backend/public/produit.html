@@ -379,33 +379,61 @@
           </div>
 
           <div class="order-wrap" id="orderFormFields">
-            <div class="error-box" id="orderError"></div>
-            <div class="fg">
-              <label class="lbl">Nom complet <span class="req">*</span></label>
-              <input class="inp" type="text" id="clientNom" placeholder="Ex : Amadou Barro" />
-            </div>
-            <div class="fg">
-              <label class="lbl">Téléphone <span class="req">*</span></label>
-              <input class="inp" type="tel" id="clientTel" placeholder="Ex : +226 70 00 00 00" />
-            </div>
-            <div class="fg">
-              <label class="lbl">Email</label>
-              <input class="inp" type="email" id="clientEmail" placeholder="votre@email.com" />
-            </div>
-            <div class="fg">
-              <label class="lbl">Adresse de livraison</label>
-              <input class="inp" type="text" id="clientAdresse" placeholder="Ex : Ouagadougou, Secteur 15" />
-            </div>
-            <button class="btn-buy" id="btnCommander" onclick="passerCommande()">
-              🛒 Confirmer la commande
-            </button>
-            <div class="trust-row">
-              <div class="trust-item">🔒 Sécurisé</div>
-              <div class="trust-item">🚚 Livraison rapide</div>
-              <div class="trust-item">✅ Vendeur vérifié</div>
-            </div>
-          </div>
+  <div class="error-box" id="orderError"></div>
+  <div class="fg">
+    <label class="lbl">Nom complet <span class="req">*</span></label>
+    <input class="inp" type="text" id="clientNom" placeholder="Ex : Amadou Barro" />
+  </div>
+  <div class="fg">
+    <label class="lbl">Téléphone <span class="req">*</span></label>
+    <input class="inp" type="tel" id="clientTel" placeholder="Ex : +226 70 00 00 00" />
+  </div>
+  <div class="fg">
+    <label class="lbl">Email</label>
+    <input class="inp" type="email" id="clientEmail" placeholder="votre@email.com" />
+  </div>
+  <div class="fg">
+    <label class="lbl">Adresse de livraison</label>
+    <input class="inp" type="text" id="clientAdresse" placeholder="Ex : Ouagadougou, Secteur 15" />
+  </div>
 
+  <!-- ── Code promo ── -->
+  <div style="border:1.5px solid var(--blue-light);border-radius:10px;padding:14px;background:var(--blue-xlight);">
+    <label class="lbl" style="margin-bottom:8px;display:block;">🎟 Code promo</label>
+    <div style="display:flex;gap:8px;">
+      <input class="inp" type="text" id="promoCodeInput" placeholder="Ex : NOEL20" style="text-transform:uppercase;flex:1;" />
+      <button onclick="appliquerPromo()" style="padding:10px 16px;background:var(--blue);color:var(--white);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;">
+        Appliquer
+      </button>
+    </div>
+    <div id="promoResult" style="margin-top:8px;font-size:13px;display:none;"></div>
+  </div>
+
+  <!-- ── Récapitulatif prix ── -->
+  <div id="prixRecap" style="background:var(--white);border:1px solid var(--blue-light);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;">
+    <div style="display:flex;justify-content:space-between;font-size:13px;">
+      <span style="color:var(--gray-600);">Prix produit</span>
+      <span id="recapPrix" style="font-weight:500;"></span>
+    </div>
+    <div id="recapReductionRow" style="display:none;justify-content:space-between;font-size:13px;">
+      <span style="color:var(--success);">Réduction</span>
+      <span id="recapReduction" style="color:var(--success);font-weight:500;"></span>
+    </div>
+    <div style="border-top:1px solid var(--blue-light);padding-top:8px;display:flex;justify-content:space-between;">
+      <span style="font-size:14px;font-weight:600;">Total à payer</span>
+      <span id="recapTotal" style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--blue);"></span>
+    </div>
+  </div>
+
+  <button class="btn-buy" id="btnCommander" onclick="passerCommande()">
+    🛒 Confirmer la commande
+  </button>
+  <div class="trust-row">
+    <div class="trust-item">🔒 Sécurisé</div>
+    <div class="trust-item">🚚 Livraison rapide</div>
+    <div class="trust-item">✅ Vendeur vérifié</div>
+  </div>
+</div>
         </div>
       </div>
     </div>
@@ -459,7 +487,7 @@ fetch(`${BASE_URL}/api/analytics/visite`, {
   body: JSON.stringify({ boutique_slug: slugBoutique, produit_slug: slugProduit, type: 'produit' })
 });
 
-  function renderProduit(p) {
+function renderProduit(p) {
     document.title = `${p.nom} — eseafy`;
 
     // Nav boutique
@@ -555,6 +583,9 @@ fetch(`${BASE_URL}/api/analytics/visite`, {
       mainImg.textContent = Object.entries(emojis).find(([k]) => p.categorie?.includes(k))?.[1] || (p.type==='digital' ? '📦' : '🚚');
     }
 
+    // ── Initialiser le récap prix ──
+    initRecapPrix(p.prix);
+
     // Afficher
     document.getElementById('loadingView').style.display = 'none';
     document.getElementById('productView').style.display = 'block';
@@ -565,7 +596,7 @@ fetch(`${BASE_URL}/api/analytics/visite`, {
     document.getElementById('errorView').style.display   = 'block';
   }
 
-  async function passerCommande() {
+async function passerCommande() {
     const nom     = document.getElementById('clientNom').value.trim();
     const tel     = document.getElementById('clientTel').value.trim();
     const email   = document.getElementById('clientEmail').value.trim();
@@ -584,7 +615,16 @@ fetch(`${BASE_URL}/api/analytics/visite`, {
       const res  = await fetch(`${API_URL}/commandes`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ produit_id:produitData.id, nom_client:nom, telephone:tel, email_client:email||null, adresse:adresse||null, quantite:1 })
+        body: JSON.stringify({
+          produit_id:   produitData.id,
+          nom_client:   nom,
+          telephone:    tel,
+          email_client: email   || null,
+          adresse:      adresse || null,
+          quantite:     1,
+          code_promo:   promoAppliquee ? promoAppliquee.code : null,
+          prix_final:   prixFinal,
+        })
       });
       const data = await res.json();
 
@@ -605,12 +645,67 @@ fetch(`${BASE_URL}/api/analytics/visite`, {
       btn.innerHTML = '🛒 Confirmer la commande';
     }
   }
-
+  
   function sharePage() {
     navigator.clipboard.writeText(window.location.href)
       .then(() => alert('✅ Lien copié !\n' + window.location.href));
   }
 
+  let promoAppliquee = null;
+let prixFinal      = 0;
+
+// ── Initialiser le récap prix ──
+function initRecapPrix(prix) {
+  prixFinal = prix;
+  document.getElementById('recapPrix').textContent  = Number(prix).toLocaleString('fr-FR') + ' XOF';
+  document.getElementById('recapTotal').textContent = Number(prix).toLocaleString('fr-FR') + ' XOF';
+}
+
+// ── Appliquer un code promo ──
+async function appliquerPromo() {
+  const code      = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+  const resultEl  = document.getElementById('promoResult');
+  const { slugBoutique } = getSlugs();
+
+  if (!code) { resultEl.style.display='block'; resultEl.style.color='#c0392b'; resultEl.textContent='Veuillez saisir un code.'; return; }
+
+  resultEl.style.display = 'block';
+  resultEl.textContent   = '⏳ Vérification…';
+
+  try {
+    const res  = await fetch(`${BASE_URL}/api/promo/verifier`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ code, boutique_slug: slugBoutique, montant: produitData.prix })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      promoAppliquee = data.promo;
+      const reduction = data.promo.reduction;
+      prixFinal       = Math.max(0, produitData.prix - reduction);
+
+      // Afficher la réduction
+      resultEl.style.color   = '#1c7a4a';
+      resultEl.textContent   = `✅ ${data.message} — Réduction : ${Number(reduction).toLocaleString('fr-FR')} XOF`;
+
+      // Mettre à jour le récap
+      document.getElementById('recapReductionRow').style.display = 'flex';
+      document.getElementById('recapReduction').textContent = '-' + Number(reduction).toLocaleString('fr-FR') + ' XOF';
+      document.getElementById('recapTotal').textContent     = Number(prixFinal).toLocaleString('fr-FR') + ' XOF';
+    } else {
+      promoAppliquee = null;
+      prixFinal      = produitData.prix;
+      resultEl.style.color = '#c0392b';
+      resultEl.textContent = '❌ ' + data.message;
+      document.getElementById('recapReductionRow').style.display = 'none';
+      document.getElementById('recapTotal').textContent = Number(produitData.prix).toLocaleString('fr-FR') + ' XOF';
+    }
+  } catch (err) {
+    resultEl.style.color = '#c0392b';
+    resultEl.textContent = 'Erreur serveur.';
+  }
+}
   loadProduit();
 </script>
 </body>
