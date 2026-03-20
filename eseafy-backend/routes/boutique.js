@@ -4,6 +4,7 @@ const pool    = require('../config/db');
 
 const router = express.Router();
 
+// ══ GET /boutique/:slugBoutique/:slugProduit ══
 router.get('/:slugBoutique/:slugProduit', async (req, res) => {
   const { slugBoutique, slugProduit } = req.params;
   const acceptsHTML = req.headers.accept && req.headers.accept.includes('text/html');
@@ -28,7 +29,14 @@ router.get('/:slugBoutique/:slugProduit', async (req, res) => {
   }
 });
 
+// ══ GET /boutique/:slugBoutique ══
 router.get('/:slugBoutique', async (req, res) => {
+  const acceptsHTML = req.headers.accept && req.headers.accept.includes('text/html');
+
+  if (acceptsHTML) {
+    return res.sendFile(path.join(__dirname, '..', 'public', 'boutique.html'));
+  }
+
   try {
     const boutiqueResult = await pool.query(
       `SELECT b.*, u.prenom, u.nom AS vendeur_nom FROM boutiques b JOIN users u ON u.id = b.user_id WHERE b.slug = $1`,
