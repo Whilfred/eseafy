@@ -66,3 +66,18 @@ CREATE TABLE visites (
   user_agent  TEXT,
   created_at  TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE codes_promo (
+  id            SERIAL PRIMARY KEY,
+  boutique_id   INTEGER REFERENCES boutiques(id) ON DELETE CASCADE,
+  user_id       INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  code          VARCHAR(50) UNIQUE NOT NULL,
+  type          VARCHAR(20) CHECK (type IN ('pourcentage', 'montant_fixe')),
+  valeur        NUMERIC(12,2) NOT NULL,
+  min_commande  NUMERIC(12,2) DEFAULT 0,
+  max_utilisations INTEGER,
+  nb_utilisations  INTEGER DEFAULT 0,
+  actif         BOOLEAN DEFAULT true,
+  expire_le     TIMESTAMP,
+  created_at    TIMESTAMP DEFAULT NOW()
+);
