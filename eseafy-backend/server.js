@@ -224,6 +224,8 @@ app.put('/api/notifications/:id/lire', require('./middleware/auth'), async (req,
   }
 });
 
+app.use('/api/tracker', require('./routes/tracker'));
+
 app.get('/suivi', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'suivi.html'));
 });
