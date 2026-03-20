@@ -525,23 +525,37 @@
       </div>
     </div>
 
-    <!-- PROFIL -->
-    <div class="page-view" id="page-profil">
-      <div class="settings-wrap">
-        <div class="page-header" style="margin-bottom:28px;"><div><h1>Profil</h1></div></div>
-        <div class="card">
-          <div class="card-head"><div><h2>Informations personnelles</h2></div></div>
-          <div style="padding:22px;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-              <div class="fg"><label class="lbl">Prénom</label><input class="inp" id="profilPrenom" type="text" /></div>
-              <div class="fg"><label class="lbl">Nom</label><input class="inp" id="profilNom" type="text" /></div>
-            </div>
-            <div class="fg"><label class="lbl">Email</label><input class="inp" id="profilEmail" type="email" /></div>
-            <button class="btn-primary" style="margin-top:8px;">Sauvegarder</button>
-          </div>
+<!-- PROFIL -->
+<div class="page-view" id="page-profil">
+  <div class="settings-wrap">
+    <div class="page-header" style="margin-bottom:28px;"><div><h1>Profil</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Vos informations personnelles</p></div></div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-head"><div><h2>Informations personnelles</h2></div></div>
+      <div style="padding:22px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="fg"><label class="lbl">Prénom</label><input class="inp" id="profilPrenom" type="text" placeholder="Votre prénom" /></div>
+          <div class="fg"><label class="lbl">Nom</label><input class="inp" id="profilNom" type="text" placeholder="Votre nom" /></div>
         </div>
+        <div class="fg"><label class="lbl">Email</label><input class="inp" id="profilEmail" type="email" placeholder="votre@email.com" /></div>
+        <div class="fg"><label class="lbl">Téléphone</label><input class="inp" id="profilTel" type="tel" placeholder="Ex : +226 70 00 00 00" /></div>
+        <div id="profilMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+        <button class="btn-primary" onclick="sauvegarderProfil(this)" style="margin-top:8px;">💾 Sauvegarder</button>
       </div>
     </div>
+
+    <div class="card">
+      <div class="card-head"><div><h2>Changer le mot de passe</h2></div></div>
+      <div style="padding:22px;">
+        <div class="fg"><label class="lbl">Nouveau mot de passe</label><input class="inp" id="newPassword" type="password" placeholder="••••••••" /></div>
+        <div class="fg"><label class="lbl">Confirmer</label><input class="inp" id="confirmPassword" type="password" placeholder="••••••••" /></div>
+        <div id="pwdMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+        <button class="btn-primary" onclick="changerMotDePasse(this)" style="margin-top:8px;">🔒 Changer le mot de passe</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 
     <!-- NOTIFICATIONS -->
     <div class="page-view" id="page-notifications">
@@ -766,6 +780,7 @@ function navigate(page) {
     if (page === 'clients') loadClients();
     if (page === 'analytiques') loadAnalytics();
     if (page === 'marketing') loadCodesPromo();
+    if (page === 'profil') loadUserInfo();
   }
   currentPage = page;
   window.scrollTo({ top: 0 });
@@ -1563,6 +1578,99 @@ async function savePixel(type) {
   }
 }
 
+// ══ SAUVEGARDER PROFIL ══
+async function sauvegarderProfil(btn) {
+  const nom      = document.getElementById('profilNom').value.trim();
+  const prenom   = document.getElementById('profilPrenom').value.trim();
+  const telephone= document.getElementById('profilTel').value.trim();
+  const msgEl    = document.getElementById('profilMsg');
+
+  btn.disabled = true; btn.textContent = '⏳ Sauvegarde…';
+
+  try {
+    const res  = await fetch(`${API_URL}/profil`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ nom, prenom, telephone })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      // Mettre à jour le localStorage
+      const u = JSON.parse(localStorage.getItem('user') || '{}');
+      u.nom = nom; u.prenom = prenom;
+      localStorage.setItem('user', JSON.stringify(u));
+
+      // Mettre à jour la sidebar
+      document.getElementById('sideShopName').textContent = prenom ? `Boutique de ${prenom}` : 'Ma boutique';
+      document.getElementById('userAvatar').textContent   = [prenom, nom].filter(Boolean).map(s => s[0].toUpperCase()).join('');
+
+      msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+      msgEl.textContent = '✅ Profil sauvegardé !';
+    } else {
+      msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+      msgEl.textContent = '❌ ' + data.message;
+    }
+    msgEl.style.display = 'block';
+    setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+
+  } catch (err) {
+    msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+    msgEl.textContent = 'Erreur serveur.';
+    msgEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Sauvegarder';
+  }
+}
+
+// ══ CHANGER MOT DE PASSE ══
+async function changerMotDePasse(btn) {
+  const pwd     = document.getElementById('newPassword').value;
+  const confirm = document.getElementById('confirmPassword').value;
+  const msgEl   = document.getElementById('pwdMsg');
+
+  msgEl.style.display = 'none';
+  if (pwd !== confirm) {
+    msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+    msgEl.textContent = '❌ Les mots de passe ne correspondent pas.';
+    msgEl.style.display = 'block'; return;
+  }
+  if (pwd.length < 6) {
+    msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+    msgEl.textContent = '❌ Minimum 6 caractères.';
+    msgEl.style.display = 'block'; return;
+  }
+
+  btn.disabled = true; btn.textContent = '⏳ Modification…';
+
+  try {
+    const res  = await fetch(`${API_URL}/profil/password`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ password: pwd })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+      msgEl.textContent = '✅ Mot de passe changé !';
+      document.getElementById('newPassword').value    = '';
+      document.getElementById('confirmPassword').value = '';
+    } else {
+      msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+      msgEl.textContent = '❌ ' + data.message;
+    }
+    msgEl.style.display = 'block';
+    setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+
+  } catch (err) {
+    msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+    msgEl.textContent = 'Erreur serveur.';
+    msgEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = '🔒 Changer le mot de passe';
+  }
+}
 
 // ══ DÉMARRAGE ══
 loadUserInfo();
