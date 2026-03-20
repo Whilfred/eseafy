@@ -2,7 +2,7 @@ const express  = require('express');
 const bcrypt   = require('bcryptjs');
 const jwt      = require('jsonwebtoken');
 const pool     = require('../config/db');
-const { sendEmailBienvenue } = require('../services/emailService');
+const { sendEmailBienvenue, sendNotificationInscription, sendOTP } = require('../services/emailService');
 
 const router = express.Router();
 
@@ -43,12 +43,8 @@ router.post('/register', async (req, res) => {
       [user.id, 'Ma boutique', `boutique-${user.id}`]
     );
 
-    // Email de bienvenue
-    sendEmailBienvenue({
-      email,
-      prenom,
-      boutique_slug: boutique.rows[0].slug
-    });
+    // Emails
+    sendEmailBienvenue({ email, prenom, boutique_slug: boutique.rows[0].slug });
     sendNotificationInscription({ email, prenom, nom });
 
     const token = jwt.sign(
@@ -77,6 +73,7 @@ router.post('/register', async (req, res) => {
 
 // ══════════════════════════════════════
 //  POST /api/auth/login
+//  Étape 1 : vérifier email + mot de passe → envoyer OTP
 // ══════════════════════════════════════
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -99,11 +96,81 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Email ou mot de passe incorrect.' });
     }
 
+    // Générer un OTP à 6 chiffres
+    const otp        = Math.floor(100000 + Math.random() * 900000).toString();
+    const expireAt   = new Date(Date.now() + 10 * 60 * 1000); // expire dans 10 minutes
+
+    // Sauvegarder l'OTP en DB
+    await pool.query(
+      `UPDATE users SET otp_code = $1, otp_expire_at = $2 WHERE id = $3`,
+      [otp, expireAt, user.id]
+    );
+
+    // Envoyer l'OTP par email
+    await sendOTP({ email: user.email, prenom: user.prenom, otp });
+
+    console.log(`🔐 OTP envoyé à ${user.email} : ${otp}`);
+
+    return res.status(200).json({
+      message: 'Code de vérification envoyé à votre email.',
+      email:   user.email,
+      step:    'otp_required',
+    });
+
+  } catch (err) {
+    console.error('Erreur login :', err.message);
+    return res.status(500).json({ message: 'Erreur serveur. Réessayez.' });
+  }
+});
+
+// ══════════════════════════════════════
+//  POST /api/auth/verify-otp
+//  Étape 2 : vérifier l'OTP → retourner le token
+// ══════════════════════════════════════
+router.post('/verify-otp', async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({ message: 'Email et code requis.' });
+  }
+
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Utilisateur introuvable.' });
+    }
+
+    const user = result.rows[0];
+
+    // Vérifier si le code est expiré
+    if (!user.otp_code || !user.otp_expire_at) {
+      return res.status(400).json({ message: 'Aucun code en attente. Reconnectez-vous.' });
+    }
+
+    if (new Date() > new Date(user.otp_expire_at)) {
+      return res.status(400).json({ message: 'Code expiré. Reconnectez-vous pour recevoir un nouveau code.' });
+    }
+
+    // Vérifier le code
+    if (user.otp_code !== otp.toString().trim()) {
+      return res.status(400).json({ message: 'Code incorrect.' });
+    }
+
+    // Effacer l'OTP
+    await pool.query(
+      `UPDATE users SET otp_code = NULL, otp_expire_at = NULL WHERE id = $1`,
+      [user.id]
+    );
+
+    // Générer le JWT
     const token = jwt.sign(
       { id: user.id, email: user.email, nom: user.nom },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
+
+    console.log(`✅ OTP vérifié pour ${user.email}`);
 
     return res.status(200).json({
       message: 'Connexion réussie.',
@@ -118,8 +185,40 @@ router.post('/login', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Erreur login :', err.message);
+    console.error('Erreur verify-otp :', err.message);
     return res.status(500).json({ message: 'Erreur serveur. Réessayez.' });
+  }
+});
+
+// ══════════════════════════════════════
+//  POST /api/auth/resend-otp
+//  Renvoyer l'OTP
+// ══════════════════════════════════════
+router.post('/resend-otp', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: 'Email requis.' });
+
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Utilisateur introuvable.' });
+
+    const user     = result.rows[0];
+    const otp      = Math.floor(100000 + Math.random() * 900000).toString();
+    const expireAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await pool.query(
+      `UPDATE users SET otp_code = $1, otp_expire_at = $2 WHERE id = $3`,
+      [otp, expireAt, user.id]
+    );
+
+    await sendOTP({ email: user.email, prenom: user.prenom, otp });
+
+    console.log(`🔐 OTP renvoyé à ${user.email} : ${otp}`);
+
+    return res.json({ message: 'Nouveau code envoyé.' });
+
+  } catch (err) {
+    return res.status(500).json({ message: 'Erreur serveur.' });
   }
 });
 
