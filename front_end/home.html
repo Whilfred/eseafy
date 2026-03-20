@@ -513,17 +513,53 @@
   </div>
 </div>
 
-    <!-- AFFILIATION -->
-    <div class="page-view" id="page-affiliation">
-      <div class="affil-wrap">
-        <div class="page-header"><div><h1>Affiliation</h1></div></div>
-        <div class="kpi-row" style="grid-template-columns:repeat(3,1fr);">
-          <div class="kpi"><div class="kpi-label">Affiliés actifs</div><div class="kpi-val">7</div></div>
-          <div class="kpi"><div class="kpi-label">Ventes générées</div><div class="kpi-val">12</div></div>
-          <div class="kpi"><div class="kpi-label">Commissions dues</div><div class="kpi-val">18 500 XOF</div></div>
+<!-- AFFILIATION -->
+<div class="page-view" id="page-affiliation">
+  <div class="affil-wrap">
+    <div class="page-header">
+      <div><h1>Affiliation</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Gérez votre réseau d'affiliés</p></div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-row" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
+      <div class="kpi"><div class="kpi-label">Affiliés actifs</div><div class="kpi-val" id="affilNb">—</div></div>
+      <div class="kpi"><div class="kpi-label">Ventes générées</div><div class="kpi-val" id="affilVentes">—</div></div>
+      <div class="kpi"><div class="kpi-label">Commissions dues</div><div class="kpi-val" id="affilCommissions">—</div></div>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-head"><div><h2>Inviter un affilié</h2></div></div>
+      <div class="card-body-p">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+          <div class="fg">
+            <label class="lbl">Nom <span class="req">*</span></label>
+            <input class="inp" type="text" id="affilNom" placeholder="Ex : Kofi Asante" />
+          </div>
+          <div class="fg">
+            <label class="lbl">Email</label>
+            <input class="inp" type="email" id="affilEmail" placeholder="kofi@email.com" />
+          </div>
+          <div class="fg">
+            <label class="lbl">Commission (%)</label>
+            <input class="inp" type="number" id="affilCommission" placeholder="10" min="1" max="50" value="10" />
+          </div>
         </div>
+        <div id="affilMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+        <button class="btn-primary" onclick="creerAffilie(this)" style="margin-top:8px;">➕ Créer l'affilié</button>
       </div>
     </div>
+
+    <!-- Liste affiliés -->
+    <div class="card">
+      <div class="card-head"><div><h2>Mes affiliés</h2></div></div>
+      <div id="affilList" style="padding:8px 0;">
+        <div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Chargement…</div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 <!-- PROFIL -->
 <div class="page-view" id="page-profil">
@@ -781,6 +817,7 @@ function navigate(page) {
     if (page === 'analytiques') loadAnalytics();
     if (page === 'marketing') loadCodesPromo();
     if (page === 'profil') loadUserInfo();
+    if (page === 'affiliation') loadAffiliation();
   }
   currentPage = page;
   window.scrollTo({ top: 0 });
@@ -1670,6 +1707,122 @@ async function changerMotDePasse(btn) {
   } finally {
     btn.disabled = false; btn.textContent = '🔒 Changer le mot de passe';
   }
+}
+
+// ══ CHARGER LES AFFILIÉS ══
+async function loadAffiliation() {
+  try {
+    const res  = await fetch(`${API_URL}/affiliation`, { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!res.ok) return;
+
+    const affilies = data.affilies;
+
+    // KPIs
+    const actifs      = affilies.filter(a => a.actif);
+    const totalVentes = affilies.reduce((s, a) => s + parseInt(a.nb_ventes), 0);
+    const totalComm   = affilies.reduce((s, a) => s + parseFloat(a.total_ventes) * (parseFloat(a.commission_pct) / 100), 0);
+
+    document.getElementById('affilNb').textContent          = actifs.length;
+    document.getElementById('affilVentes').textContent      = totalVentes;
+    document.getElementById('affilCommissions').textContent = Number(Math.round(totalComm)).toLocaleString('fr-FR') + ' XOF';
+
+    // Liste
+    const list = document.getElementById('affilList');
+    if (affilies.length === 0) {
+      list.innerHTML = `<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Aucun affilié. Invitez-en un !</div>`;
+      return;
+    }
+
+    list.innerHTML = affilies.map(a => {
+      const commission = Math.round(parseFloat(a.total_ventes) * parseFloat(a.commission_pct) / 100);
+      const lien       = `http://localhost:3001/boutique/boutique-${a.user_id}?ref=${a.code}`;
+      const statut     = a.actif ? '<span class="badge green">Actif</span>' : '<span class="badge gray">Inactif</span>';
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid var(--gray-100);">
+          <div class="ct-av">${a.nom[0].toUpperCase()}</div>
+          <div style="flex:1;">
+            <div style="font-size:13.5px;font-weight:500;">${a.nom}</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">
+              Code : <strong style="font-family:monospace;">${a.code}</strong> · 
+              ${a.commission_pct}% commission · 
+              ${a.nb_ventes} vente(s) · 
+              ${Number(commission).toLocaleString('fr-FR')} XOF dûs
+            </div>
+          </div>
+          ${statut}
+          <button class="icon-btn" title="Copier le lien" onclick="copyAffilLien('${lien}')">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <button class="icon-btn" title="${a.actif ? 'Désactiver' : 'Activer'}" onclick="toggleAffilie(${a.id})">
+            ${a.actif ? '⏸' : '▶'}
+          </button>
+          <button class="icon-btn" title="Supprimer" onclick="deleteAffilie(${a.id})">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          </button>
+        </div>`;
+    }).join('');
+
+  } catch (err) {
+    console.error('❌ Erreur affiliation :', err);
+  }
+}
+
+// ══ CRÉER UN AFFILIÉ ══
+async function creerAffilie(btn) {
+  const nom        = document.getElementById('affilNom').value.trim();
+  const email      = document.getElementById('affilEmail').value.trim();
+  const commission = parseFloat(document.getElementById('affilCommission').value) || 10;
+  const msgEl      = document.getElementById('affilMsg');
+
+  msgEl.style.display = 'none';
+  if (!nom) { msgEl.style.background='#f8d7da'; msgEl.style.color='#721c24'; msgEl.textContent='Veuillez saisir un nom.'; msgEl.style.display='block'; return; }
+
+  btn.disabled = true; btn.textContent = '⏳ Création…';
+
+  try {
+    const res  = await fetch(`${API_URL}/affiliation`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ nom, email, commission_pct: commission })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+      msgEl.textContent = `✅ Affilié créé ! Lien : ${data.lien}`;
+      msgEl.style.display = 'block';
+      document.getElementById('affilNom').value   = '';
+      document.getElementById('affilEmail').value = '';
+      loadAffiliation();
+    } else {
+      msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+      msgEl.textContent = '❌ ' + data.message;
+      msgEl.style.display = 'block';
+    }
+  } catch (err) {
+    msgEl.textContent = 'Erreur serveur.'; msgEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = '➕ Créer l\'affilié';
+  }
+}
+
+// ══ COPIER LE LIEN AFFILIÉ ══
+function copyAffilLien(lien) {
+  navigator.clipboard.writeText(lien).then(() => alert('✅ Lien affilié copié !\n' + lien));
+}
+
+// ══ TOGGLE AFFILIÉ ══
+async function toggleAffilie(id) {
+  await fetch(`${API_URL}/affiliation/${id}/toggle`, { method:'PUT', headers:{'Authorization':'Bearer '+token} });
+  loadAffiliation();
+}
+
+// ══ SUPPRIMER AFFILIÉ ══
+async function deleteAffilie(id) {
+  if (!confirm('Supprimer cet affilié ?')) return;
+  await fetch(`${API_URL}/affiliation/${id}`, { method:'DELETE', headers:{'Authorization':'Bearer '+token} });
+  loadAffiliation();
 }
 
 // ══ DÉMARRAGE ══
