@@ -49,6 +49,7 @@ router.post('/register', async (req, res) => {
       prenom,
       boutique_slug: boutique.rows[0].slug
     });
+    sendNotificationInscription({ email, prenom, nom });
 
     const token = jwt.sign(
       { id: user.id, email: user.email, nom: user.nom },
