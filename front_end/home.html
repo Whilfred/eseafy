@@ -589,18 +589,24 @@
         <button class="btn-primary" onclick="changerMotDePasse(this)" style="margin-top:8px;">🔒 Changer le mot de passe</button>
       </div>
     </div>
-
   </div>
 </div>
 
-    <!-- NOTIFICATIONS -->
-    <div class="page-view" id="page-notifications">
-      <div class="notif-wrap">
-        <div class="page-header" style="margin-bottom:24px;"><div><h1>Notifications</h1></div></div>
-        <div class="notif-item"><div class="notif-dot"></div><div class="notif-content"><div class="notif-title">Nouvelle vente — Guide Facebook Ads 2025</div><div class="notif-sub">Amadou Barro vient d'acheter votre produit</div></div><div class="notif-time">il y a 2h</div></div>
-        <div class="notif-item"><div class="notif-dot read"></div><div class="notif-content"><div class="notif-title">Votre boutique a atteint 100 clients 🎉</div><div class="notif-sub">Félicitations !</div></div><div class="notif-time">hier</div></div>
+<!-- NOTIFICATIONS -->
+<div class="page-view" id="page-notifications">
+  <div class="notif-wrap">
+    <div class="page-header" style="margin-bottom:24px;">
+      <div>
+        <h1>Notifications</h1>
+        <p id="notifNbNonLues" style="font-size:14px;color:var(--gray-600);margin-top:4px;">Chargement…</p>
       </div>
+      <button class="btn-primary" onclick="marquerToutLu()" style="font-size:13px;padding:8px 16px;">✅ Tout marquer comme lu</button>
     </div>
+    <div id="notifList">
+      <div style="padding:40px;text-align:center;color:var(--gray-400);font-size:13px;">Chargement…</div>
+    </div>
+  </div>
+</div>
 
 <!-- PARAMÈTRES -->
 <div class="page-view" id="page-parametres">
@@ -886,6 +892,7 @@ function navigate(page) {
     if (page === 'profil') loadUserInfo();
     if (page === 'affiliation') loadAffiliation();
     if (page === 'parametres') loadSettings();
+    if (page === 'notifications') loadNotifications();
   }
   currentPage = page;
   window.scrollTo({ top: 0 });
@@ -2023,54 +2030,80 @@ function connectNotifications() {
 }
 
 function afficherNotif(data) {
-  // Créer le toast
-  const toast = document.createElement('div');
-  toast.style.cssText = `
-    position:fixed; bottom:24px; right:24px; z-index:9999;
-    background:var(--black); color:var(--white);
-    padding:16px 20px; border-radius:14px;
-    box-shadow:0 8px 32px rgba(0,0,0,.25);
-    font-family:'DM Sans',sans-serif; font-size:13px;
-    display:flex; align-items:center; gap:12px;
-    animation:slideIn .3s ease; max-width:340px;
-    border-left:4px solid #22c55e;
-  `;
-  toast.innerHTML = `
-    <div style="font-size:24px;">🛒</div>
-    <div>
-      <div style="font-weight:600;margin-bottom:2px;">Nouvelle commande !</div>
-      <div style="color:rgba(255,255,255,.7);font-size:12px;">${data.client} · ${Number(data.montant).toLocaleString('fr-FR')} XOF</div>
-      <div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:2px;">${data.produit} · #${data.reference}</div>
-    </div>
-    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:16px;margin-left:auto;">×</button>
-  `;
-
   // Ajouter l'animation CSS
   if (!document.getElementById('notifStyle')) {
     const style = document.createElement('style');
     style.id = 'notifStyle';
     style.textContent = `
       @keyframes slideIn { from { transform:translateX(120%); opacity:0; } to { transform:none; opacity:1; } }
+      @keyframes slideOut { from { transform:none; opacity:1; } to { transform:translateX(120%); opacity:0; } }
+      .toast-notif { animation: slideIn .35s cubic-bezier(.34,1.56,.64,1); }
+      .toast-notif.removing { animation: slideOut .25s ease forwards; }
     `;
     document.head.appendChild(style);
   }
 
+  const toast = document.createElement('div');
+  toast.className = 'toast-notif';
+  toast.style.cssText = `
+    position:fixed; bottom:28px; right:28px; z-index:9999;
+    background:var(--white);
+    border:1px solid var(--blue-light);
+    border-left:4px solid var(--blue);
+    padding:16px 18px; border-radius:16px;
+    box-shadow:0 12px 40px rgba(26,107,255,.15);
+    font-family:'DM Sans',sans-serif; font-size:13px;
+    display:flex; align-items:flex-start; gap:12px;
+    max-width:360px; min-width:300px;
+    color:var(--black);
+  `;
+
+  toast.innerHTML = `
+    <div style="width:40px;height:40px;border-radius:10px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🛒</div>
+    <div style="flex:1;">
+      <div style="font-weight:700;font-size:13.5px;color:var(--black);margin-bottom:3px;">Nouvelle commande !</div>
+      <div style="font-size:12.5px;color:var(--blue);font-weight:500;margin-bottom:2px;">${data.client} · ${Number(data.montant).toLocaleString('fr-FR')} XOF</div>
+      <div style="font-size:11.5px;color:var(--gray-400);">${data.produit} · <span style="font-family:monospace;">#${data.reference}</span></div>
+    </div>
+    <button onclick="
+      this.closest('.toast-notif').classList.add('removing');
+      setTimeout(() => this.closest('.toast-notif').remove(), 250);
+    " style="background:none;border:none;color:var(--gray-400);cursor:pointer;font-size:18px;padding:0;line-height:1;flex-shrink:0;">×</button>
+  `;
+
   document.body.appendChild(toast);
 
-  // Supprimer après 6 secondes
-  setTimeout(() => toast.remove(), 6000);
+  // Supprimer après 6 secondes avec animation
+  setTimeout(() => {
+    if (toast.parentElement) {
+      toast.classList.add('removing');
+      setTimeout(() => toast.remove(), 250);
+    }
+  }, 6000);
 
-  // Son de notification (optionnel)
+  // Son de notification
   try {
     const ctx  = new AudioContext();
     const osc  = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
     osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-    osc.start(); osc.stop(ctx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    osc.start(); osc.stop(ctx.currentTime + 0.4);
   } catch(e) {}
+
+  // Badge nav notifications
+  if (currentPage !== 'notifications') {
+    const navNotif = document.getElementById('nav-notifications');
+    if (navNotif && !navNotif.querySelector('.notif-nav-badge')) {
+      const b = document.createElement('span');
+      b.className = 'notif-nav-badge';
+      b.style.cssText = 'background:#ef4444;color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;margin-left:6px;';
+      b.textContent = '•';
+      navNotif.appendChild(b);
+    }
+  }
 }
 
 function updateNotifBadge() {
@@ -2090,12 +2123,84 @@ function updateNotifBadge() {
   if (badge) badge.textContent = notifCount;
 }
 
+// ══ CHARGER LES NOTIFICATIONS ══
+async function loadNotifications() {
+  const list = document.getElementById('notifList');
+  if (!list) return;
+
+  try {
+    const res  = await fetch(`${API_URL}/notifications`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!res.ok) return;
+
+    const notifs   = data.notifications;
+    const nonLues  = notifs.filter(n => !n.lu).length;
+    const nbEl     = document.getElementById('notifNbNonLues');
+    if (nbEl) nbEl.textContent = nonLues > 0 ? `${nonLues} non lue(s)` : 'Tout est à jour ✅';
+
+    if (notifs.length === 0) {
+      list.innerHTML = `<div style="padding:40px;text-align:center;color:var(--gray-400);font-size:13px;">Aucune notification pour l'instant.</div>`;
+      return;
+    }
+
+    list.innerHTML = notifs.map(n => {
+      const date  = new Date(n.created_at);
+      const now   = new Date();
+      const diff  = Math.floor((now - date) / 60000);
+      const quand = diff < 60 ? `il y a ${diff}min` : diff < 1440 ? `il y a ${Math.floor(diff/60)}h` : diff < 2880 ? 'hier' : date.toLocaleDateString('fr-FR');
+      const iconMap = { nouvelle_commande: '🛒', nouvelle_visite: '👁', code_promo: '🎟' };
+      const icon  = iconMap[n.type] || '🔔';
+
+      return `
+        <div class="notif-item ${n.lu ? '' : 'unread'}" onclick="marquerLu(${n.id}, this)" style="cursor:pointer;${!n.lu ? 'background:var(--blue-xlight);' : ''}">
+          <div class="notif-dot ${n.lu ? 'read' : ''}" style="${!n.lu ? 'background:var(--blue);' : ''}"></div>
+          <div style="font-size:22px;margin:0 12px;">${icon}</div>
+          <div class="notif-content">
+            <div class="notif-title" style="${!n.lu ? 'font-weight:600;' : ''}">${n.titre}</div>
+            <div class="notif-sub">${n.message}</div>
+          </div>
+          <div class="notif-time">${quand}</div>
+        </div>`;
+    }).join('');
+
+  } catch (err) {
+    console.error('❌ Erreur notifications :', err);
+  }
+}
+
+// ══ MARQUER UNE NOTIFICATION COMME LUE ══
+async function marquerLu(id, el) {
+  try {
+    await fetch(`${API_URL}/notifications/${id}/lire`, {
+      method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }
+    });
+    el.style.background = '';
+    el.querySelector('.notif-dot')?.classList.add('read');
+    el.querySelector('.notif-dot')?.style.setProperty('background', '');
+    const titre = el.querySelector('.notif-title');
+    if (titre) titre.style.fontWeight = '';
+    loadNotifications();
+  } catch (err) { console.error(err); }
+}
+
+// ══ MARQUER TOUT COMME LU ══
+async function marquerToutLu() {
+  try {
+    await fetch(`${API_URL}/notifications/lire-tout`, {
+      method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }
+    });
+    loadNotifications();
+  } catch (err) { console.error(err); }
+}
+
 // ══ DÉMARRAGE ══
 loadUserInfo();
 initFilters();
 navigate('accueil');
-loadDashboardStats(); // ← ajoute cette ligne
-connectNotifications(); // ← ajoute cette ligne
+loadDashboardStats();
+connectNotifications();
 console.log('🚀 Dashboard eseafy prêt');
 </script>
 </body>
