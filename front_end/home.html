@@ -6,6 +6,7 @@
   <title>eseafy — Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./assets/css/home.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -398,17 +399,15 @@
       <div class="kpi"><div class="kpi-label">Taux de conversion</div><div class="kpi-val" id="anaTaux">—</div><div class="kpi-delta" id="anaTauxDelta"></div></div>
     </div>
 
-    <!-- Graphe visites -->
-    <div class="card" style="margin-bottom:20px;">
-      <div class="card-head"><div><h2>Visites — 30 derniers jours</h2></div></div>
-      <div class="card-body">
-        <div class="chart-placeholder" style="height:200px;align-items:flex-end;padding:16px 8px 0;">
-          <div class="chart-bars" id="anaGraph" style="width:100%;height:160px;">
-            <div style="color:var(--gray-400);font-size:13px;width:100%;text-align:center;padding-top:60px;">Chargement…</div>
-          </div>
-        </div>
-      </div>
+<!-- Graphe visites -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-head"><div><h2>Visites — 30 derniers jours</h2></div></div>
+  <div class="card-body">
+    <div style="position:relative;height:220px;">
+      <canvas id="anaGraph"></canvas>
     </div>
+  </div>
+</div>
 
     <!-- Top produits vus -->
     <div class="card">
@@ -1270,7 +1269,6 @@ async function updateProduit(btn) {
     btn.innerHTML = '💾 Mettre à jour';
   }
 }
-
 // ══ CHARGER LES ANALYTICS ══
 async function loadAnalytics() {
   console.log('📊 Chargement analytics…');
@@ -1284,8 +1282,8 @@ async function loadAnalytics() {
 
     const k = data.kpis;
 
-    // KPIs
-    document.getElementById('anaVisiteurs').textContent     = k.visiteurs_uniques;
+    // ── KPIs ──
+    document.getElementById('anaVisiteurs').textContent      = k.visiteurs_uniques;
     document.getElementById('anaVisiteursDelta').textContent = `${k.visites_totales} visites au total`;
     document.getElementById('anaPagesvues').textContent      = k.visites_mois;
     document.getElementById('anaPagesvuesDelta').textContent = 'ce mois';
@@ -1295,19 +1293,63 @@ async function loadAnalytics() {
     document.getElementById('anaTauxDelta').textContent      = 'commandes / vues produits';
     document.getElementById('anaTauxDelta').className        = 'kpi-delta ' + (k.taux_conversion > 0 ? 'up' : '');
 
-    // Graphe
-    const graph = document.getElementById('anaGraph');
+    // ── Graphe Chart.js ──
+    const ctx = document.getElementById('anaGraph').getContext('2d');
+    if (window.anaChart) window.anaChart.destroy();
+
     if (data.graph_visites.length > 0) {
-      const maxVal = Math.max(...data.graph_visites.map(r => parseInt(r.total)));
-      graph.innerHTML = data.graph_visites.map(r => {
-        const pct = maxVal > 0 ? Math.max(Math.round((parseInt(r.total) / maxVal) * 100), 5) : 10;
-        return `<div class="bar" style="height:${pct}%" title="${r.jour} : ${r.total} visite(s)"></div>`;
-      }).join('');
+      const labels = data.graph_visites.map(r => {
+        const d = new Date(r.jour);
+        return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
+      });
+      const values = data.graph_visites.map(r => parseInt(r.total));
+
+      window.anaChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Visites',
+            data: values,
+            borderColor: '#1A6BFF',
+            backgroundColor: 'rgba(26,107,255,.08)',
+            borderWidth: 2.5,
+            pointBackgroundColor: '#1A6BFF',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            fill: true,
+            tension: 0.4,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.parsed.y} visite${ctx.parsed.y > 1 ? 's' : ''}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9b97' }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(0,0,0,.05)' },
+              ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9b97', precision: 0 }
+            }
+          }
+        }
+      });
     } else {
-      graph.innerHTML = `<div style="color:var(--gray-400);font-size:13px;width:100%;text-align:center;padding-top:60px;">Aucune visite pour l'instant. Partagez votre boutique !</div>`;
+      ctx.canvas.parentElement.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:220px;color:var(--gray-400);font-size:13px;">Aucune visite pour l'instant. Partagez votre boutique !</div>`;
     }
 
-    // Top produits
+    // ── Top produits ──
     const topEl = document.getElementById('anaTopProduits');
     if (data.top_produits.length > 0) {
       topEl.innerHTML = data.top_produits.map((p, i) => `
@@ -1317,7 +1359,7 @@ async function loadAnalytics() {
           <div class="ri-price" style="font-size:13px;color:var(--gray-600);">${p.vues} 👁</div>
         </div>`).join('');
     } else {
-      topEl.innerHTML = `<div style="color:var(--gray-400);font-size:13px;padding:20px 0;">Aucune visite produit enregistrée.</div>`;
+      topEl.innerHTML = `<div style="color:var(--gray-400);font-size:13px;padding:20px 0;text-align:center;">Aucune visite produit enregistrée.</div>`;
     }
 
   } catch (err) {
