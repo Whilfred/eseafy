@@ -602,28 +602,95 @@
       </div>
     </div>
 
-    <!-- PARAMÈTRES -->
-    <div class="page-view" id="page-parametres">
-      <div class="settings-wrap">
-        <div class="page-header" style="margin-bottom:28px;"><div><h1>Paramètres</h1></div></div>
-        <div class="card" style="margin-bottom:16px;">
-          <div class="card-head"><div><h2>Informations de la boutique</h2></div></div>
-          <div style="padding:22px;">
-            <div class="fg"><label class="lbl">Nom de la boutique</label><input class="inp" type="text" value="Ma boutique" id="shopNameInp" /></div>
-            <div class="fg"><label class="lbl">Devise</label><select class="sel"><option selected>XOF — Franc CFA</option><option>EUR — Euro</option><option>USD — Dollar</option></select></div>
-            <button class="btn-primary" onclick="saveShopName()">Sauvegarder</button>
+<!-- PARAMÈTRES -->
+<div class="page-view" id="page-parametres">
+  <div class="settings-wrap">
+    <div class="page-header" style="margin-bottom:28px;"><div><h1>Paramètres</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Configuration de votre boutique</p></div></div>
+
+<!-- Informations boutique -->
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-head"><div><h2>Informations de la boutique</h2></div></div>
+  <div style="padding:22px;">
+    <div class="fg">
+      <label class="lbl">Nom de la boutique</label>
+      <input class="inp" type="text" id="shopNameInp" placeholder="Ma boutique" />
+    </div>
+    <div style="font-size:12px;color:var(--gray-400);padding:8px 12px;background:var(--gray-100);border-radius:8px;">
+      ⚠️ Le lien de votre boutique ne peut pas être modifié pour éviter de casser vos liens existants.
+    </div>
+    <div id="settingsMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+    <button class="btn-primary" onclick="saveSettings(this)" style="margin-top:8px;">💾 Sauvegarder</button>
+  </div>
+</div>
+
+    <!-- Paramètres généraux -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-head"><div><h2>Paramètres généraux</h2></div></div>
+      <div style="padding:22px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="fg">
+            <label class="lbl">Devise</label>
+            <select class="sel" id="shopDevise">
+              <option value="XOF">XOF — Franc CFA</option>
+              <option value="EUR">EUR — Euro</option>
+              <option value="USD">USD — Dollar américain</option>
+              <option value="GHS">GHS — Cedi ghanéen</option>
+              <option value="NGN">NGN — Naira nigérian</option>
+              <option value="MAD">MAD — Dirham marocain</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="lbl">Langue</label>
+            <select class="sel" id="shopLangue">
+              <option value="fr">🇫🇷 Français</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="ar">🇸🇦 العربية</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="lbl">Pays</label>
+            <select class="sel" id="shopPays">
+              <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
+              <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
+              <option value="Sénégal">🇸🇳 Sénégal</option>
+              <option value="Mali">🇲🇱 Mali</option>
+              <option value="Niger">🇳🇪 Niger</option>
+              <option value="Togo">🇹🇬 Togo</option>
+              <option value="Bénin">🇧🇯 Bénin</option>
+              <option value="Ghana">🇬🇭 Ghana</option>
+              <option value="Nigeria">🇳🇬 Nigeria</option>
+              <option value="Cameroun">🇨🇲 Cameroun</option>
+              <option value="Maroc">🇲🇦 Maroc</option>
+            </select>
           </div>
         </div>
-        <div class="card">
-          <div class="card-head"><div><h2>Paiement & Retrait</h2></div></div>
-          <div style="padding:22px;">
-            <div class="fg"><label class="lbl">Numéro Mobile Money</label><input class="inp" type="tel" placeholder="Ex : +226 70 00 00 00" /></div>
-            <div class="fg"><label class="lbl">Opérateur</label><select class="sel"><option>Orange Money</option><option>Moov Money</option><option>Wave</option></select></div>
-            <button class="btn-primary">Enregistrer</button>
-          </div>
-        </div>
+        <div id="generalMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+        <button class="btn-primary" onclick="saveGeneralSettings(this)" style="margin-top:8px;">💾 Sauvegarder</button>
       </div>
     </div>
+
+    <!-- Paiement & Retrait -->
+    <div class="card">
+      <div class="card-head"><div><h2>Paiement & Retrait</h2></div></div>
+      <div style="padding:22px;">
+        <div class="fg"><label class="lbl">Numéro Mobile Money</label><input class="inp" type="tel" id="mobileMoneyNum" placeholder="Ex : +226 70 00 00 00" /></div>
+        <div class="fg">
+          <label class="lbl">Opérateur</label>
+          <select class="sel" id="mobileMoneyOp">
+            <option value="orange">Orange Money</option>
+            <option value="moov">Moov Money</option>
+            <option value="wave">Wave</option>
+            <option value="mtn">MTN Mobile Money</option>
+            <option value="airtel">Airtel Money</option>
+          </select>
+        </div>
+        <div id="paymentMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+        <button class="btn-primary" onclick="savePaymentSettings(this)">💾 Enregistrer</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 
   </div>
 </div>
@@ -818,6 +885,7 @@ function navigate(page) {
     if (page === 'marketing') loadCodesPromo();
     if (page === 'profil') loadUserInfo();
     if (page === 'affiliation') loadAffiliation();
+    if (page === 'parametres') loadSettings();
   }
   currentPage = page;
   window.scrollTo({ top: 0 });
@@ -1823,6 +1891,98 @@ async function deleteAffilie(id) {
   if (!confirm('Supprimer cet affilié ?')) return;
   await fetch(`${API_URL}/affiliation/${id}`, { method:'DELETE', headers:{'Authorization':'Bearer '+token} });
   loadAffiliation();
+}
+
+// ══ CHARGER LES PARAMÈTRES BOUTIQUE ══
+async function loadSettings() {
+  try {
+    const res  = await fetch(`${API_URL}/auth/me`, { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!res.ok) return;
+
+    // Charger les infos boutique
+    const boutiqueRes  = await fetch(`${API_URL}/boutique/settings`, { headers: { 'Authorization': 'Bearer ' + token } });
+    if (boutiqueRes.ok) {
+      const boutiqueData = await boutiqueRes.json();
+      const b = boutiqueData.boutique;
+      if (b) {
+        const inp = document.getElementById('shopNameInp'); if (inp) inp.value = b.nom || '';
+        const slug = document.getElementById('shopSlugInp'); if (slug) slug.value = b.slug || '';
+        const devise = document.getElementById('shopDevise'); if (devise) devise.value = b.devise || 'XOF';
+        const langue = document.getElementById('shopLangue'); if (langue) langue.value = b.langue || 'fr';
+        const pays   = document.getElementById('shopPays');   if (pays)   pays.value   = b.pays   || 'Burkina Faso';
+      }
+    }
+  } catch (err) { console.error('❌ loadSettings :', err); }
+}
+
+async function saveSettings(btn) {
+  const nom   = document.getElementById('shopNameInp').value.trim();
+  const msgEl = document.getElementById('settingsMsg');
+
+  btn.disabled = true; btn.textContent = '⏳ Sauvegarde…';
+  try {
+    const res  = await fetch(`${API_URL}/boutique/settings`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ nom }) // ← slug retiré
+    });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('sideShopName').textContent = nom || 'Ma boutique';
+      msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+      msgEl.textContent = '✅ Nom sauvegardé !';
+    } else {
+      msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+      msgEl.textContent = '❌ ' + data.message;
+    }
+    msgEl.style.display = 'block';
+    setTimeout(() => msgEl.style.display = 'none', 3000);
+  } catch (err) { msgEl.textContent = 'Erreur serveur.'; msgEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = '💾 Sauvegarder'; }
+}
+
+// ══ SAUVEGARDER DEVISE + LANGUE + PAYS ══
+async function saveGeneralSettings(btn) {
+  const devise = document.getElementById('shopDevise').value;
+  const langue = document.getElementById('shopLangue').value;
+  const pays   = document.getElementById('shopPays').value;
+  const msgEl  = document.getElementById('generalMsg');
+
+  btn.disabled = true; btn.textContent = '⏳ Sauvegarde…';
+  try {
+    const res  = await fetch(`${API_URL}/boutique/settings`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ devise, langue, pays })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+      msgEl.textContent = '✅ Paramètres sauvegardés !';
+    } else {
+      msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+      msgEl.textContent = '❌ ' + data.message;
+    }
+    msgEl.style.display = 'block';
+    setTimeout(() => msgEl.style.display = 'none', 3000);
+  } catch (err) { msgEl.textContent = 'Erreur serveur.'; msgEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = '💾 Sauvegarder'; }
+}
+
+// ══ SAUVEGARDER MOBILE MONEY ══
+async function savePaymentSettings(btn) {
+  const num = document.getElementById('mobileMoneyNum').value.trim();
+  const op  = document.getElementById('mobileMoneyOp').value;
+  const msgEl = document.getElementById('paymentMsg');
+
+  if (!num) { msgEl.style.background='#f8d7da'; msgEl.style.color='#721c24'; msgEl.textContent='Veuillez saisir un numéro.'; msgEl.style.display='block'; return; }
+
+  // Sauvegarder en localStorage pour l'instant
+  localStorage.setItem('mobile_money', JSON.stringify({ num, op }));
+  msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+  msgEl.textContent = `✅ ${op === 'orange' ? 'Orange Money' : op === 'moov' ? 'Moov Money' : op === 'wave' ? 'Wave' : op} sauvegardé : ${num}`;
+  msgEl.style.display = 'block';
+  setTimeout(() => msgEl.style.display = 'none', 3000);
 }
 
 // ══ DÉMARRAGE ══
