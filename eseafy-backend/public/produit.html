@@ -585,6 +585,7 @@ function renderProduit(p) {
 
     // ── Initialiser le récap prix ──
     initRecapPrix(p.prix);
+    injecterPixels(p.fb_pixel_id, p.ga_id);
 
     // Afficher
     document.getElementById('loadingView').style.display = 'none';
@@ -645,7 +646,7 @@ async function passerCommande() {
       btn.innerHTML = '🛒 Confirmer la commande';
     }
   }
-  
+
   function sharePage() {
     navigator.clipboard.writeText(window.location.href)
       .then(() => alert('✅ Lien copié !\n' + window.location.href));
@@ -706,6 +707,42 @@ async function appliquerPromo() {
     resultEl.textContent = 'Erreur serveur.';
   }
 }
+function injecterPixels(fb_pixel_id, ga_id) {
+  // Facebook Pixel
+  if (fb_pixel_id) {
+    const fbScript = document.createElement('script');
+    fbScript.innerHTML = `
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '${fb_pixel_id}');
+      fbq('track', 'PageView');
+    `;
+    document.head.appendChild(fbScript);
+    console.log('📘 Facebook Pixel injecté :', fb_pixel_id);
+  }
+
+  // Google Analytics
+  if (ga_id) {
+    const gaScript = document.createElement('script');
+    gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${ga_id}`;
+    gaScript.async = true;
+    document.head.appendChild(gaScript);
+
+    const gaInit = document.createElement('script');
+    gaInit.innerHTML = `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '${ga_id}');
+    `;
+    document.head.appendChild(gaInit);
+    console.log('📗 Google Analytics injecté :', ga_id);
+  }
+}
+
   loadProduit();
 </script>
 </body>

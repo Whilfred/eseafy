@@ -328,6 +328,8 @@ fetch(`${BASE_URL}/api/analytics/visite`, {
         <div class="hero-stat-val">${nbPhysical}</div>
         <div class="hero-stat-lbl">Physiques</div>
       </div>`;
+    injecterPixels(b.fb_pixel_id, b.ga_id);
+
   }
 
   // ══ AFFICHER LES PRODUITS ══
@@ -406,6 +408,41 @@ fetch(`${BASE_URL}/api/analytics/visite`, {
     document.getElementById('loadingView').style.display = 'none';
     document.getElementById('errorView').style.display  = 'block';
   }
+  function injecterPixels(fb_pixel_id, ga_id) {
+  // Facebook Pixel
+  if (fb_pixel_id) {
+    const fbScript = document.createElement('script');
+    fbScript.innerHTML = `
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '${fb_pixel_id}');
+      fbq('track', 'PageView');
+    `;
+    document.head.appendChild(fbScript);
+    console.log('📘 Facebook Pixel injecté :', fb_pixel_id);
+  }
+
+  // Google Analytics
+  if (ga_id) {
+    const gaScript = document.createElement('script');
+    gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${ga_id}`;
+    gaScript.async = true;
+    document.head.appendChild(gaScript);
+
+    const gaInit = document.createElement('script');
+    gaInit.innerHTML = `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '${ga_id}');
+    `;
+    document.head.appendChild(gaInit);
+    console.log('📗 Google Analytics injecté :', ga_id);
+  }
+}
 
   loadBoutique();
 </script>
