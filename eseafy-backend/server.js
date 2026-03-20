@@ -69,5 +69,40 @@ app.put('/api/profil/password', require('./middleware/auth'), async (req, res) =
   }
 });
 
+app.put('/api/boutique/settings', require('./middleware/auth'), async (req, res) => {
+  const { nom, slug, devise, langue, pays, mobile_money_num, mobile_money_op } = req.body;
+  const pool = require('./config/db');
+  try {
+    const result = await pool.query(
+      `UPDATE boutiques SET
+        nom   = COALESCE($1, nom),
+        slug  = COALESCE($2, slug),
+        devise= COALESCE($3, devise),
+        langue= COALESCE($4, langue),
+        pays  = COALESCE($5, pays),
+        updated_at = NOW()
+       WHERE user_id = $6 RETURNING *`,
+      [nom||null, slug||null, devise||null, langue||null, pays||null, req.user.id]
+    );
+    return res.json({ message: 'Paramètres sauvegardés.', boutique: result.rows[0] });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
+app.get('/api/boutique/settings', require('./middleware/auth'), async (req, res) => {
+  const pool = require('./config/db');
+  try {
+    const result = await pool.query(
+      'SELECT * FROM boutiques WHERE user_id = $1 LIMIT 1',
+      [req.user.id]
+    );
+    return res.json({ boutique: result.rows[0] || null });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`));
