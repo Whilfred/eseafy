@@ -55,3 +55,14 @@ CREATE TABLE ventes (
   total         NUMERIC(12,2) NOT NULL,
   created_at    TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE visites (
+  id          SERIAL PRIMARY KEY,
+  boutique_id INTEGER REFERENCES boutiques(id) ON DELETE CASCADE,
+  produit_id  INTEGER REFERENCES produits(id) ON DELETE SET NULL,
+  user_id     INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  type        VARCHAR(20) CHECK (type IN ('boutique', 'produit')),
+  ip          VARCHAR(50),
+  user_agent  TEXT,
+  created_at  TIMESTAMP DEFAULT NOW()
+);
