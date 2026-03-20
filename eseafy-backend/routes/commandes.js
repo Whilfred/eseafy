@@ -89,6 +89,18 @@ router.post('/', async (req, res) => {
       console.log('🤝 Affilié mis à jour :', ref_affilie);
     }
 
+    // ── Notification temps réel au vendeur ──
+    const notifyUser = req.app.locals.notifyUser;
+    if (notifyUser) {
+      notifyUser(produit.user_id, {
+        type:      'nouvelle_commande',
+        reference: reference,
+        montant:   total,
+        client:    nom_client,
+        produit:   produit.nom,
+      });
+    }
+
     console.log(`✅ Commande : ${reference} | ${total} XOF | ${nom_client}`);
 
     return res.status(201).json({
