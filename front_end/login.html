@@ -8,6 +8,75 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./assets/css/login.css" />
+  <style>
+    /* ── OTP Step ── */
+    .otp-box {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .otp-icon {
+      font-size: 52px;
+      margin-bottom: 12px;
+    }
+    .otp-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #0a0a0a;
+    }
+    .otp-sub {
+      font-size: 13px;
+      color: #6a6760;
+      line-height: 1.6;
+    }
+    .otp-sub strong {
+      color: #1A6BFF;
+    }
+    .otp-input-wrap {
+      position: relative;
+      margin: 20px 0;
+    }
+    .otp-input {
+      width: 100%;
+      padding: 16px;
+      font-family: 'Sora', monospace;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 12px;
+      text-align: center;
+      border: 2px solid #e8f0ff;
+      border-radius: 14px;
+      background: #f0f5ff;
+      color: #1A6BFF;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .otp-input:focus {
+      border-color: #1A6BFF;
+      box-shadow: 0 0 0 4px rgba(26,107,255,.1);
+    }
+    .otp-timer {
+      font-size: 12px;
+      color: #9e9b97;
+      margin-top: 6px;
+    }
+    .otp-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+      font-size: 13px;
+    }
+    .otp-actions a {
+      color: #1A6BFF;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .otp-actions a:hover { text-decoration: underline; }
+    .otp-actions span { color: #dddcda; }
+  </style>
 </head>
 <body>
 
@@ -98,20 +167,20 @@
       </p>
 
       <!-- Onglets -->
-      <div class="auth-tabs">
+      <div class="auth-tabs" id="auth-tabs">
         <button class="auth-tab active" id="tab-login"    onclick="switchTab('login')">Connexion</button>
         <button class="auth-tab"        id="tab-register" onclick="switchTab('register')">Inscription</button>
       </div>
 
-      <!-- Bannière d'erreur -->
+      <!-- Bannière erreur/succès -->
       <div class="error-banner" id="errorBanner">
         <span>⚠</span>
         <span id="errorMsg">Erreur</span>
       </div>
 
+      <!-- ══ FORMULAIRE PRINCIPAL ══ -->
       <form id="auth-form" onsubmit="handleSubmit(event)">
 
-        <!-- Prénom / Nom — inscription seulement -->
         <div class="field register-only" id="field-name">
           <div class="field-row">
             <div class="field">
@@ -131,7 +200,6 @@
           </div>
         </div>
 
-        <!-- Email -->
         <div class="field">
           <label class="field-label">Adresse e-mail</label>
           <div class="field-wrap">
@@ -140,7 +208,6 @@
           </div>
         </div>
 
-        <!-- Mot de passe -->
         <div class="field">
           <label class="field-label">Mot de passe</label>
           <div class="field-wrap">
@@ -152,7 +219,6 @@
           </div>
         </div>
 
-        <!-- Confirmer mot de passe — inscription seulement -->
         <div class="field register-only" id="field-confirm">
           <label class="field-label">Confirmer le mot de passe</label>
           <div class="field-wrap">
@@ -168,30 +234,66 @@
         </button>
       </form>
 
-      <div class="divider">ou continuer avec</div>
+      <!-- ══ ÉTAPE OTP ══ -->
+      <div id="otp-step" style="display:none;">
+        <div class="otp-box">
+          <div class="otp-icon">📧</div>
+          <div class="otp-title">Vérifiez votre email</div>
+          <p class="otp-sub">
+            Un code à 6 chiffres a été envoyé à<br/>
+            <strong id="otp-email"></strong>
+          </p>
+        </div>
 
-      <div class="social-btns">
-        <button class="btn-social" onclick="showError('Google non disponible pour l\'instant')">
-          <svg width="15" height="15" viewBox="0 0 24 24">
-            <path fill="#1A6BFF" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#3D87FF" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#6AABFF" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#A8CCFF" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-          </svg>
-          Google
+        <input
+          class="otp-input"
+          type="text"
+          id="otpInput"
+          placeholder="000000"
+          maxlength="6"
+          oninput="this.value=this.value.replace(/\D/g,'')"
+          onkeydown="if(event.key==='Enter')verifyOTP()"
+        />
+        <div class="otp-timer">Le code expire dans 10 minutes</div>
+
+        <button class="btn-submit" onclick="verifyOTP()" id="otp-btn" style="margin-top:16px;">
+          <span id="otp-btn-text">Vérifier le code</span>
+          <span class="btn-arrow">→</span>
+          <div class="spinner" id="otp-spinner" style="display:none;"></div>
         </button>
-        <button class="btn-social" onclick="showError('Facebook non disponible pour l\'instant')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="#1A6BFF">
-            <path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/>
-          </svg>
-          Facebook
-        </button>
+
+        <div class="otp-actions">
+          <a href="#" onclick="resendOTP();return false;">🔄 Renvoyer le code</a>
+          <span>|</span>
+          <a href="#" onclick="backToLogin();return false;">← Retour</a>
+        </div>
       </div>
 
-      <div class="feature-pills">
-        <div class="pill"><div class="pill-dot"></div>Sans carte bancaire</div>
-        <div class="pill"><div class="pill-dot"></div>Gratuit pour démarrer</div>
-        <div class="pill"><div class="pill-dot"></div>Paiement à la livraison</div>
+      <!-- Séparateur et social (masqués pendant OTP) -->
+      <div id="social-section">
+        <div class="divider">ou continuer avec</div>
+        <div class="social-btns">
+          <button class="btn-social" onclick="showError('Google non disponible pour l\'instant')">
+            <svg width="15" height="15" viewBox="0 0 24 24">
+              <path fill="#1A6BFF" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#3D87FF" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#6AABFF" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#A8CCFF" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Google
+          </button>
+          <button class="btn-social" onclick="showError('Facebook non disponible pour l\'instant')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="#1A6BFF">
+              <path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/>
+            </svg>
+            Facebook
+          </button>
+        </div>
+        <div class="feature-pills">
+          <div class="pill"><div class="pill-dot"></div>Sans carte bancaire</div>
+          <div class="pill"><div class="pill-dot"></div>Gratuit pour démarrer</div>
+          <div class="pill"><div class="pill-dot"></div>Paiement à la livraison</div>
+        </div>
       </div>
 
       <p class="terms-text" id="terms-p" style="display:none">
