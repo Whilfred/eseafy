@@ -39,5 +39,34 @@ app.put('/api/boutique/pixels', require('./middleware/auth'), async (req, res) =
   }
 });
 
+const bcrypt = require('bcryptjs');
+
+app.put('/api/profil', require('./middleware/auth'), async (req, res) => {
+  const { nom, prenom, telephone } = req.body;
+  const pool = require('./config/db');
+  try {
+    const result = await pool.query(
+      `UPDATE users SET nom=$1, prenom=$2, telephone=$3, updated_at=NOW() WHERE id=$4 RETURNING id, email, nom, prenom, telephone, plan`,
+      [nom||null, prenom||null, telephone||null, req.user.id]
+    );
+    return res.json({ message: 'Profil mis à jour.', user: result.rows[0] });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
+app.put('/api/profil/password', require('./middleware/auth'), async (req, res) => {
+  const { password } = req.body;
+  const pool = require('./config/db');
+  if (!password || password.length < 6) return res.status(400).json({ message: 'Mot de passe trop court (min 6 caractères).' });
+  try {
+    const hashed = await bcrypt.hash(password, 12);
+    await pool.query(`UPDATE users SET password=$1, updated_at=NOW() WHERE id=$2`, [hashed, req.user.id]);
+    return res.json({ message: 'Mot de passe mis à jour.' });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`));
