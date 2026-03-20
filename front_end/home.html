@@ -709,14 +709,17 @@ async function loadProduits(filtre = 'tous') {
           <span class="pt-val">${typeHtml}</span>
           <span class="pt-val" style="font-weight:600">${Number(p.prix).toLocaleString('fr-FR')} XOF</span>
           <span>${statutHtml}</span>
-          <div class="pt-actions">
-            <button class="icon-btn" title="Copier lien" onclick="copyLien('${p.slug}')">
-              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-            </button>
-            <button class="icon-btn" title="Supprimer" onclick="deleteProduit(${p.id}, this)">
-              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-            </button>
-          </div>
+<div class="pt-actions">
+  <button class="icon-btn" title="Modifier" onclick="editProduit(${p.id})">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  </button>
+  <button class="icon-btn" title="Copier lien" onclick="copyLien('${p.slug}')">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+  </button>
+  <button class="icon-btn" title="Supprimer" onclick="deleteProduit(${p.id}, this)">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+  </button>
+</div>
         </div>`;
     });
   } catch (err) {
@@ -1108,6 +1111,140 @@ function searchClients(val) {
   rows.forEach(row => {
     row.style.display = row.textContent.toLowerCase().includes(val.toLowerCase()) ? '' : 'none';
   });
+}
+
+// ══ ÉDITER UN PRODUIT ══
+async function editProduit(id) {
+  console.log('✏️ Édition produit id :', id);
+  editingProduitId = id;
+
+  try {
+    const res  = await fetch(`${API_URL}/produits/${id}`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!res.ok) { alert('❌ Produit introuvable'); return; }
+
+    const p = data.produit;
+
+    // Aller sur le formulaire
+    productType = p.type;
+    navigate('nouveau-produit');
+    startCreation(p.type);
+
+    // Pré-remplir après un court délai
+    setTimeout(() => {
+      document.getElementById('pName').value          = p.nom || '';
+      document.getElementById('editorBody').innerHTML = p.description || '';
+      document.getElementById('prixInput').value      = p.prix || '';
+      document.getElementById('prixBarreInput').value = p.prix_barre || '';
+      document.getElementById('seoTitle').value       = p.seo_titre || '';
+      document.getElementById('seoDescInp').value     = p.seo_desc || '';
+
+      // Catégorie
+      const sel = document.getElementById('catSelect');
+      Array.from(sel.options).forEach(opt => {
+        if (opt.text === p.categorie) opt.selected = true;
+      });
+
+      // Tags
+      if (p.tags && p.tags.length > 0) {
+        const tgInp = document.getElementById('tgInp');
+        p.tags.forEach(tag => {
+          const chip = document.createElement('span');
+          chip.className = 'chip';
+          chip.innerHTML = tag + ' <button onclick="this.parentElement.remove()">×</button>';
+          tgInp.before(chip);
+        });
+      }
+
+      // Statut toggle
+      const toggle = document.getElementById('visibleToggle');
+      if (p.visible) toggle.classList.add('on');
+      else toggle.classList.remove('on');
+
+      // Changer le bouton publier
+      const publishBtn = document.getElementById('publishBtn');
+      publishBtn.innerHTML = '💾 Mettre à jour';
+      publishBtn.onclick   = () => updateProduit(publishBtn);
+
+      // Changer le titre
+      document.getElementById('topCrumb').innerHTML =
+        '<strong>Ma boutique</strong> &nbsp;/&nbsp; Modifier le produit';
+
+      updateSEO();
+      console.log('✅ Formulaire pré-rempli pour :', p.nom);
+    }, 300);
+
+  } catch (err) {
+    console.error('❌ Erreur editProduit :', err);
+  }
+}
+
+// ══ METTRE À JOUR UN PRODUIT ══
+async function updateProduit(btn) {
+  const nom         = document.getElementById('pName').value.trim();
+  const description = document.getElementById('editorBody')?.innerHTML || '';
+  const categorie   = document.getElementById('catSelect').value;
+  const prix        = parseFloat(document.getElementById('prixInput')?.value);
+  const prix_barre  = parseFloat(document.getElementById('prixBarreInput')?.value) || null;
+  const seo_titre   = document.getElementById('seoTitle')?.value   || '';
+  const seo_desc    = document.getElementById('seoDescInp')?.value || '';
+  const visible     = document.getElementById('visibleToggle')?.classList.contains('on') ?? true;
+  const statut      = visible ? 'publie' : 'brouillon';
+  const tags        = Array.from(document.querySelectorAll('.chip')).map(c => c.textContent.replace('×','').trim()).filter(Boolean);
+
+  if (!nom)          { alert('Veuillez saisir un nom.'); goStep(2); return; }
+  if (!prix||prix<=0){ alert('Veuillez saisir un prix valide.'); goStep(4); return; }
+
+  btn.disabled  = true;
+  btn.innerHTML = '⏳ Mise à jour…';
+
+  // Upload nouvelles images si sélectionnées
+  let imageUrls = [];
+  if (selectedFiles.length > 0) {
+    const formData = new FormData();
+    selectedFiles.forEach(file => formData.append('images', file));
+    try {
+      const uploadRes  = await fetch(`${API_URL}/upload/images`, {
+        method:  'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body:    formData
+      });
+      const uploadData = await uploadRes.json();
+      if (uploadRes.ok) imageUrls = uploadData.urls;
+    } catch (err) {
+      console.warn('⚠️ Upload échoué :', err);
+    }
+  }
+
+  try {
+    const body = { nom, description, prix, prix_barre, categorie, tags, statut, visible, seo_titre, seo_desc };
+    if (imageUrls.length > 0) body.images = imageUrls;
+
+    const res  = await fetch(`${API_URL}/produits/${editingProduitId}`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify(body)
+    });
+    const data = await res.json();
+    console.log('💾 Mise à jour :', data);
+
+    if (res.ok) {
+      btn.innerHTML    = '✅ Mis à jour !';
+      editingProduitId = null;
+      setTimeout(() => navigate('produits'), 1000);
+    } else {
+      alert('❌ ' + data.message);
+      btn.disabled  = false;
+      btn.innerHTML = '💾 Mettre à jour';
+    }
+  } catch (err) {
+    console.error('❌', err);
+    alert('Erreur serveur.');
+    btn.disabled  = false;
+    btn.innerHTML = '💾 Mettre à jour';
+  }
 }
 
 // ══ DÉMARRAGE ══
