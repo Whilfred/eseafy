@@ -25,12 +25,11 @@ router.get('/', auth, async (req, res) => {
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
 });
-
 // ══════════════════════════════════════
 //  POST /api/commandes — PUBLIC (client)
 // ══════════════════════════════════════
 router.post('/', async (req, res) => {
-  const { produit_id, nom_client, email_client, telephone, adresse, quantite = 1, code_promo, prix_final } = req.body;
+  const { produit_id, nom_client, email_client, telephone, adresse, quantite = 1, code_promo, prix_final, ref_affilie } = req.body;
 
   if (!produit_id || !nom_client) {
     return res.status(400).json({ message: 'Produit et nom client requis.' });
@@ -78,6 +77,16 @@ router.post('/', async (req, res) => {
         [code_promo.toUpperCase(), produit.boutique_id]
       );
       console.log('🎟 Code promo utilisé :', code_promo);
+    }
+
+    // Mettre à jour l'affilié si code présent
+    if (ref_affilie) {
+      await pool.query(
+        `UPDATE affilies SET nb_ventes = nb_ventes + 1, total_ventes = total_ventes + $1
+         WHERE code = $2 AND boutique_id = $3 AND actif = true`,
+        [total, ref_affilie.toUpperCase(), produit.boutique_id]
+      );
+      console.log('🤝 Affilié mis à jour :', ref_affilie);
     }
 
     console.log(`✅ Commande : ${reference} | ${total} XOF | ${nom_client}`);
