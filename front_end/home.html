@@ -420,18 +420,98 @@
   </div>
 </div>
 
-    <!-- MARKETING -->
-    <div class="page-view" id="page-marketing">
-      <div class="marketing-wrap">
-        <div class="page-header"><div><h1>Marketing</h1></div></div>
-        <div class="mkt-grid">
-          <div class="mkt-card"><div class="mkt-icon" style="background:var(--accent-light)">🎟</div><div class="mkt-title">Codes promo</div><div class="mkt-desc">Créez des codes de réduction pour vos clients.</div></div>
-          <div class="mkt-card"><div class="mkt-icon" style="background:#e8f5e9">📧</div><div class="mkt-title">Email marketing</div><div class="mkt-desc">Envoyez des campagnes email ciblées.</div></div>
-          <div class="mkt-card"><div class="mkt-icon" style="background:#e3f2fd">📱</div><div class="mkt-title">Réseaux sociaux</div><div class="mkt-desc">Générez des visuels pour Facebook, Instagram.</div></div>
-          <div class="mkt-card"><div class="mkt-icon" style="background:#f3e5f5">📊</div><div class="mkt-title">Pixels & Tracking</div><div class="mkt-desc">Intégrez Facebook Pixel et Google Analytics.</div></div>
+<!-- MARKETING -->
+<div class="page-view" id="page-marketing">
+  <div class="marketing-wrap">
+    <div class="page-header"><div><h1>Marketing</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Boostez vos ventes</p></div></div>
+
+    <!-- Onglets -->
+    <div style="display:flex;gap:12px;margin-bottom:28px;">
+      <button class="btn-primary" id="mktTabPromo"   onclick="showMktTab('promo')"   style="background:var(--black);">🎟 Codes promo</button>
+      <button class="btn-primary" id="mktTabPixels"  onclick="showMktTab('pixels')"  style="background:var(--gray-400);">📊 Pixels & Tracking</button>
+    </div>
+
+    <!-- ── Tab Codes Promo ── -->
+    <div id="mktPanelPromo">
+
+      <!-- Formulaire création -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-head"><div><h2>Créer un code promo</h2></div></div>
+        <div class="card-body-p">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="fg">
+              <label class="lbl">Code <span class="req">*</span></label>
+              <input class="inp" type="text" id="promoCode" placeholder="Ex : NOEL20" style="text-transform:uppercase;" />
+            </div>
+            <div class="fg">
+              <label class="lbl">Type <span class="req">*</span></label>
+              <select class="sel" id="promoType">
+                <option value="pourcentage">Pourcentage (%)</option>
+                <option value="montant_fixe">Montant fixe (XOF)</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="lbl">Valeur <span class="req">*</span></label>
+              <input class="inp" type="number" id="promoValeur" placeholder="Ex : 20" min="1" />
+            </div>
+            <div class="fg">
+              <label class="lbl">Montant minimum commande</label>
+              <input class="inp" type="number" id="promoMin" placeholder="Ex : 5000" min="0" />
+            </div>
+            <div class="fg">
+              <label class="lbl">Nb utilisations max</label>
+              <input class="inp" type="number" id="promoMax" placeholder="Illimité" min="1" />
+            </div>
+            <div class="fg">
+              <label class="lbl">Expire le</label>
+              <input class="inp" type="datetime-local" id="promoExpire" />
+            </div>
+          </div>
+          <div id="promoError" style="display:none;background:#f8d7da;border:1px solid #f5c6cb;border-radius:8px;padding:10px 14px;font-size:13px;color:#721c24;margin-top:8px;"></div>
+          <button class="btn-primary" onclick="creerCodePromo(this)" style="margin-top:8px;">
+            ➕ Créer le code promo
+          </button>
+        </div>
+      </div>
+
+      <!-- Liste des codes -->
+      <div class="card">
+        <div class="card-head"><div><h2>Mes codes promo</h2></div></div>
+        <div id="promoList" style="padding:8px 0;">
+          <div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Chargement…</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Tab Pixels ── -->
+    <div id="mktPanelPixels" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head"><div><h2>Facebook Pixel</h2></div></div>
+        <div class="card-body-p">
+          <p style="font-size:13px;color:var(--gray-600);margin-bottom:12px;">Collez votre Pixel ID Facebook pour tracker les conversions sur votre boutique.</p>
+          <div class="fg">
+            <label class="lbl">Facebook Pixel ID</label>
+            <input class="inp" type="text" id="fbPixelId" placeholder="Ex : 1234567890123456" />
+          </div>
+          <button class="btn-primary" onclick="savePixel('facebook')" style="margin-top:4px;">💾 Sauvegarder</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>Google Analytics</h2></div></div>
+        <div class="card-body-p">
+          <p style="font-size:13px;color:var(--gray-600);margin-bottom:12px;">Collez votre ID de mesure Google Analytics (GA4).</p>
+          <div class="fg">
+            <label class="lbl">Google Analytics ID</label>
+            <input class="inp" type="text" id="gaId" placeholder="Ex : G-XXXXXXXXXX" />
+          </div>
+          <button class="btn-primary" onclick="savePixel('google')" style="margin-top:4px;">💾 Sauvegarder</button>
         </div>
       </div>
     </div>
+
+  </div>
+</div>
 
     <!-- AFFILIATION -->
     <div class="page-view" id="page-affiliation">
@@ -685,6 +765,7 @@ function navigate(page) {
     if (page === 'ventes')  loadVentes();
     if (page === 'clients') loadClients();
     if (page === 'analytiques') loadAnalytics();
+    if (page === 'marketing') loadCodesPromo();
   }
   currentPage = page;
   window.scrollTo({ top: 0 });
@@ -1366,6 +1447,112 @@ async function loadAnalytics() {
     console.error('❌ Erreur analytics :', err);
   }
 }
+
+// ══ MARKETING TABS ══
+function showMktTab(tab) {
+  document.getElementById('mktPanelPromo').style.display  = tab === 'promo'  ? 'block' : 'none';
+  document.getElementById('mktPanelPixels').style.display = tab === 'pixels' ? 'block' : 'none';
+  document.getElementById('mktTabPromo').style.background  = tab === 'promo'  ? 'var(--black)' : 'var(--gray-400)';
+  document.getElementById('mktTabPixels').style.background = tab === 'pixels' ? 'var(--black)' : 'var(--gray-400)';
+}
+
+// ══ CHARGER LES CODES PROMO ══
+async function loadCodesPromo() {
+  const list = document.getElementById('promoList');
+  if (!list) return;
+  try {
+    const res  = await fetch(`${API_URL}/promo`, { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!res.ok || data.codes.length === 0) {
+      list.innerHTML = `<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Aucun code promo. Créez-en un !</div>`;
+      return;
+    }
+    list.innerHTML = data.codes.map(c => {
+      const valeur  = c.type === 'pourcentage' ? `${c.valeur}%` : `${Number(c.valeur).toLocaleString('fr-FR')} XOF`;
+      const expire  = c.expire_le ? new Date(c.expire_le).toLocaleDateString('fr-FR') : 'Sans limite';
+      const statut  = c.actif ? '<span class="badge green">Actif</span>' : '<span class="badge gray">Inactif</span>';
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid var(--gray-100);">
+          <div style="flex:1;">
+            <div style="font-family:monospace;font-size:15px;font-weight:700;color:var(--black);">${c.code}</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">
+              ${valeur} de réduction · Min : ${Number(c.min_commande).toLocaleString('fr-FR')} XOF · Expire : ${expire} · ${c.nb_utilisations} utilisation(s)
+            </div>
+          </div>
+          ${statut}
+          <button class="icon-btn" onclick="togglePromo(${c.id})" title="${c.actif ? 'Désactiver' : 'Activer'}">
+            ${c.actif ? '⏸' : '▶'}
+          </button>
+          <button class="icon-btn" onclick="deletePromo(${c.id}, this)" title="Supprimer">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          </button>
+        </div>`;
+    }).join('');
+  } catch (err) {
+    console.error('❌ Erreur codes promo :', err);
+  }
+}
+
+// ══ CRÉER UN CODE PROMO ══
+async function creerCodePromo(btn) {
+  const code     = document.getElementById('promoCode').value.trim().toUpperCase();
+  const type     = document.getElementById('promoType').value;
+  const valeur   = parseFloat(document.getElementById('promoValeur').value);
+  const min      = parseFloat(document.getElementById('promoMin').value)   || 0;
+  const max      = parseInt(document.getElementById('promoMax').value)     || null;
+  const expire   = document.getElementById('promoExpire').value            || null;
+  const errBox   = document.getElementById('promoError');
+
+  errBox.style.display = 'none';
+  if (!code)   { errBox.textContent = 'Veuillez saisir un code.';  errBox.style.display='block'; return; }
+  if (!valeur) { errBox.textContent = 'Veuillez saisir une valeur.'; errBox.style.display='block'; return; }
+
+  btn.disabled = true; btn.textContent = '⏳ Création…';
+
+  try {
+    const res  = await fetch(`${API_URL}/promo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ code, type, valeur, min_commande: min, max_utilisations: max, expire_le: expire })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      // Reset formulaire
+      ['promoCode','promoValeur','promoMin','promoMax','promoExpire'].forEach(id => document.getElementById(id).value = '');
+      loadCodesPromo();
+    } else {
+      errBox.textContent   = '❌ ' + data.message;
+      errBox.style.display = 'block';
+    }
+  } catch (err) {
+    errBox.textContent   = 'Erreur serveur.';
+    errBox.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = '➕ Créer le code promo';
+  }
+}
+
+// ══ TOGGLE PROMO ══
+async function togglePromo(id) {
+  await fetch(`${API_URL}/promo/${id}/toggle`, { method:'PUT', headers:{'Authorization':'Bearer '+token} });
+  loadCodesPromo();
+}
+
+// ══ SUPPRIMER PROMO ══
+async function deletePromo(id, btn) {
+  if (!confirm('Supprimer ce code promo ?')) return;
+  await fetch(`${API_URL}/promo/${id}`, { method:'DELETE', headers:{'Authorization':'Bearer '+token} });
+  loadCodesPromo();
+}
+
+// ══ PIXELS ══
+function savePixel(type) {
+  const val = document.getElementById(type === 'facebook' ? 'fbPixelId' : 'gaId').value.trim();
+  if (!val) { alert('Veuillez saisir un ID.'); return; }
+  localStorage.setItem(`pixel_${type}`, val);
+  alert(`✅ ${type === 'facebook' ? 'Facebook Pixel' : 'Google Analytics'} sauvegardé : ${val}`);
+}
+
 
 // ══ DÉMARRAGE ══
 loadUserInfo();
