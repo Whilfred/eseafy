@@ -1985,11 +1985,117 @@ async function savePaymentSettings(btn) {
   setTimeout(() => msgEl.style.display = 'none', 3000);
 }
 
+// ══ NOTIFICATIONS TEMPS RÉEL ══
+let notifEventSource = null;
+let notifCount = 0;
+
+function connectNotifications() {
+  if (notifEventSource) notifEventSource.close();
+
+  notifEventSource = new EventSource(`${API_URL}/notifications/stream?token=${token}`);
+
+  notifEventSource.addEventListener('notification', (e) => {
+    const data = JSON.parse(e.data);
+    console.log('🔔 Notification reçue :', data);
+
+    if (data.type === 'nouvelle_commande') {
+      notifCount++;
+      afficherNotif(data);
+      updateNotifBadge();
+
+      // Rafraîchir les stats si on est sur l'accueil
+      if (currentPage === 'accueil') loadDashboardStats();
+      if (currentPage === 'ventes')  loadVentes();
+    }
+  });
+
+  notifEventSource.addEventListener('ping', () => {
+    console.log('🏓 Ping serveur reçu');
+  });
+
+  notifEventSource.onerror = () => {
+    console.warn('⚠️ Connexion notifications perdue, reconnexion dans 5s…');
+    notifEventSource.close();
+    setTimeout(connectNotifications, 5000);
+  };
+
+  console.log('🔔 Connexion notifications établie');
+}
+
+function afficherNotif(data) {
+  // Créer le toast
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position:fixed; bottom:24px; right:24px; z-index:9999;
+    background:var(--black); color:var(--white);
+    padding:16px 20px; border-radius:14px;
+    box-shadow:0 8px 32px rgba(0,0,0,.25);
+    font-family:'DM Sans',sans-serif; font-size:13px;
+    display:flex; align-items:center; gap:12px;
+    animation:slideIn .3s ease; max-width:340px;
+    border-left:4px solid #22c55e;
+  `;
+  toast.innerHTML = `
+    <div style="font-size:24px;">🛒</div>
+    <div>
+      <div style="font-weight:600;margin-bottom:2px;">Nouvelle commande !</div>
+      <div style="color:rgba(255,255,255,.7);font-size:12px;">${data.client} · ${Number(data.montant).toLocaleString('fr-FR')} XOF</div>
+      <div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:2px;">${data.produit} · #${data.reference}</div>
+    </div>
+    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:16px;margin-left:auto;">×</button>
+  `;
+
+  // Ajouter l'animation CSS
+  if (!document.getElementById('notifStyle')) {
+    const style = document.createElement('style');
+    style.id = 'notifStyle';
+    style.textContent = `
+      @keyframes slideIn { from { transform:translateX(120%); opacity:0; } to { transform:none; opacity:1; } }
+    `;
+    document.head.appendChild(style);
+  }
+
+  document.body.appendChild(toast);
+
+  // Supprimer après 6 secondes
+  setTimeout(() => toast.remove(), 6000);
+
+  // Son de notification (optionnel)
+  try {
+    const ctx  = new AudioContext();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(); osc.stop(ctx.currentTime + 0.3);
+  } catch(e) {}
+}
+
+function updateNotifBadge() {
+  let badge = document.getElementById('notifBadge');
+  if (!badge) {
+    const nav = document.getElementById('nav-ventes');
+    if (nav) {
+      badge = document.createElement('span');
+      badge.id = 'notifBadge';
+      badge.style.cssText = `
+        background:#ef4444; color:white; font-size:10px; font-weight:700;
+        padding:1px 6px; border-radius:20px; margin-left:6px;
+      `;
+      nav.appendChild(badge);
+    }
+  }
+  if (badge) badge.textContent = notifCount;
+}
+
 // ══ DÉMARRAGE ══
 loadUserInfo();
 initFilters();
 navigate('accueil');
 loadDashboardStats(); // ← ajoute cette ligne
+connectNotifications(); // ← ajoute cette ligne
 console.log('🚀 Dashboard eseafy prêt');
 </script>
 </body>
