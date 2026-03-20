@@ -385,18 +385,41 @@
       </div>
     </div>
 
-    <!-- ANALYTIQUES -->
-    <div class="page-view" id="page-analytiques">
-      <div class="analytics-wrap">
-        <div class="page-header"><div><h1>Analytiques</h1></div></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-label">Visiteurs</div><div class="kpi-val">1 240</div><div class="kpi-delta up">↑ +18%</div></div>
-          <div class="kpi"><div class="kpi-label">Pages vues</div><div class="kpi-val">4 870</div><div class="kpi-delta up">↑ +9%</div></div>
-          <div class="kpi"><div class="kpi-label">Taux de rebond</div><div class="kpi-val">42%</div><div class="kpi-delta down">↑ +3%</div></div>
-          <div class="kpi"><div class="kpi-label">Durée moyenne</div><div class="kpi-val">2m 34s</div><div class="kpi-delta up">↑ +12s</div></div>
+<!-- ANALYTIQUES -->
+<div class="page-view" id="page-analytiques">
+  <div class="analytics-wrap">
+    <div class="page-header"><div><h1>Analytiques</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Trafic et performances de votre boutique</p></div></div>
+
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-label">Visiteurs uniques</div><div class="kpi-val" id="anaVisiteurs">—</div><div class="kpi-delta" id="anaVisiteursDelta"></div></div>
+      <div class="kpi"><div class="kpi-label">Pages vues ce mois</div><div class="kpi-val" id="anaPagesvues">—</div><div class="kpi-delta" id="anaPagesvuesDelta"></div></div>
+      <div class="kpi"><div class="kpi-label">Vues produits</div><div class="kpi-val" id="anaVuesProduits">—</div><div class="kpi-delta" id="anaVuesProduitsD"></div></div>
+      <div class="kpi"><div class="kpi-label">Taux de conversion</div><div class="kpi-val" id="anaTaux">—</div><div class="kpi-delta" id="anaTauxDelta"></div></div>
+    </div>
+
+    <!-- Graphe visites -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-head"><div><h2>Visites — 30 derniers jours</h2></div></div>
+      <div class="card-body">
+        <div class="chart-placeholder" style="height:200px;align-items:flex-end;padding:16px 8px 0;">
+          <div class="chart-bars" id="anaGraph" style="width:100%;height:160px;">
+            <div style="color:var(--gray-400);font-size:13px;width:100%;text-align:center;padding-top:60px;">Chargement…</div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Top produits vus -->
+    <div class="card">
+      <div class="card-head"><div><h2>Produits les plus vus</h2></div></div>
+      <div class="card-body" style="padding:8px 16px;">
+        <div id="anaTopProduits" style="color:var(--gray-400);font-size:13px;padding:20px 0;text-align:center;">Chargement…</div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
     <!-- MARKETING -->
     <div class="page-view" id="page-marketing">
@@ -662,6 +685,7 @@ function navigate(page) {
     if (page === 'accueil') loadDashboardStats();
     if (page === 'ventes')  loadVentes();
     if (page === 'clients') loadClients();
+    if (page === 'analytiques') loadAnalytics();
   }
   currentPage = page;
   window.scrollTo({ top: 0 });
@@ -1244,6 +1268,60 @@ async function updateProduit(btn) {
     alert('Erreur serveur.');
     btn.disabled  = false;
     btn.innerHTML = '💾 Mettre à jour';
+  }
+}
+
+// ══ CHARGER LES ANALYTICS ══
+async function loadAnalytics() {
+  console.log('📊 Chargement analytics…');
+  try {
+    const res  = await fetch(`${API_URL}/analytics/dashboard`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    console.log('📊 Analytics :', data);
+    if (!res.ok) return;
+
+    const k = data.kpis;
+
+    // KPIs
+    document.getElementById('anaVisiteurs').textContent     = k.visiteurs_uniques;
+    document.getElementById('anaVisiteursDelta').textContent = `${k.visites_totales} visites au total`;
+    document.getElementById('anaPagesvues').textContent      = k.visites_mois;
+    document.getElementById('anaPagesvuesDelta').textContent = 'ce mois';
+    document.getElementById('anaVuesProduits').textContent   = k.visites_produits;
+    document.getElementById('anaVuesProduitsD').textContent  = `${k.visites_boutique} vues boutique`;
+    document.getElementById('anaTaux').textContent           = k.taux_conversion + '%';
+    document.getElementById('anaTauxDelta').textContent      = 'commandes / vues produits';
+    document.getElementById('anaTauxDelta').className        = 'kpi-delta ' + (k.taux_conversion > 0 ? 'up' : '');
+
+    // Graphe
+    const graph = document.getElementById('anaGraph');
+    if (data.graph_visites.length > 0) {
+      const maxVal = Math.max(...data.graph_visites.map(r => parseInt(r.total)));
+      graph.innerHTML = data.graph_visites.map(r => {
+        const pct = maxVal > 0 ? Math.max(Math.round((parseInt(r.total) / maxVal) * 100), 5) : 10;
+        return `<div class="bar" style="height:${pct}%" title="${r.jour} : ${r.total} visite(s)"></div>`;
+      }).join('');
+    } else {
+      graph.innerHTML = `<div style="color:var(--gray-400);font-size:13px;width:100%;text-align:center;padding-top:60px;">Aucune visite pour l'instant. Partagez votre boutique !</div>`;
+    }
+
+    // Top produits
+    const topEl = document.getElementById('anaTopProduits');
+    if (data.top_produits.length > 0) {
+      topEl.innerHTML = data.top_produits.map((p, i) => `
+        <div class="recent-item">
+          <div class="ri-icon">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]}</div>
+          <div><div class="ri-name">${p.nom}</div><div class="ri-sub">${p.vues} vue(s)</div></div>
+          <div class="ri-price" style="font-size:13px;color:var(--gray-600);">${p.vues} 👁</div>
+        </div>`).join('');
+    } else {
+      topEl.innerHTML = `<div style="color:var(--gray-400);font-size:13px;padding:20px 0;">Aucune visite produit enregistrée.</div>`;
+    }
+
+  } catch (err) {
+    console.error('❌ Erreur analytics :', err);
   }
 }
 
