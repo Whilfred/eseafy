@@ -24,11 +24,8 @@
       --success:    #1c7a4a;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--black); min-height: 100vh; }
-
-    /* ══ NAV ══ */
     .nav {
-      background: var(--white);
-      border-bottom: 2px solid var(--blue-light);
+      background: var(--white); border-bottom: 2px solid var(--blue-light);
       padding: 0 40px; height: 58px;
       display: flex; align-items: center; justify-content: space-between;
       position: sticky; top: 0; z-index: 100;
@@ -39,153 +36,58 @@
     .nav-search {
       display: flex; align-items: center; gap: 8px;
       background: var(--blue-xlight); border: 1.5px solid var(--blue-light);
-      border-radius: 20px; padding: 8px 16px; width: 280px;
-      transition: border-color .15s;
+      border-radius: 20px; padding: 8px 16px; width: 280px; transition: border-color .15s;
     }
     .nav-search:focus-within { border-color: var(--blue); }
     .nav-search input { border: none; outline: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--black); flex: 1; }
     .nav-search input::placeholder { color: var(--gray-400); }
-
-    /* ══ HERO BOUTIQUE ══ */
     .boutique-hero {
       background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
-      padding: 56px 40px 64px;
-      text-align: center;
-      position: relative; overflow: hidden;
+      padding: 56px 40px 64px; text-align: center; position: relative; overflow: hidden;
     }
-    .boutique-hero::before {
-      content: ''; position: absolute;
-      top: -100px; right: -100px;
-      width: 400px; height: 400px; border-radius: 50%;
-      background: rgba(255,255,255,.05);
-    }
-    .boutique-hero::after {
-      content: ''; position: absolute;
-      bottom: -80px; left: -60px;
-      width: 280px; height: 280px; border-radius: 50%;
-      background: rgba(255,255,255,.04);
-    }
-    .hero-avatar {
-      width: 80px; height: 80px; border-radius: 20px;
-      background: rgba(255,255,255,.2); backdrop-filter: blur(10px);
-      border: 2px solid rgba(255,255,255,.3);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 36px; margin: 0 auto 16px;
-      position: relative; z-index: 1;
-    }
-    .hero-name { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--white); margin-bottom: 8px; position: relative; z-index: 1; }
+    .boutique-hero::before { content: ''; position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; border-radius: 50%; background: rgba(255,255,255,.05); }
+    .boutique-hero::after  { content: ''; position: absolute; bottom: -80px; left: -60px;  width: 280px; height: 280px; border-radius: 50%; background: rgba(255,255,255,.04); }
+    .hero-avatar { width: 80px; height: 80px; border-radius: 20px; background: rgba(255,255,255,.2); backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,.3); display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 16px; position: relative; z-index: 1; }
+    .hero-name   { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--white); margin-bottom: 8px; position: relative; z-index: 1; }
     .hero-seller { font-size: 14px; color: rgba(255,255,255,.7); margin-bottom: 20px; position: relative; z-index: 1; }
-    .hero-stats {
-      display: flex; align-items: center; justify-content: center; gap: 32px;
-      position: relative; z-index: 1;
-    }
-    .hero-stat { text-align: center; }
+    .hero-stats  { display: flex; align-items: center; justify-content: center; gap: 32px; position: relative; z-index: 1; }
+    .hero-stat   { text-align: center; }
     .hero-stat-val { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--white); }
     .hero-stat-lbl { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 2px; }
     .hero-stat-sep { width: 1px; height: 36px; background: rgba(255,255,255,.2); }
-
-    /* ══ FILTRES ══ */
-    .filters-section {
-      background: var(--white);
-      border-bottom: 1px solid var(--blue-light);
-      padding: 16px 40px;
-      display: flex; align-items: center; gap: 10px;
-      flex-wrap: wrap;
-    }
-    .filter-chip {
-      padding: 7px 16px; border-radius: 20px;
-      border: 1.5px solid var(--blue-light);
-      background: var(--blue-xlight); color: var(--blue);
-      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
-      cursor: pointer; transition: all .15s;
-    }
-    .filter-chip:hover { border-color: var(--blue); background: var(--blue-light); }
+    .filters-section { background: var(--white); border-bottom: 1px solid var(--blue-light); padding: 16px 40px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .filter-chip { padding: 7px 16px; border-radius: 20px; border: 1.5px solid var(--blue-light); background: var(--blue-xlight); color: var(--blue); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; }
+    .filter-chip:hover  { border-color: var(--blue); background: var(--blue-light); }
     .filter-chip.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
-
-    /* ══ PRODUITS ══ */
-    .container { max-width: 1200px; margin: 0 auto; padding: 40px 32px 80px; }
-    .section-title {
-      font-family: 'DM Serif Display', serif; font-size: 22px;
-      margin-bottom: 24px; display: flex; align-items: center; gap: 10px;
-    }
-    .section-count {
-      font-family: 'DM Sans', sans-serif; font-size: 13px;
-      color: var(--gray-400); font-weight: 400;
-    }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
-    }
-
-    .product-card {
-      background: var(--white);
-      border: 1px solid var(--blue-light);
-      border-radius: 16px; overflow: hidden;
-      cursor: pointer; transition: all .22s;
-      text-decoration: none; color: var(--black);
-      display: flex; flex-direction: column;
-    }
-    .product-card:hover {
-      border-color: var(--blue);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(26,107,255,.15);
-    }
-    .product-img {
-      width: 100%; aspect-ratio: 1;
-      background: var(--blue-xlight);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 56px; overflow: hidden;
-      position: relative;
-    }
+    .container    { max-width: 1200px; margin: 0 auto; padding: 40px 32px 80px; }
+    .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+    .section-count { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--gray-400); font-weight: 400; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .product-card  { background: var(--white); border: 1px solid var(--blue-light); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all .22s; text-decoration: none; color: var(--black); display: flex; flex-direction: column; }
+    .product-card:hover { border-color: var(--blue); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(26,107,255,.15); }
+    .product-img   { width: 100%; aspect-ratio: 1; background: var(--blue-xlight); display: flex; align-items: center; justify-content: center; font-size: 56px; overflow: hidden; position: relative; }
     .product-img img { width: 100%; height: 100%; object-fit: cover; }
-    .product-type-badge {
-      position: absolute; top: 10px; left: 10px;
-      font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
-      background: rgba(255,255,255,.9); backdrop-filter: blur(4px);
-    }
+    .product-type-badge { position: absolute; top: 10px; left: 10px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: rgba(255,255,255,.9); backdrop-filter: blur(4px); }
     .product-type-badge.digital  { color: var(--blue); }
     .product-type-badge.physical { color: var(--gray-600); }
-
-    .product-info { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
-    .product-cat  { font-size: 11.5px; color: var(--blue); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
-    .product-name { font-family: 'DM Serif Display', serif; font-size: 17px; line-height: 1.3; }
+    .product-info  { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .product-cat   { font-size: 11.5px; color: var(--blue); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+    .product-name  { font-family: 'DM Serif Display', serif; font-size: 17px; line-height: 1.3; }
     .product-price-row { display: flex; align-items: baseline; gap: 8px; margin-top: auto; padding-top: 10px; }
     .product-price     { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--black); }
     .product-price-cur { font-size: 12px; color: var(--gray-400); }
     .product-price-old { font-size: 13px; color: var(--gray-400); text-decoration: line-through; }
-    .product-price-disc {
-      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
-      background: var(--blue-light); color: var(--blue); margin-left: auto;
-    }
-
-    .btn-commander {
-      margin: 0 16px 16px;
-      padding: 12px; border-radius: 10px;
-      background: var(--blue-light); color: var(--blue);
-      border: 1.5px solid rgba(26,107,255,.2);
-      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: all .2s; text-align: center;
-      display: block; text-decoration: none;
-    }
+    .product-price-disc { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: var(--blue-light); color: var(--blue); margin-left: auto; }
+    .btn-commander { margin: 0 16px 16px; padding: 12px; border-radius: 10px; background: var(--blue-light); color: var(--blue); border: 1.5px solid rgba(26,107,255,.2); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; text-align: center; display: block; text-decoration: none; }
     .btn-commander:hover { background: var(--blue); color: var(--white); border-color: var(--blue); }
-
-    /* Loading / Empty / Error */
     .loading { display: flex; align-items: center; justify-content: center; min-height: 300px; flex-direction: column; gap: 14px; }
     .spinner { width: 36px; height: 36px; border: 3px solid var(--blue-light); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .empty-state { text-align: center; padding: 60px 24px; }
     .empty-state h3 { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 8px; }
-    .empty-state p { color: var(--gray-600); font-size: 14px; }
-
-    /* ══ FOOTER ══ */
-    .page-footer {
-      background: var(--blue-dark); padding: 28px 40px;
-      text-align: center; font-size: 12.5px; color: rgba(255,255,255,.5);
-    }
+    .empty-state p  { color: var(--gray-600); font-size: 14px; }
+    .page-footer { background: var(--blue-dark); padding: 28px 40px; text-align: center; font-size: 12.5px; color: rgba(255,255,255,.5); }
     .page-footer a { color: rgba(255,255,255,.85); text-decoration: none; font-weight: 500; }
-
     @media (max-width: 600px) {
       .boutique-hero { padding: 40px 16px 48px; }
       .hero-name { font-size: 26px; }
@@ -223,31 +125,21 @@
 
 <!-- BOUTIQUE -->
 <div id="boutiqueView" style="display:none">
-
-  <!-- Hero -->
   <div class="boutique-hero">
     <div class="hero-avatar" id="heroAvatar">🏪</div>
     <h1 class="hero-name" id="heroName">Ma boutique</h1>
     <p class="hero-seller" id="heroSeller"></p>
     <div class="hero-stats" id="heroStats"></div>
   </div>
-
-  <!-- Filtres -->
   <div class="filters-section">
-    <button class="filter-chip active" data-type="tous" onclick="setFilter(this, 'tous')">Tous</button>
-    <button class="filter-chip" data-type="digital"  onclick="setFilter(this, 'digital')">📦 Digital</button>
-    <button class="filter-chip" data-type="physical" onclick="setFilter(this, 'physical')">🚚 Physique</button>
+    <button class="filter-chip active" data-type="tous"     onclick="setFilter(this, 'tous')">Tous</button>
+    <button class="filter-chip"        data-type="digital"  onclick="setFilter(this, 'digital')">📦 Digital</button>
+    <button class="filter-chip"        data-type="physical" onclick="setFilter(this, 'physical')">🚚 Physique</button>
   </div>
-
-  <!-- Produits -->
   <div class="container">
-    <div class="section-title">
-      Nos produits
-      <span class="section-count" id="produitsCount"></span>
-    </div>
+    <div class="section-title">Nos produits <span class="section-count" id="produitsCount"></span></div>
     <div class="products-grid" id="produitsGrid"></div>
   </div>
-
 </div>
 
 <!-- FOOTER -->
@@ -256,65 +148,57 @@
 </footer>
 
 <script>
-  const BASE_URL = 'http://localhost:3001';
-  let allProduits = [];
+  const BASE_URL  = 'http://localhost:3001';
+  let allProduits  = [];
   let boutiqueData = null;
 
-  // ══ SLUG DEPUIS URL ══
   function getSlugBoutique() {
     const parts = window.location.pathname.split('/').filter(Boolean);
-    return parts[1]; // /boutique/boutique-2 → boutique-2
+    return parts[1];
   }
 
-// ══ CHARGER LA BOUTIQUE ══
-async function loadBoutique() {
-  const slug = getSlugBoutique();
-  if (!slug) { showError(); return; }
+  async function loadBoutique() {
+    const slug = getSlugBoutique();
+    if (!slug) { showError(); return; }
 
-  try {
-    const res  = await fetch(`${BASE_URL}/boutique/${slug}`, {
-      headers: { 'Accept': 'application/json' }
-    });
-    const data = await res.json();
-    console.log('🏪 Boutique :', data);
+    try {
+      const res  = await fetch(`${BASE_URL}/boutique/${slug}`, { headers: { 'Accept': 'application/json' } });
+      const data = await res.json();
+      if (!res.ok || !data.boutique) { showError(); return; }
 
-    if (!res.ok || !data.boutique) { showError(); return; }
+      boutiqueData = data.boutique;
+      allProduits  = data.produits || [];
 
-    boutiqueData = data.boutique;
-    allProduits  = data.produits || [];
+      renderHero(boutiqueData, allProduits);
+      renderProduits(allProduits);
 
-    renderHero(boutiqueData, allProduits);
-    renderProduits(allProduits);
+      document.getElementById('loadingView').style.display  = 'none';
+      document.getElementById('boutiqueView').style.display = 'block';
 
-    document.getElementById('loadingView').style.display  = 'none';
-    document.getElementById('boutiqueView').style.display = 'block';
+      // Visite analytics
+      fetch(`${BASE_URL}/api/analytics/visite`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ boutique_slug: slug, type: 'boutique' })
+      });
 
-    // Enregistrer la visite boutique
-    fetch(`${BASE_URL}/api/analytics/visite`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ boutique_slug: slug, type: 'boutique' })
-    });
+      // Code affilié
+      const urlParams = new URLSearchParams(window.location.search);
+      const refCode   = urlParams.get('ref');
+      if (refCode) {
+        localStorage.setItem('ref_affilie', refCode.toUpperCase());
+        console.log('🤝 Code affilié :', refCode);
+      }
 
-    // Détecter et sauvegarder le code affilié
-    const urlParams = new URLSearchParams(window.location.search);
-    const refCode   = urlParams.get('ref');
-    if (refCode) {
-      localStorage.setItem('ref_affilie', refCode.toUpperCase());
-      console.log('🤝 Code affilié détecté :', refCode);
+    } catch (err) {
+      console.error('❌', err);
+      showError();
     }
-
-  } catch (err) {
-    console.error('❌', err);
-    showError();
   }
-}
 
-  // ══ HERO ══
   function renderHero(b, produits) {
     document.title = `${b.nom} — eseafy`;
-    document.getElementById('heroName').textContent   = b.nom;
-    document.getElementById('navInfo').textContent    = b.nom;
+    document.getElementById('heroName').textContent = b.nom;
+    document.getElementById('navInfo').textContent  = b.nom;
 
     const vendeur = [b.prenom, b.vendeur_nom].filter(Boolean).join(' ') || 'Vendeur';
     document.getElementById('heroSeller').innerHTML = `Par <strong style="color:rgba(255,255,255,.9)">${vendeur}</strong>`;
@@ -323,58 +207,38 @@ async function loadBoutique() {
     const nbPhysical = produits.filter(p => p.type === 'physical').length;
 
     document.getElementById('heroStats').innerHTML = `
-      <div class="hero-stat">
-        <div class="hero-stat-val">${produits.length}</div>
-        <div class="hero-stat-lbl">Produits</div>
-      </div>
+      <div class="hero-stat"><div class="hero-stat-val">${produits.length}</div><div class="hero-stat-lbl">Produits</div></div>
       <div class="hero-stat-sep"></div>
-      <div class="hero-stat">
-        <div class="hero-stat-val">${nbDigital}</div>
-        <div class="hero-stat-lbl">Digitaux</div>
-      </div>
+      <div class="hero-stat"><div class="hero-stat-val">${nbDigital}</div><div class="hero-stat-lbl">Digitaux</div></div>
       <div class="hero-stat-sep"></div>
-      <div class="hero-stat">
-        <div class="hero-stat-val">${nbPhysical}</div>
-        <div class="hero-stat-lbl">Physiques</div>
-      </div>`;
-    injecterPixels(b.fb_pixel_id, b.ga_id);
+      <div class="hero-stat"><div class="hero-stat-val">${nbPhysical}</div><div class="hero-stat-lbl">Physiques</div></div>`;
 
+    injecterPixels(b.fb_pixel_id, b.ga_id);
   }
 
-  // ══ AFFICHER LES PRODUITS ══
   function renderProduits(produits) {
     const grid  = document.getElementById('produitsGrid');
     const count = document.getElementById('produitsCount');
-
     count.textContent = `${produits.length} produit${produits.length > 1 ? 's' : ''}`;
     grid.innerHTML    = '';
 
     if (produits.length === 0) {
-      grid.innerHTML = `
-        <div class="empty-state" style="grid-column:1/-1;">
-          <div style="font-size:48px;margin-bottom:12px;">📦</div>
-          <h3>Aucun produit disponible</h3>
-          <p>Cette boutique n'a pas encore de produits publiés.</p>
-        </div>`;
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div style="font-size:48px;margin-bottom:12px;">📦</div><h3>Aucun produit disponible</h3><p>Cette boutique n'a pas encore de produits publiés.</p></div>`;
       return;
     }
 
     produits.forEach(p => {
-      const slug      = getSlugBoutique();
-      const lien      = `${BASE_URL}/boutique/${slug}/${p.slug}`;
-      const prix      = Number(p.prix).toLocaleString('fr-FR');
+      const slug     = getSlugBoutique();
+      const lien     = `${BASE_URL}/boutique/${slug}/${p.slug}`;
+      const prix     = Number(p.prix).toLocaleString('fr-FR');
       const isDigital = p.type === 'digital';
-      const emojis    = {'Ebooks':'📚','Formation':'🎓','Design':'🎨','Vêtements':'👗','Alimentation':'🍽','Électronique':'⚡','Beauté':'💄','Maison':'🏠','Artisanat':'🎨'};
-      const emoji     = Object.entries(emojis).find(([k]) => p.categorie?.includes(k))?.[1] || (isDigital ? '📦' : '🚚');
-      const discount  = p.prix_barre ? Math.round((1 - p.prix / p.prix_barre) * 100) : null;
-
-      // Image
-      const imgHtml = (p.images && p.images.length > 0)
-        ? `<img src="${BASE_URL}${p.images[0]}" alt="${p.nom}" />`
-        : emoji;
+      const emojis   = {'Ebooks':'📚','Formation':'🎓','Design':'🎨','Vêtements':'👗','Alimentation':'🍽','Électronique':'⚡','Beauté':'💄','Maison':'🏠','Artisanat':'🎨'};
+      const emoji    = Object.entries(emojis).find(([k]) => p.categorie?.includes(k))?.[1] || (isDigital ? '📦' : '🚚');
+      const discount = p.prix_barre ? Math.round((1 - p.prix / p.prix_barre) * 100) : null;
+      const imgHtml  = (p.images && p.images.length > 0) ? `<img src="${BASE_URL}${p.images[0]}" alt="${p.nom}" />` : emoji;
 
       grid.innerHTML += `
-        <div class="product-card" onclick="window.location.href='${lien}'">
+        <div class="product-card" onclick="window.location.href='${lien}'" data-track="product_card_${p.id}">
           <div class="product-img">
             ${imgHtml}
             <span class="product-type-badge ${p.type}">${isDigital ? '📦 Digital' : '🚚 Physique'}</span>
@@ -389,14 +253,11 @@ async function loadBoutique() {
               ${discount ? `<span class="product-price-disc">-${discount}%</span>` : ''}
             </div>
           </div>
-          <a class="btn-commander" href="${lien}" onclick="event.stopPropagation()">
-            🛒 Commander →
-          </a>
+          <a class="btn-commander" href="${lien}" onclick="event.stopPropagation()" data-track="btn_commander_${p.id}">🛒 Commander →</a>
         </div>`;
     });
   }
 
-  // ══ FILTRE TYPE ══
   function setFilter(btn, type) {
     document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -404,7 +265,6 @@ async function loadBoutique() {
     renderProduits(filtered);
   }
 
-  // ══ RECHERCHE ══
   function filterProduits(val) {
     const filtered = allProduits.filter(p =>
       p.nom.toLowerCase().includes(val.toLowerCase()) ||
@@ -417,43 +277,35 @@ async function loadBoutique() {
     document.getElementById('loadingView').style.display = 'none';
     document.getElementById('errorView').style.display  = 'block';
   }
+
   function injecterPixels(fb_pixel_id, ga_id) {
-  // Facebook Pixel
-  if (fb_pixel_id) {
-    const fbScript = document.createElement('script');
-    fbScript.innerHTML = `
-      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-      document,'script','https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '${fb_pixel_id}');
-      fbq('track', 'PageView');
-    `;
-    document.head.appendChild(fbScript);
-    console.log('📘 Facebook Pixel injecté :', fb_pixel_id);
+    if (fb_pixel_id) {
+      const fbScript = document.createElement('script');
+      fbScript.innerHTML = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${fb_pixel_id}');fbq('track','PageView');`;
+      document.head.appendChild(fbScript);
+    }
+    if (ga_id) {
+      const gaScript = document.createElement('script');
+      gaScript.src   = `https://www.googletagmanager.com/gtag/js?id=${ga_id}`;
+      gaScript.async = true;
+      document.head.appendChild(gaScript);
+      const gaInit = document.createElement('script');
+      gaInit.innerHTML = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga_id}');`;
+      document.head.appendChild(gaInit);
+    }
   }
-
-  // Google Analytics
-  if (ga_id) {
-    const gaScript = document.createElement('script');
-    gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${ga_id}`;
-    gaScript.async = true;
-    document.head.appendChild(gaScript);
-
-    const gaInit = document.createElement('script');
-    gaInit.innerHTML = `
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '${ga_id}');
-    `;
-    document.head.appendChild(gaInit);
-    console.log('📗 Google Analytics injecté :', ga_id);
-  }
-}
 
   loadBoutique();
 </script>
+
+<!-- ══ eseafy Tracker ══ -->
+<script src="/tracker.js"></script>
+<script>
+  EsfTracker.init({
+    boutique_slug: getSlugBoutique(),
+    page_type:     'boutique'
+  });
+</script>
+
 </body>
 </html>
