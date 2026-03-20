@@ -294,6 +294,12 @@
       showError();
     }
   }
+  // Enregistrer la visite boutique
+fetch(`${BASE_URL}/api/analytics/visite`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ boutique_slug: getSlugBoutique(), type: 'boutique' })
+});
 
   // ══ HERO ══
   function renderHero(b, produits) {

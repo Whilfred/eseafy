@@ -451,6 +451,13 @@
       showError();
     }
   }
+// Enregistrer la visite produit
+const { slugBoutique, slugProduit } = getSlugs();
+fetch(`${BASE_URL}/api/analytics/visite`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ boutique_slug: slugBoutique, produit_slug: slugProduit, type: 'produit' })
+});
 
   function renderProduit(p) {
     document.title = `${p.nom} — eseafy`;

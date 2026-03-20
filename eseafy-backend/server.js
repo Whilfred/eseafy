@@ -22,6 +22,7 @@ app.use('/api/upload',    require('./routes/upload'));
 
 // Routes publiques
 app.use('/boutique', require('./routes/boutique'));
+app.use('/api/analytics', require('./routes/analytics'));
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`));
