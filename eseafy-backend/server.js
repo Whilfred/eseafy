@@ -138,12 +138,33 @@ app.get('/api/notifications/stream', async (req, res) => {
   }
 });
 
+
 // Envoyer une notification à un utilisateur connecté
-app.locals.notifyUser = (userId, data) => {
+app.locals.notifyUser = async (userId, data) => {
+  // Envoyer via SSE
   const client = clients.get(parseInt(userId));
   if (client) {
     client.write(`event: notification\ndata: ${JSON.stringify(data)}\n\n`);
-    console.log(`🔔 Notification envoyée à user ${userId} :`, data);
+    console.log(`🔔 Notification SSE envoyée à user ${userId}`);
+  }
+
+  // Sauvegarder en DB
+  try {
+    const pool = require('./config/db');
+    const titreMap = {
+      nouvelle_commande: `Nouvelle commande — ${data.produit}`,
+    };
+    const messageMap = {
+      nouvelle_commande: `${data.client} vient d'acheter pour ${Number(data.montant).toLocaleString('fr-FR')} XOF · #${data.reference}`,
+    };
+    await pool.query(
+      `INSERT INTO notifications (user_id, type, titre, message, data)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [userId, data.type, titreMap[data.type] || 'Notification', messageMap[data.type] || '', JSON.stringify(data)]
+    );
+    console.log(`💾 Notification sauvegardée pour user ${userId}`);
+  } catch (err) {
+    console.error('Erreur sauvegarde notification :', err.message);
   }
 };
 
@@ -164,6 +185,40 @@ app.get('/api/suivi/:reference', async (req, res) => {
 
     if (result.rows.length === 0) return res.status(404).json({ message: 'Commande introuvable.' });
     return res.json({ commande: result.rows[0] });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
+// ══ NOTIFICATIONS ══
+app.get('/api/notifications', require('./middleware/auth'), async (req, res) => {
+  const pool = require('./config/db');
+  try {
+    const result = await pool.query(
+      `SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50`,
+      [req.user.id]
+    );
+    return res.json({ notifications: result.rows });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
+app.put('/api/notifications/lire-tout', require('./middleware/auth'), async (req, res) => {
+  const pool = require('./config/db');
+  try {
+    await pool.query(`UPDATE notifications SET lu = true WHERE user_id = $1`, [req.user.id]);
+    return res.json({ message: 'Toutes les notifications marquées comme lues.' });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
+app.put('/api/notifications/:id/lire', require('./middleware/auth'), async (req, res) => {
+  const pool = require('./config/db');
+  try {
+    await pool.query(`UPDATE notifications SET lu = true WHERE id = $1 AND user_id = $2`, [req.params.id, req.user.id]);
+    return res.json({ message: 'Notification lue.' });
   } catch (err) {
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
