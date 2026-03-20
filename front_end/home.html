@@ -1545,12 +1545,22 @@ async function deletePromo(id, btn) {
   loadCodesPromo();
 }
 
-// ══ PIXELS ══
-function savePixel(type) {
-  const val = document.getElementById(type === 'facebook' ? 'fbPixelId' : 'gaId').value.trim();
-  if (!val) { alert('Veuillez saisir un ID.'); return; }
-  localStorage.setItem(`pixel_${type}`, val);
-  alert(`✅ ${type === 'facebook' ? 'Facebook Pixel' : 'Google Analytics'} sauvegardé : ${val}`);
+async function savePixel(type) {
+  const fbId = document.getElementById('fbPixelId').value.trim();
+  const gaId = document.getElementById('gaId').value.trim();
+
+  try {
+    const res  = await fetch(`${API_URL}/boutique/pixels`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ fb_pixel_id: fbId, ga_id: gaId })
+    });
+    const data = await res.json();
+    if (res.ok) alert('✅ Pixels sauvegardés !');
+    else alert('❌ ' + data.message);
+  } catch (err) {
+    alert('Erreur serveur.');
+  }
 }
 
 
