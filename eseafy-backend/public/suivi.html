@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suivi de commande — eseafy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:       #1A6BFF;
+      --blue-dark:  #1455cc;
+      --blue-light: #e8f0ff;
+      --blue-xlight:#f0f5ff;
+      --black:      #0a0a0a;
+      --white:      #ffffff;
+      --cream:      #f4f7ff;
+      --gray-100:   #ebebea;
+      --gray-200:   #dddcda;
+      --gray-400:   #9e9b97;
+      --gray-600:   #6a6760;
+      --success:    #1c7a4a;
+      --success-bg: #d4edda;
+      --warning:    #856404;
+      --warning-bg: #fff3cd;
+      --danger:     #721c24;
+      --danger-bg:  #f8d7da;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--black); min-height: 100vh; }
+
+    /* ══ NAV ══ */
+    .nav {
+      background: var(--white);
+      border-bottom: 2px solid var(--blue-light);
+      padding: 0 40px; height: 58px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 16px rgba(26,107,255,.08);
+    }
+    .nav-brand { font-family: 'DM Serif Display', serif; font-size: 22px; text-decoration: none; color: var(--blue); }
+    .nav-brand span { opacity: .5; }
+
+    /* ══ HERO ══ */
+    .hero {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+      padding: 56px 40px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -80px; right: -80px;
+      width: 300px; height: 300px; border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--white); margin-bottom: 8px; position: relative; z-index: 1; }
+    .hero p  { font-size: 14px; color: rgba(255,255,255,.7); margin-bottom: 28px; position: relative; z-index: 1; }
+
+    /* Search box */
+    .search-wrap {
+      display: flex; gap: 10px; max-width: 500px; margin: 0 auto;
+      position: relative; z-index: 1;
+    }
+    .search-inp {
+      flex: 1; padding: 14px 18px;
+      border: 2px solid rgba(255,255,255,.3); border-radius: 12px;
+      background: rgba(255,255,255,.15); backdrop-filter: blur(10px);
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
+      color: var(--white); outline: none;
+      transition: border-color .15s;
+    }
+    .search-inp::placeholder { color: rgba(255,255,255,.6); }
+    .search-inp:focus { border-color: rgba(255,255,255,.7); }
+    .search-btn {
+      padding: 14px 24px; background: var(--white); color: var(--blue);
+      border: none; border-radius: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all .2s; white-space: nowrap;
+    }
+    .search-btn:hover { background: var(--blue-light); }
+
+    /* ══ CONTENU ══ */
+    .container { max-width: 680px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* Loading */
+    .loading { text-align: center; padding: 40px; }
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--blue-light); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Error */
+    .error-box {
+      background: var(--danger-bg); border: 1px solid #f5c6cb;
+      border-radius: 12px; padding: 16px 20px;
+      font-size: 13.5px; color: var(--danger); text-align: center;
+      margin-bottom: 20px; display: none;
+    }
+
+    /* ══ CARTE COMMANDE ══ */
+    .commande-card {
+      background: var(--white); border: 1px solid var(--blue-light);
+      border-radius: 20px; overflow: hidden;
+      box-shadow: 0 4px 24px rgba(26,107,255,.08);
+      display: none;
+    }
+
+    /* Header carte */
+    .card-header {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+      padding: 24px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-ref { font-family: monospace; font-size: 18px; font-weight: 700; color: var(--white); }
+    .card-date { font-size: 12px; color: rgba(255,255,255,.7); margin-top: 4px; }
+
+    /* Statut badge */
+    .statut-badge {
+      padding: 8px 16px; border-radius: 20px;
+      font-size: 13px; font-weight: 700; letter-spacing: .03em;
+    }
+    .statut-paye       { background: #d4edda; color: #1c7a4a; }
+    .statut-en_attente { background: #fff3cd; color: #856404; }
+    .statut-rembourse  { background: #e2e3e5; color: #383d41; }
+    .statut-annule     { background: #f8d7da; color: #721c24; }
+
+    /* Steps */
+    .steps {
+      padding: 28px;
+      display: flex; align-items: center; gap: 0;
+      border-bottom: 1px solid var(--blue-light);
+    }
+    .step {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      flex: 1; position: relative;
+    }
+    .step:not(:last-child)::after {
+      content: ''; position: absolute;
+      top: 16px; left: 50%; right: -50%;
+      height: 2px; background: var(--gray-200);
+    }
+    .step.done:not(:last-child)::after { background: var(--blue); }
+    .step-dot {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--gray-200); color: var(--gray-400);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; position: relative; z-index: 1;
+      transition: all .3s;
+    }
+    .step.done .step-dot  { background: var(--blue); color: var(--white); }
+    .step.active .step-dot { background: var(--blue-light); color: var(--blue); border: 2px solid var(--blue); }
+    .step-label { font-size: 11px; color: var(--gray-400); text-align: center; }
+    .step.done .step-label, .step.active .step-label { color: var(--blue); font-weight: 500; }
+
+    /* Détails */
+    .card-section { padding: 24px 28px; border-bottom: 1px solid var(--blue-light); }
+    .card-section:last-child { border-bottom: none; }
+    .section-title { font-family: 'DM Serif Display', serif; font-size: 16px; margin-bottom: 16px; }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .info-item { }
+    .info-lbl  { font-size: 11.5px; color: var(--gray-400); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+    .info-val  { font-size: 14px; font-weight: 500; color: var(--black); }
+
+    .produit-row {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--blue-xlight); border: 1px solid var(--blue-light);
+      border-radius: 12px; padding: 14px 16px;
+    }
+    .produit-icon { font-size: 32px; }
+    .produit-name { font-size: 15px; font-weight: 600; }
+    .produit-prix { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--blue); margin-left: auto; white-space: nowrap; }
+    .produit-cur  { font-size: 12px; color: var(--gray-400); }
+
+    .vendeur-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 0;
+    }
+    .vendeur-av {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--blue-light); color: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700;
+    }
+    .vendeur-name { font-size: 14px; font-weight: 500; }
+    .vendeur-boutique { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+    .btn-contact {
+      margin-left: auto; padding: 8px 16px;
+      background: var(--blue-light); color: var(--blue);
+      border: 1.5px solid rgba(26,107,255,.2); border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all .15s; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-contact:hover { background: var(--blue); color: var(--white); }
+
+    /* ══ FOOTER ══ */
+    .page-footer {
+      background: var(--blue-dark); padding: 24px 40px;
+      text-align: center; font-size: 12.5px; color: rgba(255,255,255,.5);
+    }
+    .page-footer a { color: rgba(255,255,255,.85); text-decoration: none; font-weight: 500; }
+
+    @media (max-width: 600px) {
+      .nav { padding: 0 16px; }
+      .hero { padding: 40px 16px; }
+      .hero h1 { font-size: 26px; }
+      .search-wrap { flex-direction: column; }
+      .container { padding: 24px 16px 60px; }
+      .info-grid { grid-template-columns: 1fr; }
+      .steps { padding: 20px 16px; }
+      .card-section { padding: 20px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-brand">eseafy<span>.</span></a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Suivi de commande</h1>
+  <p>Entrez votre référence de commande pour suivre son statut</p>
+  <div class="search-wrap">
+    <input class="search-inp" type="text" id="refInput" placeholder="Ex : ESF-587368"
+      onkeydown="if(event.key==='Enter') rechercherCommande()" />
+    <button class="search-btn" onclick="rechercherCommande()">🔍 Suivre</button>
+  </div>
+</div>
+
+<!-- CONTENU -->
+<div class="container">
+  <div class="error-box" id="errorBox"></div>
+  <div class="loading" id="loadingView" style="display:none;">
+    <div class="spinner"></div>
+    <p style="font-size:13px;color:var(--gray-600);">Recherche en cours…</p>
+  </div>
+
+  <!-- Carte commande -->
+  <div class="commande-card" id="commandeCard">
+
+    <!-- Header -->
+    <div class="card-header">
+      <div>
+        <div class="card-ref" id="cardRef"></div>
+        <div class="card-date" id="cardDate"></div>
+      </div>
+      <div class="statut-badge" id="cardStatut"></div>
+    </div>
+
+    <!-- Steps -->
+    <div class="steps" id="stepsRow"></div>
+
+    <!-- Produit -->
+    <div class="card-section">
+      <div class="section-title">Produit commandé</div>
+      <div class="produit-row" id="produitRow"></div>
+    </div>
+
+    <!-- Informations client -->
+    <div class="card-section">
+      <div class="section-title">Vos informations</div>
+      <div class="info-grid" id="clientInfo"></div>
+    </div>
+
+    <!-- Vendeur -->
+    <div class="card-section">
+      <div class="section-title">Vendeur</div>
+      <div class="vendeur-row" id="vendeurRow"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  Propulsé par <a href="/">eseafy</a> · La plateforme e-commerce made in Africa 🌍
+</footer>
+
+<script>
+  const BASE_URL = 'http://localhost:3001';
+
+  // ── Lire la ref depuis l'URL si présente ──
+  window.addEventListener('load', () => {
+    const params = new URLSearchParams(window.location.search);
+    const ref    = params.get('ref');
+    if (ref) {
+      document.getElementById('refInput').value = ref;
+      rechercherCommande();
+    }
+  });
+
+  async function rechercherCommande() {
+    const ref    = document.getElementById('refInput').value.trim().toUpperCase();
+    const errBox = document.getElementById('errorBox');
+
+    errBox.style.display = 'none';
+    document.getElementById('commandeCard').style.display = 'none';
+
+    if (!ref) {
+      errBox.textContent   = 'Veuillez saisir une référence de commande.';
+      errBox.style.display = 'block';
+      return;
+    }
+
+    document.getElementById('loadingView').style.display = 'block';
+
+    try {
+      const res  = await fetch(`${BASE_URL}/api/suivi/${ref}`);
+      const data = await res.json();
+
+      document.getElementById('loadingView').style.display = 'none';
+
+      if (!res.ok) {
+        errBox.textContent   = '❌ ' + data.message;
+        errBox.style.display = 'block';
+        return;
+      }
+
+      renderCommande(data.commande);
+
+    } catch (err) {
+      document.getElementById('loadingView').style.display = 'none';
+      errBox.textContent   = 'Erreur serveur. Réessayez.';
+      errBox.style.display = 'block';
+    }
+  }
+
+  function renderCommande(c) {
+    const card = document.getElementById('commandeCard');
+    card.style.display = 'block';
+
+    // Header
+    document.getElementById('cardRef').textContent  = '#' + c.reference;
+    const date = new Date(c.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    document.getElementById('cardDate').textContent = 'Passée le ' + date;
+
+    // Statut
+    const statutMap = {
+      paye:       { label: '✅ Payé',       cls: 'statut-paye' },
+      en_attente: { label: '⏳ En attente', cls: 'statut-en_attente' },
+      rembourse:  { label: '↩️ Remboursé',  cls: 'statut-rembourse' },
+      annule:     { label: '❌ Annulé',     cls: 'statut-annule' },
+    };
+    const s = statutMap[c.statut] || { label: c.statut, cls: '' };
+    const statutEl = document.getElementById('cardStatut');
+    statutEl.textContent  = s.label;
+    statutEl.className    = 'statut-badge ' + s.cls;
+
+    // Steps
+    const steps = [
+      { label: 'Commande reçue', icon: '📋' },
+      { label: 'En traitement',  icon: '⚙️' },
+      { label: 'Expédiée',       icon: '🚚' },
+      { label: 'Livrée',         icon: '✅' },
+    ];
+    const stepIndex = { en_attente:0, paye:1, rembourse:2, annule:0 }[c.statut] ?? 0;
+
+    document.getElementById('stepsRow').innerHTML = steps.map((step, i) => {
+      let cls = '';
+      if (i < stepIndex)  cls = 'done';
+      if (i === stepIndex) cls = c.statut === 'annule' ? '' : 'done active';
+      return `
+        <div class="step ${cls}">
+          <div class="step-dot">${i < stepIndex ? '✓' : step.icon}</div>
+          <div class="step-label">${step.label}</div>
+        </div>`;
+    }).join('');
+
+    // Produit
+    const prix = Number(c.total).toLocaleString('fr-FR');
+    document.getElementById('produitRow').innerHTML = `
+      <div class="produit-icon">📦</div>
+      <div>
+        <div class="produit-name">${c.nom_produit || 'Produit'}</div>
+        <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">Qté : ${c.quantite || 1}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="produit-prix">${prix}</div>
+        <div class="produit-cur">XOF</div>
+      </div>`;
+
+    // Client
+    document.getElementById('clientInfo').innerHTML = `
+      <div class="info-item"><div class="info-lbl">Nom</div><div class="info-val">${c.nom_client || '—'}</div></div>
+      <div class="info-item"><div class="info-lbl">Téléphone</div><div class="info-val">${c.telephone || '—'}</div></div>
+      <div class="info-item"><div class="info-lbl">Email</div><div class="info-val">${c.email_client || '—'}</div></div>
+      <div class="info-item"><div class="info-lbl">Adresse</div><div class="info-val">${c.adresse || '—'}</div></div>`;
+
+    // Vendeur
+    const vendeur   = [c.vendeur_prenom, c.vendeur_nom].filter(Boolean).join(' ') || 'Vendeur';
+    const initiales = vendeur.split(' ').map(s => s[0]?.toUpperCase() || '').join('').slice(0, 2);
+    const waLink    = c.vendeur_tel ? `https://wa.me/${c.vendeur_tel.replace(/\D/g,'')}?text=Bonjour, je voudrais suivre ma commande #${c.reference}` : null;
+
+    document.getElementById('vendeurRow').innerHTML = `
+      <div class="vendeur-av">${initiales}</div>
+      <div>
+        <div class="vendeur-name">${vendeur}</div>
+        <div class="vendeur-boutique">${c.boutique_nom || 'Boutique'}</div>
+      </div>
+      ${waLink ? `<a class="btn-contact" href="${waLink}" target="_blank">💬 WhatsApp</a>` : ''}`;
+  }
+</script>
+</body>
+</html>

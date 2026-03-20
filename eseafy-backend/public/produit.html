@@ -368,15 +368,17 @@
         <div class="tab-panel" id="panel-commander">
 
           <div class="order-summary" id="orderSummary"></div>
-
-          <div class="success-box" id="orderSuccess">
-            <div class="success-icon">🎉</div>
-            <h3>Commande confirmée !</h3>
-            <p>Merci ! Le vendeur vous contactera très bientôt pour organiser la livraison.</p>
-            <div class="success-ref" id="successRef"></div>
-            <p style="font-size:12px;color:var(--gray-400);">Conservez cette référence pour le suivi.</p>
-            <button class="btn-back-produit" onclick="switchTab('produit')">← Retour au produit</button>
-          </div>
+<div class="success-box" id="orderSuccess">
+  <div class="success-icon">🎉</div>
+  <h3>Commande confirmée !</h3>
+  <p>Merci ! Le vendeur vous contactera très bientôt pour organiser la livraison.</p>
+  <div class="success-ref" id="successRef"></div>
+  <p style="font-size:12px;color:var(--gray-400);">Conservez cette référence pour le suivi.</p>
+  <a id="suiviLien" href="#" target="_blank" style="display:inline-block;margin-top:8px;padding:10px 20px;background:var(--blue-light);color:var(--blue);border-radius:8px;font-size:13px;font-weight:500;text-decoration:none;">
+    🔍 Suivre ma commande
+  </a>
+  <button class="btn-back-produit" onclick="switchTab('produit')" style="margin-top:8px;">← Retour au produit</button>
+</div>
 
           <div class="order-wrap" id="orderFormFields">
   <div class="error-box" id="orderError"></div>
@@ -634,18 +636,23 @@ async function passerCommande() {
       });
       const data = await res.json();
 
-      if (res.ok) {
-        // Supprimer le code affilié après utilisation
-        localStorage.removeItem('ref_affilie');
-        document.getElementById('orderFormFields').style.display = 'none';
-        document.getElementById('successRef').textContent        = data.reference;
-        document.getElementById('orderSuccess').style.display    = 'block';
-      } else {
-        errBox.textContent   = '❌ ' + data.message;
-        errBox.style.display = 'block';
-        btn.disabled  = false;
-        btn.innerHTML = '🛒 Confirmer la commande';
-      }
+if (res.ok) {
+  // Supprimer le code affilié après utilisation
+  localStorage.removeItem('ref_affilie');
+  document.getElementById('orderFormFields').style.display = 'none';
+  document.getElementById('successRef').textContent        = data.reference;
+  document.getElementById('orderSuccess').style.display    = 'block';
+  // Lien de suivi
+  const suiviEl = document.getElementById('suiviLien');
+  if (suiviEl) {
+    suiviEl.href = `${BASE_URL}/suivi?ref=${data.reference}`;
+  }
+} else {
+  errBox.textContent   = '❌ ' + data.message;
+  errBox.style.display = 'block';
+  btn.disabled  = false;
+  btn.innerHTML = '🛒 Confirmer la commande';
+}
     } catch (err) {
       errBox.textContent   = 'Erreur serveur. Réessayez.';
       errBox.style.display = 'block';
