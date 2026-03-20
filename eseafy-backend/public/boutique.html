@@ -266,40 +266,49 @@
     return parts[1]; // /boutique/boutique-2 → boutique-2
   }
 
-  // ══ CHARGER LA BOUTIQUE ══
-  async function loadBoutique() {
-    const slug = getSlugBoutique();
-    if (!slug) { showError(); return; }
+// ══ CHARGER LA BOUTIQUE ══
+async function loadBoutique() {
+  const slug = getSlugBoutique();
+  if (!slug) { showError(); return; }
 
-    try {
-      const res  = await fetch(`${BASE_URL}/boutique/${slug}`, {
-        headers: { 'Accept': 'application/json' }
-      });
-      const data = await res.json();
-      console.log('🏪 Boutique :', data);
+  try {
+    const res  = await fetch(`${BASE_URL}/boutique/${slug}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    const data = await res.json();
+    console.log('🏪 Boutique :', data);
 
-      if (!res.ok || !data.boutique) { showError(); return; }
+    if (!res.ok || !data.boutique) { showError(); return; }
 
-      boutiqueData = data.boutique;
-      allProduits  = data.produits || [];
+    boutiqueData = data.boutique;
+    allProduits  = data.produits || [];
 
-      renderHero(boutiqueData, allProduits);
-      renderProduits(allProduits);
+    renderHero(boutiqueData, allProduits);
+    renderProduits(allProduits);
 
-      document.getElementById('loadingView').style.display  = 'none';
-      document.getElementById('boutiqueView').style.display = 'block';
+    document.getElementById('loadingView').style.display  = 'none';
+    document.getElementById('boutiqueView').style.display = 'block';
 
-    } catch (err) {
-      console.error('❌', err);
-      showError();
+    // Enregistrer la visite boutique
+    fetch(`${BASE_URL}/api/analytics/visite`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ boutique_slug: slug, type: 'boutique' })
+    });
+
+    // Détecter et sauvegarder le code affilié
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode   = urlParams.get('ref');
+    if (refCode) {
+      localStorage.setItem('ref_affilie', refCode.toUpperCase());
+      console.log('🤝 Code affilié détecté :', refCode);
     }
+
+  } catch (err) {
+    console.error('❌', err);
+    showError();
   }
-  // Enregistrer la visite boutique
-fetch(`${BASE_URL}/api/analytics/visite`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ boutique_slug: getSlugBoutique(), type: 'boutique' })
-});
+}
 
   // ══ HERO ══
   function renderHero(b, produits) {

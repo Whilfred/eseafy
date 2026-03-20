@@ -24,6 +24,7 @@ app.use('/api/upload',    require('./routes/upload'));
 app.use('/boutique', require('./routes/boutique'));
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/promo', require('./routes/promo'));
+app.use('/api/affiliation', require('./routes/affiliation'));
 
 app.put('/api/boutique/pixels', require('./middleware/auth'), async (req, res) => {
   const { fb_pixel_id, ga_id } = req.body;

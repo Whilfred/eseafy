@@ -612,6 +612,10 @@ async function passerCommande() {
     btn.disabled  = true;
     btn.innerHTML = '⏳ Traitement en cours…';
 
+    // Récupérer le code affilié
+    const urlParams = new URLSearchParams(window.location.search);
+    const refAffilie = urlParams.get('ref') || localStorage.getItem('ref_affilie') || null;
+
     try {
       const res  = await fetch(`${API_URL}/commandes`, {
         method:  'POST',
@@ -625,11 +629,14 @@ async function passerCommande() {
           quantite:     1,
           code_promo:   promoAppliquee ? promoAppliquee.code : null,
           prix_final:   prixFinal,
+          ref_affilie:  refAffilie,
         })
       });
       const data = await res.json();
 
       if (res.ok) {
+        // Supprimer le code affilié après utilisation
+        localStorage.removeItem('ref_affilie');
         document.getElementById('orderFormFields').style.display = 'none';
         document.getElementById('successRef').textContent        = data.reference;
         document.getElementById('orderSuccess').style.display    = 'block';
@@ -646,7 +653,7 @@ async function passerCommande() {
       btn.innerHTML = '🛒 Confirmer la commande';
     }
   }
-
+  
   function sharePage() {
     navigator.clipboard.writeText(window.location.href)
       .then(() => alert('✅ Lien copié !\n' + window.location.href));
