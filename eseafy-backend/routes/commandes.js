@@ -1,6 +1,7 @@
 const express = require('express');
 const pool    = require('../config/db');
 const auth    = require('../middleware/auth');
+const { sendConfirmationCommande, sendNotificationVendeur } = require('../services/emailService');
 
 const router = express.Router();
 
@@ -25,6 +26,7 @@ router.get('/', auth, async (req, res) => {
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
 });
+
 // ══════════════════════════════════════
 //  POST /api/commandes — PUBLIC (client)
 // ══════════════════════════════════════
@@ -48,7 +50,7 @@ router.post('/', async (req, res) => {
 
     const produit = prodResult.rows[0];
 
-    // Calculer le total (avec réduction si code promo)
+    // Calculer le total
     let total = produit.prix * quantite;
     if (prix_final && prix_final > 0 && prix_final < total) {
       total = prix_final;
@@ -79,7 +81,7 @@ router.post('/', async (req, res) => {
       console.log('🎟 Code promo utilisé :', code_promo);
     }
 
-    // Mettre à jour l'affilié si code présent
+    // Mettre à jour l'affilié
     if (ref_affilie) {
       await pool.query(
         `UPDATE affilies SET nb_ventes = nb_ventes + 1, total_ventes = total_ventes + $1
@@ -89,17 +91,44 @@ router.post('/', async (req, res) => {
       console.log('🤝 Affilié mis à jour :', ref_affilie);
     }
 
-    // ── Notification temps réel au vendeur ──
+    // Notification temps réel
     const notifyUser = req.app.locals.notifyUser;
     if (notifyUser) {
       notifyUser(produit.user_id, {
         type:      'nouvelle_commande',
-        reference: reference,
+        reference,
         montant:   total,
         client:    nom_client,
         produit:   produit.nom,
       });
     }
+
+    // ── Emails automatiques ──
+    const vendeurResult = await pool.query(
+      'SELECT email, nom, prenom, telephone FROM users WHERE id = $1',
+      [produit.user_id]
+    );
+    const vendeur = vendeurResult.rows[0];
+
+    sendConfirmationCommande({
+      email:        email_client,
+      nom_client,
+      reference,
+      produit:      produit.nom,
+      montant:      total,
+      boutique_nom: produit.boutique_nom || 'Boutique',
+      vendeur_tel:  vendeur?.telephone || null,
+    });
+
+    sendNotificationVendeur({
+      email_vendeur:    vendeur?.email,
+      nom_vendeur:      [vendeur?.prenom, vendeur?.nom].filter(Boolean).join(' ') || 'Vendeur',
+      reference,
+      produit:          produit.nom,
+      montant:          total,
+      nom_client,
+      telephone_client: telephone,
+    });
 
     console.log(`✅ Commande : ${reference} | ${total} XOF | ${nom_client}`);
 

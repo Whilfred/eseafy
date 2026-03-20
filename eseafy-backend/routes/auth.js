@@ -2,17 +2,16 @@ const express  = require('express');
 const bcrypt   = require('bcryptjs');
 const jwt      = require('jsonwebtoken');
 const pool     = require('../config/db');
+const { sendEmailBienvenue } = require('../services/emailService');
 
 const router = express.Router();
 
 // ══════════════════════════════════════
 //  POST /api/auth/register
-//  Créer un nouveau compte
 // ══════════════════════════════════════
 router.post('/register', async (req, res) => {
   const { email, password, nom, prenom } = req.body;
 
-  // Validation basique
   if (!email || !password) {
     return res.status(400).json({ message: 'Email et mot de passe requis.' });
   }
@@ -21,16 +20,13 @@ router.post('/register', async (req, res) => {
   }
 
   try {
-    // Vérifier si l'email existe déjà
     const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
     if (existing.rows.length > 0) {
       return res.status(409).json({ message: 'Un compte avec cet email existe déjà.' });
     }
 
-    // Hasher le mot de passe
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Créer l'utilisateur
     const result = await pool.query(
       `INSERT INTO users (email, password, nom, prenom)
        VALUES ($1, $2, $3, $4)
@@ -41,13 +37,19 @@ router.post('/register', async (req, res) => {
     const user = result.rows[0];
 
     // Créer une boutique par défaut
-    await pool.query(
+    const boutique = await pool.query(
       `INSERT INTO boutiques (user_id, nom, slug)
-       VALUES ($1, $2, $3)`,
+       VALUES ($1, $2, $3) RETURNING slug`,
       [user.id, 'Ma boutique', `boutique-${user.id}`]
     );
 
-    // Générer le JWT
+    // Email de bienvenue
+    sendEmailBienvenue({
+      email,
+      prenom,
+      boutique_slug: boutique.rows[0].slug
+    });
+
     const token = jwt.sign(
       { id: user.id, email: user.email, nom: user.nom },
       process.env.JWT_SECRET,
@@ -74,7 +76,6 @@ router.post('/register', async (req, res) => {
 
 // ══════════════════════════════════════
 //  POST /api/auth/login
-//  Connexion
 // ══════════════════════════════════════
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -84,11 +85,7 @@ router.post('/login', async (req, res) => {
   }
 
   try {
-    // Chercher l'utilisateur
-    const result = await pool.query(
-      'SELECT * FROM users WHERE email = $1',
-      [email]
-    );
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
     if (result.rows.length === 0) {
       return res.status(401).json({ message: 'Email ou mot de passe incorrect.' });
@@ -96,13 +93,11 @@ router.post('/login', async (req, res) => {
 
     const user = result.rows[0];
 
-    // Vérifier le mot de passe
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return res.status(401).json({ message: 'Email ou mot de passe incorrect.' });
     }
 
-    // Générer le JWT
     const token = jwt.sign(
       { id: user.id, email: user.email, nom: user.nom },
       process.env.JWT_SECRET,
@@ -129,7 +124,6 @@ router.post('/login', async (req, res) => {
 
 // ══════════════════════════════════════
 //  GET /api/auth/me
-//  Infos de l'utilisateur connecté
 // ══════════════════════════════════════
 const authMiddleware = require('../middleware/auth');
 
@@ -139,13 +133,10 @@ router.get('/me', authMiddleware, async (req, res) => {
       'SELECT id, email, nom, prenom, telephone, plan, created_at FROM users WHERE id = $1',
       [req.user.id]
     );
-
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Utilisateur non trouvé.' });
     }
-
     return res.status(200).json({ user: result.rows[0] });
-
   } catch (err) {
     console.error('Erreur /me :', err.message);
     return res.status(500).json({ message: 'Erreur serveur.' });
