@@ -147,5 +147,31 @@ app.locals.notifyUser = (userId, data) => {
   }
 };
 
+app.get('/api/suivi/:reference', async (req, res) => {
+  const pool = require('./config/db');
+  try {
+    const result = await pool.query(`
+      SELECT c.*, v.nom_produit, v.prix_unitaire, v.quantite,
+             b.nom AS boutique_nom, b.slug AS boutique_slug,
+             u.prenom AS vendeur_prenom, u.nom AS vendeur_nom,
+             u.telephone AS vendeur_tel
+      FROM commandes c
+      LEFT JOIN ventes v ON v.commande_id = c.id
+      LEFT JOIN boutiques b ON b.id = c.boutique_id
+      LEFT JOIN users u ON u.id = c.user_id
+      WHERE c.reference = $1
+    `, [req.params.reference.toUpperCase()]);
+
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Commande introuvable.' });
+    return res.json({ commande: result.rows[0] });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+});
+
+app.get('/suivi', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'suivi.html'));
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`));
