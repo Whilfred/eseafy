@@ -255,6 +255,16 @@
   let adminToken = localStorage.getItem('esf_admin_token');
   let charts = {};
 
+  // ══ PAGE TITLES — déclaré en premier pour éviter le TDZ ══
+  const pageTitles = {
+    dashboard: 'Dashboard',
+    vendeurs:  'Vendeurs',
+    produits:  'Top Produits',
+    scoring:   'Scoring IA',
+    segments:  'Segmentation',
+    events:    'Events & Analytics'
+  };
+
   // ══ DATE ══
   document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
 
@@ -305,8 +315,6 @@
   }
 
   // ══ NAVIGATION ══
-  const pageTitles = { dashboard:'Dashboard', vendeurs:'Vendeurs', produits:'Top Produits', scoring:'Scoring IA', segments:'Segmentation', events:'Events & Analytics' };
-
   function navigate(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -339,7 +347,6 @@
         <div class="kpi-sub">${k.sub}</div>
       </div>`).join('');
 
-    // Graphe revenus
     renderChart('revenusChart', data.revenus_graph, 'jour', 'total', '#1A6BFF', 'Revenus XOF');
     renderChart('inscriptionsChart', data.inscriptions, 'jour', 'nb', '#22c55e', 'Inscriptions');
   }
@@ -421,7 +428,6 @@
         <div class="seg-sub">Score moy. : ${s.score_moyen} · ${s.visites_moy} visites · ${s.duree_moy}s</div>
       </div>`).join('');
 
-    // Pie chart segments
     if (charts.segChart) charts.segChart.destroy();
     const ctx = document.getElementById('segChart').getContext('2d');
     charts.segChart = new Chart(ctx, {
@@ -439,7 +445,6 @@
     const res  = await fetch(`${API}/events`, { headers: headers() });
     const data = await res.json();
 
-    // Events par type
     document.getElementById('eventsByType').innerHTML = data.by_type.map(e => `
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
         <div style="flex:1;font-size:13px;">${e.event_type}</div>
@@ -449,10 +454,8 @@
         <div style="font-size:13px;font-weight:600;width:40px;text-align:right;">${e.nb}</div>
       </div>`).join('');
 
-    // Events par jour
     renderChart('eventsChart', data.by_day, 'jour', 'nb', '#8b5cf6', 'Events');
 
-    // Devices
     if (charts.devicesChart) charts.devicesChart.destroy();
     const ctx = document.getElementById('devicesChart').getContext('2d');
     charts.devicesChart = new Chart(ctx, {
