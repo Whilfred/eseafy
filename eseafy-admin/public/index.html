@@ -445,14 +445,37 @@
     const res  = await fetch(`${API}/events`, { headers: headers() });
     const data = await res.json();
 
-    document.getElementById('eventsByType').innerHTML = data.by_type.map(e => `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-        <div style="flex:1;font-size:13px;">${e.event_type}</div>
-        <div style="width:120px;height:6px;background:var(--gray-200);border-radius:10px;overflow:hidden;">
-          <div style="height:100%;width:${Math.round(e.nb/data.by_type[0].nb*100)}%;background:var(--blue);border-radius:10px;"></div>
+    const eventLabels = {
+      visibility_change: { label: "👁️ Changement d'onglet",   desc: "Le visiteur a quitté ou est revenu sur l'onglet" },
+      time_on_page:      { label: "⏱️ Temps sur la page",       desc: "Durée enregistrée avant de quitter la page" },
+      click:             { label: "🖱️ Clic",                    desc: "Clic sur un bouton, lien ou élément interactif" },
+      page_view:         { label: "📄 Vue de page",             desc: "Ouverture d'une page boutique ou produit" },
+      scroll_depth:      { label: "📜 Profondeur de scroll",    desc: "Seuils de scroll atteints : 25%, 50%, 75%, 100%" },
+      tab_switch:        { label: "🔀 Switch d'onglet",         desc: "Navigation entre les onglets du navigateur" },
+      purchase:          { label: "✅ Achat",                   desc: "Commande finalisée avec succès" },
+      checkout_attempt:  { label: "🛒 Tentative de commande",   desc: "Le visiteur a initié le processus de paiement" },
+      promo_attempt:     { label: "🎟️ Essai de code promo",     desc: "Un code promo a été saisi (valide ou non)" },
+      rage_click:        { label: "😤 Clic de frustration",     desc: "3+ clics rapides au même endroit — bouton bloqué ?" },
+      promo_applied:     { label: "✨ Code promo appliqué",     desc: "Un code promo valide a été utilisé avec succès" },
+      copy:              { label: "📋 Copie de texte",          desc: "Le visiteur a copié du contenu sur la page" },
+      product_hover:     { label: "🔍 Survol produit",          desc: "Souris maintenue +500ms sur une fiche produit" },
+    };
+
+    document.getElementById('eventsByType').innerHTML = data.by_type.map(e => {
+      const info = eventLabels[e.event_type] || { label: e.event_type, desc: '' };
+      const pct  = Math.round(e.nb / data.by_type[0].nb * 100);
+      return `
+      <div style="margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:3px;">
+          <div style="flex:1;font-size:13px;font-weight:500;">${info.label}</div>
+          <div style="font-size:13px;font-weight:600;width:40px;text-align:right;">${e.nb}</div>
         </div>
-        <div style="font-size:13px;font-weight:600;width:40px;text-align:right;">${e.nb}</div>
-      </div>`).join('');
+        <div style="flex:1;height:6px;background:var(--gray-200);border-radius:10px;overflow:hidden;margin-bottom:3px;">
+          <div style="height:100%;width:${pct}%;background:var(--blue);border-radius:10px;"></div>
+        </div>
+        <div style="font-size:11px;color:var(--gray-400);">${info.desc}</div>
+      </div>`;
+    }).join('');
 
     renderChart('eventsChart', data.by_day, 'jour', 'nb', '#8b5cf6', 'Events');
 
