@@ -4,6 +4,11 @@ const cors    = require('cors');
 const path    = require('path');
 const bcrypt  = require('bcryptjs');
 
+// ══ ELISA CRON ══
+const { envoyerCampagnesElisa } = require('./jobs/elisa.cron');
+// TEST — retire cette ligne après avoir confirmé que les emails arrivent
+setTimeout(envoyerCampagnesElisa, 3000);
+
 const app = express();
 
 app.use(cors({ origin: ['http://localhost:3001', 'http://127.0.0.1:5500', 'null'], credentials: true }));
@@ -22,6 +27,8 @@ app.use('/api/analytics',   require('./routes/analytics'));
 app.use('/api/promo',       require('./routes/promo'));
 app.use('/api/affiliation', require('./routes/affiliation'));
 app.use('/boutique',        require('./routes/boutique'));
+app.use('/api/elisa',       require('./routes/elisa'));
+app.use('/api/tracker',     require('./routes/tracker'));
 
 // ══ PIXELS ══
 app.put('/api/boutique/pixels', require('./middleware/auth'), async (req, res) => {
@@ -138,28 +145,18 @@ app.get('/api/notifications/stream', async (req, res) => {
   }
 });
 
-
-// Envoyer une notification à un utilisateur connecté
 app.locals.notifyUser = async (userId, data) => {
-  // Envoyer via SSE
   const client = clients.get(parseInt(userId));
   if (client) {
     client.write(`event: notification\ndata: ${JSON.stringify(data)}\n\n`);
     console.log(`🔔 Notification SSE envoyée à user ${userId}`);
   }
-
-  // Sauvegarder en DB
   try {
     const pool = require('./config/db');
-    const titreMap = {
-      nouvelle_commande: `Nouvelle commande — ${data.produit}`,
-    };
-    const messageMap = {
-      nouvelle_commande: `${data.client} vient d'acheter pour ${Number(data.montant).toLocaleString('fr-FR')} XOF · #${data.reference}`,
-    };
+    const titreMap   = { nouvelle_commande: `Nouvelle commande — ${data.produit}` };
+    const messageMap = { nouvelle_commande: `${data.client} vient d'acheter pour ${Number(data.montant).toLocaleString('fr-FR')} XOF · #${data.reference}` };
     await pool.query(
-      `INSERT INTO notifications (user_id, type, titre, message, data)
-       VALUES ($1, $2, $3, $4, $5)`,
+      `INSERT INTO notifications (user_id, type, titre, message, data) VALUES ($1, $2, $3, $4, $5)`,
       [userId, data.type, titreMap[data.type] || 'Notification', messageMap[data.type] || '', JSON.stringify(data)]
     );
     console.log(`💾 Notification sauvegardée pour user ${userId}`);
@@ -168,6 +165,7 @@ app.locals.notifyUser = async (userId, data) => {
   }
 };
 
+// ══ SUIVI COMMANDE ══
 app.get('/api/suivi/:reference', async (req, res) => {
   const pool = require('./config/db');
   try {
@@ -182,7 +180,6 @@ app.get('/api/suivi/:reference', async (req, res) => {
       LEFT JOIN users u ON u.id = c.user_id
       WHERE c.reference = $1
     `, [req.params.reference.toUpperCase()]);
-
     if (result.rows.length === 0) return res.status(404).json({ message: 'Commande introuvable.' });
     return res.json({ commande: result.rows[0] });
   } catch (err) {
@@ -223,8 +220,6 @@ app.put('/api/notifications/:id/lire', require('./middleware/auth'), async (req,
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
 });
-
-app.use('/api/tracker', require('./routes/tracker'));
 
 app.get('/suivi', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'suivi.html'));
