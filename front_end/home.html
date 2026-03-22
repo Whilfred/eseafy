@@ -515,7 +515,7 @@
           </div>
           <div style="font-size:22px;font-weight:700;color:white;margin-bottom:6px;font-family:'DM Serif Display',serif;">Campagnes intelligentes</div>
           <div style="font-size:13px;color:rgba(255,255,255,0.5);max-width:460px;line-height:1.6;">
-            Easyfy envoie automatiquement vos campagnes aux meilleurs prospects toutes les 3 jours. Configurez votre ciblage une fois — on s'occupe du reste.
+            Easyfy envoie automatiquement vos campagnes aux meilleurs prospects tous les 3 jours. Configurez votre ciblage une fois — on s'occupe du reste.
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;">
@@ -663,6 +663,239 @@
 
         </div>
       </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <!-- Éditeur séquence emails -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-head">
+    <div><h2>Contenu des emails</h2><p>Personnalisez chaque email de la séquence</p></div>
+    <div style="font-size:11px;color:var(--gray-400);background:#f8fafc;padding:6px 12px;border-radius:6px;border:1px solid var(--gray-100);">
+      Variables dispo : <code style="background:#f1f5f9;padding:2px 5px;border-radius:4px;">{{prenom}}</code>
+      <code style="background:#f1f5f9;padding:2px 5px;border-radius:4px;margin-left:4px;">{{boutique_nom}}</code>
+    </div>
+  </div>
+
+  <!-- Onglets J0 / J+3 / J+6 -->
+  <div style="display:flex;border-bottom:1px solid var(--gray-100);">
+    <button class="elisa-seq-tab active" onclick="switchSeqTab(1)" id="seqTab1"
+      style="flex:1;padding:14px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid var(--black);color:var(--black);">
+      📧 Email 01 · J0
+    </button>
+    <button class="elisa-seq-tab" onclick="switchSeqTab(2)" id="seqTab2"
+      style="flex:1;padding:14px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--gray-400);">
+      📧 Email 02 · J+3
+    </button>
+    <button class="elisa-seq-tab" onclick="switchSeqTab(3)" id="seqTab3"
+      style="flex:1;padding:14px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--gray-400);">
+      📧 Email 03 · J+6
+    </button>
+  </div>
+
+  <!-- Panel Email 01 -->
+  <div class="elisa-seq-panel" id="seqPanel1" style="padding:22px;display:flex;flex-direction:column;gap:18px;">
+    <div class="fg">
+      <label class="lbl">Objet de l'email <span class="req">*</span></label>
+      <input class="inp" type="text" id="e1Objet" placeholder="Ex : {{prenom}}, on a quelque chose pour vous 👀"
+        value="{{prenom}}, on a quelque chose pour vous 👀" />
+    </div>
+    <div class="fg">
+      <label class="lbl">Corps du message</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;">
+        <div style="display:flex;gap:4px;padding:8px 12px;background:#fafafa;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;">
+          <button class="tb" onclick="fmtSeq('e1Body','bold')"><b>B</b></button>
+          <button class="tb" onclick="fmtSeq('e1Body','italic')"><i>I</i></button>
+          <button class="tb" onclick="fmtSeq('e1Body','underline')"><u>U</u></button>
+          <div style="width:1px;background:var(--gray-200);margin:2px 4px;"></div>
+          <button class="tb" onclick="fmtSeq('e1Body','insertUnorderedList')">• Liste</button>
+          <button class="tb" onclick="fmtSeq('e1Body','formatBlock','h3')">Titre</button>
+        </div>
+        <div id="e1Body" contenteditable="true"
+          style="min-height:120px;padding:14px;font-size:13px;line-height:1.7;outline:none;font-family:'DM Sans',sans-serif;">
+Bonjour {{prenom}},
+
+Vous avez visité notre boutique récemment. Nous avons sélectionné des produits qui pourraient vous intéresser.
+
+Ne manquez pas cette offre exclusive — disponible 48h seulement.
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Code promo</label>
+        <input class="inp" type="text" id="e1Code" placeholder="Ex : ELISA10" style="text-transform:uppercase;font-family:monospace;letter-spacing:1px;" />
+        <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">Laissez vide si pas de promo</div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Valeur du code</label>
+        <input class="inp" type="text" id="e1CodeVal" placeholder="Ex : -10% ou -5000 XOF" />
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Texte du bouton CTA</label>
+        <input class="inp" type="text" id="e1CtaText" placeholder="Ex : Découvrir la boutique →" value="Découvrir la boutique →" />
+      </div>
+      <div class="fg">
+        <label class="lbl">Lien du bouton</label>
+        <input class="inp" type="url" id="e1CtaLink" placeholder="https://..." />
+        <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">Laissez vide → lien auto vers votre boutique</div>
+      </div>
+    </div>
+    <!-- Aperçu -->
+    <div>
+      <label class="lbl">Aperçu email</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;margin-top:8px;">
+        <div style="background:#f8fafc;padding:8px 14px;border-bottom:1px solid var(--gray-100);font-size:11px;color:var(--gray-400);display:flex;align-items:center;gap:8px;">
+          <span>📧</span> Aperçu · <span id="e1ObjetPreview" style="color:var(--black);font-weight:500;">—</span>
+        </div>
+        <iframe id="e1Preview" style="width:100%;height:280px;border:none;" srcdoc=""></iframe>
+      </div>
+      <button onclick="genererApercu(1)" style="margin-top:8px;font-size:12px;padding:6px 16px;border:1px solid var(--gray-200);border-radius:6px;background:white;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        🔄 Actualiser l'aperçu
+      </button>
+    </div>
+  </div>
+
+  <!-- Panel Email 02 -->
+  <div class="elisa-seq-panel" id="seqPanel2" style="padding:22px;display:none;flex-direction:column;gap:18px;">
+    <div class="fg">
+      <label class="lbl">Objet de l'email <span class="req">*</span></label>
+      <input class="inp" type="text" id="e2Objet" placeholder="Ex : Votre offre expire dans 24h ⏳"
+        value="Votre offre expire dans 24h ⏳" />
+    </div>
+    <div class="fg">
+      <label class="lbl">Corps du message</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;">
+        <div style="display:flex;gap:4px;padding:8px 12px;background:#fafafa;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;">
+          <button class="tb" onclick="fmtSeq('e2Body','bold')"><b>B</b></button>
+          <button class="tb" onclick="fmtSeq('e2Body','italic')"><i>I</i></button>
+          <button class="tb" onclick="fmtSeq('e2Body','underline')"><u>U</u></button>
+          <div style="width:1px;background:var(--gray-200);margin:2px 4px;"></div>
+          <button class="tb" onclick="fmtSeq('e2Body','insertUnorderedList')">• Liste</button>
+          <button class="tb" onclick="fmtSeq('e2Body','formatBlock','h3')">Titre</button>
+        </div>
+        <div id="e2Body" contenteditable="true"
+          style="min-height:120px;padding:14px;font-size:13px;line-height:1.7;outline:none;font-family:'DM Sans',sans-serif;">
+Bonjour {{prenom}},
+
+Votre code promo expire dans 24 heures. Ne passez pas à côté de cette offre !
+
+C'est le bon moment pour passer commande.
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Code promo</label>
+        <input class="inp" type="text" id="e2Code" placeholder="Ex : ELISA10" style="text-transform:uppercase;font-family:monospace;letter-spacing:1px;" />
+      </div>
+      <div class="fg">
+        <label class="lbl">Valeur du code</label>
+        <input class="inp" type="text" id="e2CodeVal" placeholder="Ex : -10% ou -5000 XOF" />
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Texte du bouton CTA</label>
+        <input class="inp" type="text" id="e2CtaText" placeholder="En profiter maintenant →" value="En profiter maintenant →" />
+      </div>
+      <div class="fg">
+        <label class="lbl">Lien du bouton</label>
+        <input class="inp" type="url" id="e2CtaLink" placeholder="https://..." />
+      </div>
+    </div>
+    <div>
+      <label class="lbl">Aperçu email</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;margin-top:8px;">
+        <div style="background:#f8fafc;padding:8px 14px;border-bottom:1px solid var(--gray-100);font-size:11px;color:var(--gray-400);display:flex;align-items:center;gap:8px;">
+          <span>📧</span> Aperçu · <span id="e2ObjetPreview" style="color:var(--black);font-weight:500;">—</span>
+        </div>
+        <iframe id="e2Preview" style="width:100%;height:280px;border:none;" srcdoc=""></iframe>
+      </div>
+      <button onclick="genererApercu(2)" style="margin-top:8px;font-size:12px;padding:6px 16px;border:1px solid var(--gray-200);border-radius:6px;background:white;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        🔄 Actualiser l'aperçu
+      </button>
+    </div>
+  </div>
+
+  <!-- Panel Email 03 -->
+  <div class="elisa-seq-panel" id="seqPanel3" style="padding:22px;display:none;flex-direction:column;gap:18px;">
+    <div class="fg">
+      <label class="lbl">Objet de l'email <span class="req">*</span></label>
+      <input class="inp" type="text" id="e3Objet" placeholder="Ex : Dernière chance — -15% pour vous 🎁"
+        value="Dernière chance — on vous offre -15% 🎁" />
+    </div>
+    <div class="fg">
+      <label class="lbl">Corps du message</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;">
+        <div style="display:flex;gap:4px;padding:8px 12px;background:#fafafa;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;">
+          <button class="tb" onclick="fmtSeq('e3Body','bold')"><b>B</b></button>
+          <button class="tb" onclick="fmtSeq('e3Body','italic')"><i>I</i></button>
+          <button class="tb" onclick="fmtSeq('e3Body','underline')"><u>U</u></button>
+          <div style="width:1px;background:var(--gray-200);margin:2px 4px;"></div>
+          <button class="tb" onclick="fmtSeq('e3Body','insertUnorderedList')">• Liste</button>
+          <button class="tb" onclick="fmtSeq('e3Body','formatBlock','h3')">Titre</button>
+        </div>
+        <div id="e3Body" contenteditable="true"
+          style="min-height:120px;padding:14px;font-size:13px;line-height:1.7;outline:none;font-family:'DM Sans',sans-serif;">
+Bonjour {{prenom}},
+
+C'est notre dernière offre pour vous. On ne se verra peut-être plus de si tôt 😉
+
+Profitez-en avant qu'il soit trop tard.
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Code promo</label>
+        <input class="inp" type="text" id="e3Code" placeholder="Ex : ELISA15" style="text-transform:uppercase;font-family:monospace;letter-spacing:1px;" />
+      </div>
+      <div class="fg">
+        <label class="lbl">Valeur du code</label>
+        <input class="inp" type="text" id="e3CodeVal" placeholder="Ex : -15% ou -7500 XOF" />
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Texte du bouton CTA</label>
+        <input class="inp" type="text" id="e3CtaText" placeholder="Saisir cette offre →" value="Saisir cette offre →" />
+      </div>
+      <div class="fg">
+        <label class="lbl">Lien du bouton</label>
+        <input class="inp" type="url" id="e3CtaLink" placeholder="https://..." />
+      </div>
+    </div>
+    <div>
+      <label class="lbl">Aperçu email</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;margin-top:8px;">
+        <div style="background:#f8fafc;padding:8px 14px;border-bottom:1px solid var(--gray-100);font-size:11px;color:var(--gray-400);display:flex;align-items:center;gap:8px;">
+          <span>📧</span> Aperçu · <span id="e3ObjetPreview" style="color:var(--black);font-weight:500;">—</span>
+        </div>
+        <iframe id="e3Preview" style="width:100%;height:280px;border:none;" srcdoc=""></iframe>
+      </div>
+      <button onclick="genererApercu(3)" style="margin-top:8px;font-size:12px;padding:6px 16px;border:1px solid var(--gray-200);border-radius:6px;background:white;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        🔄 Actualiser l'aperçu
+      </button>
+    </div>
+  </div>
+
+</div>
+
+
+
 
       <!-- Historique -->
       <div class="card" style="margin-bottom:32px;">
@@ -2366,14 +2599,83 @@ async function marquerToutLu() {
 }
 
 // ══ ELISA ══
-let elisaActif     = false;
-let elisaTargeting = { device:'tous', genre:'tous', age:'tous', interets:[] };
-let elisaEmails    = [];
+let elisaActif       = false;
+let elisaTargeting   = { device:'tous', genre:'tous', age:'tous', interets:[] };
+let elisaEmails      = [];
 let campagnesHistory = [];
 
-function toggleElisa(btn) {
+// ── Charger config au démarrage ──
+async function loadElisa() {
+  try {
+    const res  = await fetch(`${API_URL}/elisa/config`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!res.ok) { estimerAudience(); return; }
+
+    if (data.actif) {
+      elisaActif = true;
+      const btn = document.getElementById('elisaToggleBtn');
+      const sub = document.getElementById('elisaToggleSub');
+      if (btn) {
+        btn.textContent      = 'ACTIF';
+        btn.style.background = '#16a34a';
+        btn.style.color      = 'white';
+        btn.style.border     = '1px solid #16a34a';
+      }
+      if (sub) {
+        sub.textContent = '✓ Campagnes activées';
+        sub.style.color = 'rgba(255,255,255,0.5)';
+      }
+    }
+
+    const isPro   = data.plan === 'pro';
+    const limitEl = document.getElementById('elisaStatLimit');
+    if (limitEl) limitEl.textContent = isPro ? '∞' : `${data.emails_sent} / 3`;
+
+    if (isPro) {
+      const banner = document.getElementById('elisaFreeBanner');
+      if (banner) banner.style.display = 'none';
+    } else {
+      setTimeout(() => {
+        const bar = document.getElementById('elisaLimitBar');
+        if (bar) bar.style.width = Math.min((data.emails_sent / 3) * 100, 100) + '%';
+      }, 300);
+    }
+
+  } catch (err) {
+    console.warn('⚠️ loadElisa config :', err);
+  }
+
+  // ── Charger l'historique depuis la DB ──
+  try {
+    const res  = await fetch(`${API_URL}/elisa/campagnes`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (res.ok && data.campagnes.length > 0) {
+      campagnesHistory = data.campagnes.map(c => ({
+        nom:       c.nom,
+        statut:    c.statut === 'envoyee' ? 'envoyée' : 'programmée',
+        targeting: c.targeting || {},
+        envoyes:   c.envoyes  || 0,
+        ouverts:   0,
+        date:      new Date(c.created_at),
+      }));
+    }
+  } catch (err) {
+    console.warn('⚠️ loadElisa campagnes :', err);
+  }
+  estimerAudience();
+  renderElisaHistorique();
+  updateElisaSlots();
+}
+
+// ── Toggle ON/OFF ──
+async function toggleElisa(btn) {
   elisaActif = !elisaActif;
   const sub  = document.getElementById('elisaToggleSub');
+
   if (elisaActif) {
     btn.textContent      = 'ACTIF';
     btn.style.background = '#16a34a';
@@ -2387,11 +2689,21 @@ function toggleElisa(btn) {
     btn.style.color      = 'rgba(255,255,255,0.5)';
     btn.style.border     = '1px solid rgba(255,255,255,0.15)';
     sub.textContent      = 'Cliquez pour activer';
+    sub.style.color      = 'rgba(255,255,255,0.3)';
   }
-  // TODO: PATCH /api/boutiques/:id/elisa { actif: elisaActif }
+
+  try {
+    await fetch(`${API_URL}/elisa/config`, {
+      method:  'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ actif: elisaActif })
+    });
+  } catch (err) {
+    console.warn('⚠️ toggleElisa :', err);
+  }
 }
 
-// Chip sélection unique par groupe
+// ── Chip sélection unique par groupe ──
 function selectChip(el) {
   const group = el.dataset.group;
   document.querySelectorAll(`.elisa-chip[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
@@ -2400,7 +2712,7 @@ function selectChip(el) {
   estimerAudience();
 }
 
-// Intérêts — toggle multiple
+// ── Intérêts — toggle multiple ──
 function toggleInterest(el) {
   el.classList.toggle('interest-on');
   const val = el.dataset.val;
@@ -2412,7 +2724,7 @@ function toggleInterest(el) {
   estimerAudience();
 }
 
-// Email tags
+// ── Email tags ──
 function addEmailTag(e) {
   if (e.key !== 'Enter' && e.key !== ',') return;
   e.preventDefault();
@@ -2434,27 +2746,42 @@ function removeEmailTag(btn, email) {
   estimerAudience();
 }
 
-// Estimation audience (mock — à remplacer par vraie API)
+// ── Estimation audience (vraie API) ──
 function estimerAudience() {
   const el = document.getElementById('elisaAudienceEst');
+  if (!el) return;
   el.textContent = 'Calcul…';
   clearTimeout(window._audTimer);
-  window._audTimer = setTimeout(() => {
-    // TODO: GET /api/elisa/audience?device=X&genre=Y&age=Z
-    let base = 142;
-    if (elisaTargeting.device !== 'tous') base = Math.round(base * 0.6);
-    if (elisaTargeting.genre  !== 'tous') base = Math.round(base * 0.55);
-    if (elisaTargeting.age    !== 'tous') base = Math.round(base * 0.65);
-    base -= elisaTargeting.interets.length * 8;
-    base = Math.max(base, 12);
-    el.textContent = `~${base} contacts qualifiés`;
+  window._audTimer = setTimeout(async () => {
+    try {
+      const params = new URLSearchParams({
+        device: elisaTargeting.device,
+        genre:  elisaTargeting.genre,
+        age:    elisaTargeting.age,
+      });
+      const res  = await fetch(`${API_URL}/elisa/audience?${params}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      el.textContent = res.ok
+        ? `~${data.audience} contact${data.audience > 1 ? 's' : ''} qualifié${data.audience > 1 ? 's' : ''}`
+        : '— contacts';
+    } catch {
+      // Fallback estimation locale si API indisponible
+      let base = 142;
+      if (elisaTargeting.device !== 'tous') base = Math.round(base * 0.6);
+      if (elisaTargeting.genre  !== 'tous') base = Math.round(base * 0.55);
+      if (elisaTargeting.age    !== 'tous') base = Math.round(base * 0.65);
+      base -= elisaTargeting.interets.length * 8;
+      el.textContent = `~${Math.max(base, 12)} contacts qualifiés`;
+    }
   }, 500);
 }
 
-// Lancer une campagne
+// ── Lancer une campagne ──
 async function lancerCampagne(btn) {
-  const nom    = document.getElementById('campNom').value.trim();
-  const errEl  = document.getElementById('campError');
+  const nom   = document.getElementById('campNom').value.trim();
+  const errEl = document.getElementById('campError');
   errEl.style.display = 'none';
 
   if (!nom) {
@@ -2468,35 +2795,69 @@ async function lancerCampagne(btn) {
     return;
   }
 
-  const slotsDispo = 3 - campagnesHistory.length;
-  if (slotsDispo <= 0) {
-    errEl.textContent   = 'Vos 3 campagnes gratuites sont utilisées ce cycle. Prochaine fenêtre dans 3 jours.';
+  btn.disabled  = true;
+  btn.innerHTML = '⏳ Lancement…';
+
+  try {
+    const res  = await fetch(`${API_URL}/elisa/campagnes`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({
+        nom,
+        emails:    elisaEmails,
+        targeting: elisaTargeting,
+        sequences: getSequencesContent()
+      })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      errEl.textContent   = data.message || 'Erreur lors du lancement.';
+      errEl.style.display = 'block';
+      btn.disabled        = false;
+      btn.innerHTML       = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
+      return;
+    }
+
+    // Ajouter à l'historique local
+    campagnesHistory.unshift({
+      nom,
+      statut:    'programmée',
+      targeting: { ...elisaTargeting },
+      envoyes:   data.destinataires,
+      ouverts:   0,
+      date:      new Date(),
+    });
+
+    // Mettre à jour le compteur limite
+    const limitEl = document.getElementById('elisaStatLimit');
+    if (limitEl) limitEl.textContent = data.reste === null ? '∞' : `${3 - data.reste} / 3`;
+    const bar = document.getElementById('elisaLimitBar');
+    if (bar && data.reste !== null) {
+      bar.style.width = Math.min(((3 - data.reste) / 3) * 100, 100) + '%';
+    }
+
+    renderElisaHistorique();
+    updateElisaSlots();
+    resetElisaForm();
+
+    btn.innerHTML = '✅ Campagne lancée !';
+    setTimeout(() => {
+      btn.disabled  = false;
+      btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
+    }, 2500);
+
+  } catch (err) {
+    console.error('❌ lancerCampagne DÉTAIL :', err);
+    errEl.textContent   = err.message || 'Erreur serveur.';
     errEl.style.display = 'block';
-    return;
+    btn.disabled        = false;
+    btn.innerHTML       = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
   }
+}
 
-  btn.disabled     = true;
-  btn.innerHTML    = '⏳ Lancement…';
-
-  // Simuler envoi API
-  // TODO: POST /api/elisa/campagnes { nom, emails, targeting: elisaTargeting }
-  await new Promise(r => setTimeout(r, 1200));
-
-  const nouvelleCamp = {
-    id:        Date.now(),
-    nom,
-    statut:    'envoyée',
-    emails:    elisaEmails.length > 0 ? elisaEmails : ['ciblage auto'],
-    targeting: { ...elisaTargeting },
-    envoyes:   Math.floor(Math.random() * 80) + 20,
-    ouverts:   Math.floor(Math.random() * 30) + 5,
-    date:      new Date(),
-  };
-  campagnesHistory.unshift(nouvelleCamp);
-  renderElisaHistorique();
-  updateElisaSlots();
-
-  // Reset formulaire
+// ── Reset formulaire après lancement ──
+function resetElisaForm() {
   document.getElementById('campNom').value = '';
   document.getElementById('emailTagsBox').querySelectorAll('.email-tag').forEach(t => t.remove());
   elisaEmails = [];
@@ -2504,69 +2865,84 @@ async function lancerCampagne(btn) {
     if (c.dataset.val !== 'tous') c.classList.remove('selected');
   });
   document.querySelectorAll('[data-group="device"][data-val="tous"]').forEach(c => c.classList.add('selected'));
-  document.querySelectorAll('[data-group="genre"][data-val="tous"]').forEach(c => c.classList.add('selected'));
-  document.querySelectorAll('[data-group="age"][data-val="tous"]').forEach(c => c.classList.add('selected'));
+  document.querySelectorAll('[data-group="genre"][data-val="tous"]').forEach(c  => c.classList.add('selected'));
+  document.querySelectorAll('[data-group="age"][data-val="tous"]').forEach(c    => c.classList.add('selected'));
   document.querySelectorAll('.elisa-chip.interest-on').forEach(c => c.classList.remove('interest-on'));
   elisaTargeting = { device:'tous', genre:'tous', age:'tous', interets:[] };
   estimerAudience();
-
-  btn.innerHTML = '✅ Campagne lancée !';
-  setTimeout(() => {
-    btn.disabled = false;
-    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
-  }, 2500);
 }
 
+// ── Slots visuels ──
 function updateElisaSlots() {
   const used = campagnesHistory.length;
-  const slotStatuses = [
-    { id:'slot1', label: used > 0 ? 'Envoyée' : 'Prête',     timer: used > 0 ? 'Il y a peu' : 'Maintenant', pct: used > 0 ? 100 : 100, color: used > 0 ? '#16a34a' : 'var(--black)', badgeCls: used > 0 ? 'green' : 'green' },
-    { id:'slot2', label: used > 1 ? 'Envoyée' : 'J+3',        timer: used > 1 ? 'Il y a 3j' : 'Dans 3 jours', pct: used > 1 ? 100 : 33,  color: '#f59e0b', badgeCls: used > 1 ? 'green' : '' },
-    { id:'slot3', label: used > 2 ? 'Envoyée' : 'J+6',        timer: used > 2 ? 'Il y a 6j' : 'Dans 6 jours', pct: used > 2 ? 100 : 0,   color: '#f59e0b', badgeCls: '' },
-  ];
-  slotStatuses.forEach((s, i) => {
+  [
+    { id:'slot1', label: used > 0 ? 'Envoyée' : 'Prête',      timer: used > 0 ? 'Il y a peu'    : 'Maintenant',   green: true  },
+    { id:'slot2', label: used > 1 ? 'Envoyée' : 'J+3',         timer: used > 1 ? 'Il y a 3j'     : 'Dans 3 jours', green: used > 1 },
+    { id:'slot3', label: used > 2 ? 'Envoyée' : 'J+6',         timer: used > 2 ? 'Il y a 6j'     : 'Dans 6 jours', green: used > 2 },
+  ].forEach(s => {
     const statusEl = document.getElementById(s.id + 'Status');
     const timerEl  = document.getElementById(s.id + 'Timer');
-    if (statusEl) { statusEl.textContent = s.label; statusEl.className = s.badgeCls === 'green' ? 'badge green' : 'badge'; if (!s.badgeCls) { statusEl.style.background='#fef3c7'; statusEl.style.color='#92400e'; } }
-    if (timerEl)  timerEl.textContent = s.timer;
+    if (statusEl) {
+      statusEl.textContent = s.label;
+      if (s.green) {
+        statusEl.className        = 'badge green';
+        statusEl.style.background = '';
+        statusEl.style.color      = '';
+      } else {
+        statusEl.className        = 'badge';
+        statusEl.style.background = '#fef3c7';
+        statusEl.style.color      = '#92400e';
+      }
+    }
+    if (timerEl) timerEl.textContent = s.timer;
   });
 }
 
+// ── Historique ──
 function renderElisaHistorique() {
   const el = document.getElementById('elisaHistorique');
+  if (!el) return;
+
   if (campagnesHistory.length === 0) {
-    el.innerHTML = `<div style="padding:32px;text-align:center;color:var(--gray-400);font-size:13px;"><div style="font-size:28px;margin-bottom:8px;">📭</div>Aucune campagne encore lancée.</div>`;
+    el.innerHTML = `
+      <div style="padding:32px;text-align:center;color:var(--gray-400);font-size:13px;">
+        <div style="font-size:28px;margin-bottom:8px;">📭</div>
+        Aucune campagne encore lancée.<br>Créez votre première campagne ci-dessus.
+      </div>`;
     return;
   }
+
+  const deviceLbls = { tous:'Tous appareils', mobile:'Mobile', desktop:'Desktop', tablet:'Tablette' };
+  const genreLbls  = { tous:'Tous', femme:'Femme', homme:'Homme' };
+
   el.innerHTML = campagnesHistory.map(c => {
-    const tauxOuv  = Math.round((c.ouverts / c.envoyes) * 100);
-    const dateStr  = c.date.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
-    const deviceLbl = { tous:'Tous appareils', mobile:'Mobile', desktop:'Desktop', tablet:'Tablette' }[c.targeting.device] || c.targeting.device;
-    const genreLbl  = { tous:'Tous', femme:'Femme', homme:'Homme' }[c.targeting.genre] || c.targeting.genre;
+    const tauxOuv  = c.envoyes > 0 ? Math.round((c.ouverts / c.envoyes) * 100) : 0;
+    const dateStr  = new Date(c.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    const deviceLbl = deviceLbls[c.targeting?.device] || 'Tous appareils';
+    const genreLbl  = genreLbls[c.targeting?.genre]   || 'Tous';
+    const ageLbl    = c.targeting?.age === 'tous' ? 'Tous âges' : (c.targeting?.age || 'Tous âges') + ' ans';
+    const isProg    = c.statut === 'programmée';
+
     return `
       <div style="display:flex;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid var(--gray-100);">
         <div style="width:36px;height:36px;border-radius:10px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📨</div>
         <div style="flex:1;">
           <div style="font-size:13.5px;font-weight:600;color:var(--black);margin-bottom:3px;">${c.nom}</div>
-          <div style="font-size:11.5px;color:var(--gray-400);">${deviceLbl} · ${genreLbl} · ${c.targeting.age === 'tous' ? 'Tous âges' : c.targeting.age + ' ans'} · ${dateStr}</div>
+          <div style="font-size:11.5px;color:var(--gray-400);">${deviceLbl} · ${genreLbl} · ${ageLbl} · ${dateStr}</div>
         </div>
         <div style="text-align:center;">
           <div style="font-size:18px;font-weight:700;color:var(--black);">${c.envoyes}</div>
-          <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;">Envoyés</div>
+          <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;">Destinataires</div>
         </div>
         <div style="text-align:center;">
-          <div style="font-size:18px;font-weight:700;color:#16a34a;">${tauxOuv}%</div>
+          <div style="font-size:18px;font-weight:700;color:#16a34a;">${tauxOuv > 0 ? tauxOuv + '%' : '—'}</div>
           <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;">Ouverture</div>
         </div>
-        <span class="badge green">Envoyée</span>
+        <span class="${isProg ? 'badge' : 'badge green'}" style="${isProg ? 'background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;' : ''}">
+          ${isProg ? 'Programmée' : 'Envoyée'}
+        </span>
       </div>`;
   }).join('');
-}
-
-function loadElisa() {
-  estimerAudience();
-  renderElisaHistorique();
-  updateElisaSlots();
 }
 
 function showMktTab(tab) {
@@ -2577,6 +2953,86 @@ function showMktTab(tab) {
   document.getElementById('mktTabPixels').style.background = tab === 'pixels' ? 'var(--black)' : 'var(--gray-400)';
   document.getElementById('mktTabElisa').style.background  = tab === 'elisa'  ? 'var(--black)' : 'var(--gray-400)';
   if (tab === 'elisa') loadElisa();
+}
+
+// ── Formatage texte riche ──
+function fmtSeq(id, cmd, val) {
+  document.getElementById(id).focus();
+  document.execCommand(cmd, false, val || null);
+}
+
+function genererApercu(n) {
+  const objet   = document.getElementById('e' + n + 'Objet')   ?.value   || '';
+  const corps   = document.getElementById('e' + n + 'Body')    ?.innerHTML || '';
+  const code    = document.getElementById('e' + n + 'Code')    ?.value   || '';
+  const codeVal = document.getElementById('e' + n + 'CodeVal') ?.value   || '';
+  const ctaTxt  = document.getElementById('e' + n + 'CtaText') ?.value   || 'Découvrir la boutique →';
+  const ctaLink = document.getElementById('e' + n + 'CtaLink') ?.value   || '#';
+
+  const obPrev = document.getElementById('e' + n + 'ObjetPreview');
+  if (obPrev) obPrev.textContent = objet || '—';
+
+  const codeBlock = code ? `
+    <div style="background:#f9fafb;border-radius:10px;padding:18px;margin:20px 0;text-align:center;">
+      <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">Code exclusif</div>
+      <div style="font-size:26px;font-weight:800;letter-spacing:3px;color:#000;font-family:monospace;">${code.toUpperCase()}</div>
+      ${codeVal ? `<div style="font-size:13px;color:#16a34a;margin-top:4px;font-weight:600;">${codeVal}</div>` : ''}
+    </div>` : '';
+
+  const objetFormate = objet.replace(/\{\{prenom\}\}/g,'Prénom').replace(/\{\{boutique_nom\}\}/g,'Votre boutique');
+  const corpsFormate = corps.replace(/\{\{prenom\}\}/g,'<strong>Prénom</strong>').replace(/\{\{boutique_nom\}\}/g,'<strong>Votre boutique</strong>');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:"Helvetica Neue",Arial,sans-serif;background:#f3f4f6;padding:20px;}</style>
+    </head><body>
+    <div style="max-width:520px;margin:0 auto;">
+      <div style="background:#000;padding:22px 28px;border-radius:12px 12px 0 0;">
+        <div style="font-size:10px;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:6px;">EASYFY · ELISA</div>
+        <div style="font-size:18px;font-weight:700;color:white;">${objetFormate}</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:24px 28px;border-radius:0 0 12px 12px;">
+        <div style="font-size:13.5px;line-height:1.75;color:#374151;">${corpsFormate}</div>
+        ${codeBlock}
+        <div style="text-align:center;margin:20px 0 16px;">
+          <a href="${ctaLink}" style="background:#000;color:#fff;text-decoration:none;padding:13px 28px;border-radius:8px;font-size:13px;font-weight:700;display:inline-block;">${ctaTxt}</a>
+        </div>
+        <div style="font-size:11px;color:#9ca3af;text-align:center;padding-top:14px;border-top:1px solid #f3f4f6;">Propulsé par <strong>Easyfy</strong></div>
+      </div>
+    </div>
+    ` + '</' + 'body></' + 'html>';
+
+  const iframe = document.getElementById('e' + n + 'Preview');
+  if (iframe) iframe.srcdoc = html;
+}
+
+// ── Récupérer le contenu des séquences pour l'envoi ──
+function getSequencesContent() {
+  return {
+    1: {
+      objet:    document.getElementById('e1Objet')   ?.value   || '',
+      corps:    document.getElementById('e1Body')    ?.innerHTML || '',
+      code:     document.getElementById('e1Code')    ?.value   || '',
+      code_val: document.getElementById('e1CodeVal') ?.value   || '',
+      cta_text: document.getElementById('e1CtaText') ?.value   || '',
+      cta_link: document.getElementById('e1CtaLink') ?.value   || '',
+    },
+    2: {
+      objet:    document.getElementById('e2Objet')   ?.value   || '',
+      corps:    document.getElementById('e2Body')    ?.innerHTML || '',
+      code:     document.getElementById('e2Code')    ?.value   || '',
+      code_val: document.getElementById('e2CodeVal') ?.value   || '',
+      cta_text: document.getElementById('e2CtaText') ?.value   || '',
+      cta_link: document.getElementById('e2CtaLink') ?.value   || '',
+    },
+    3: {
+      objet:    document.getElementById('e3Objet')   ?.value   || '',
+      corps:    document.getElementById('e3Body')    ?.innerHTML || '',
+      code:     document.getElementById('e3Code')    ?.value   || '',
+      code_val: document.getElementById('e3CodeVal') ?.value   || '',
+      cta_text: document.getElementById('e3CtaText') ?.value   || '',
+      cta_link: document.getElementById('e3CtaLink') ?.value   || '',
+    }
+  };
 }
 
 // ══ DÉMARRAGE ══
