@@ -419,7 +419,6 @@
 
   </div>
 </div>
-
 <!-- MARKETING -->
 <div class="page-view" id="page-marketing">
   <div class="marketing-wrap">
@@ -427,14 +426,13 @@
 
     <!-- Onglets -->
     <div style="display:flex;gap:12px;margin-bottom:28px;">
-      <button class="btn-primary" id="mktTabPromo"   onclick="showMktTab('promo')"   style="background:var(--black);">🎟 Codes promo</button>
-      <button class="btn-primary" id="mktTabPixels"  onclick="showMktTab('pixels')"  style="background:var(--gray-400);">📊 Pixels & Tracking</button>
+      <button class="btn-primary" id="mktTabPromo"  onclick="showMktTab('promo')"  style="background:var(--black);">🎟 Codes promo</button>
+      <button class="btn-primary" id="mktTabPixels" onclick="showMktTab('pixels')" style="background:var(--gray-400);">📊 Pixels & Tracking</button>
+      <button class="btn-primary" id="mktTabElisa"  onclick="showMktTab('elisa')"  style="background:var(--gray-400);">⚡ ELISA</button>
     </div>
 
     <!-- ── Tab Codes Promo ── -->
     <div id="mktPanelPromo">
-
-      <!-- Formulaire création -->
       <div class="card" style="margin-bottom:20px;">
         <div class="card-head"><div><h2>Créer un code promo</h2></div></div>
         <div class="card-body-p">
@@ -468,20 +466,15 @@
             </div>
           </div>
           <div id="promoError" style="display:none;background:#f8d7da;border:1px solid #f5c6cb;border-radius:8px;padding:10px 14px;font-size:13px;color:#721c24;margin-top:8px;"></div>
-          <button class="btn-primary" onclick="creerCodePromo(this)" style="margin-top:8px;">
-            ➕ Créer le code promo
-          </button>
+          <button class="btn-primary" onclick="creerCodePromo(this)" style="margin-top:8px;">➕ Créer le code promo</button>
         </div>
       </div>
-
-      <!-- Liste des codes -->
       <div class="card">
         <div class="card-head"><div><h2>Mes codes promo</h2></div></div>
         <div id="promoList" style="padding:8px 0;">
           <div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Chargement…</div>
         </div>
       </div>
-
     </div>
 
     <!-- ── Tab Pixels ── -->
@@ -510,8 +503,185 @@
       </div>
     </div>
 
+    <!-- ── Tab ELISA ── -->
+    <div id="mktPanelElisa" style="display:none;">
+
+      <!-- Hero -->
+      <div style="border-radius:16px;background:var(--black);padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;">
+        <div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:110px;font-weight:900;color:rgba(255,255,255,0.04);pointer-events:none;letter-spacing:-4px;">ELISA</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="font-size:11px;font-weight:700;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);padding:3px 10px;border-radius:20px;">IA · Automatisé</span>
+          </div>
+          <div style="font-size:22px;font-weight:700;color:white;margin-bottom:6px;font-family:'DM Serif Display',serif;">Campagnes intelligentes</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);max-width:460px;line-height:1.6;">
+            Easyfy envoie automatiquement vos campagnes aux meilleurs prospects toutes les 3 jours. Configurez votre ciblage une fois — on s'occupe du reste.
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;">
+          <button id="elisaToggleBtn" onclick="toggleElisa(this)"
+            style="padding:12px 28px;border-radius:24px;border:1px solid rgba(255,255,255,0.15);
+                   background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);
+                   font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+                   cursor:pointer;transition:all .25s;min-width:120px;letter-spacing:.5px;">
+            INACTIF
+          </button>
+          <div style="font-size:11px;color:rgba(255,255,255,0.3);" id="elisaToggleSub">Cliquez pour activer</div>
+        </div>
+      </div>
+
+      <!-- Slots 3 campagnes -->
+      <div style="margin-bottom:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--black);">Vos 3 campagnes gratuites</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">Envoyées automatiquement par Easyfy toutes les 3 jours</div>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:1px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;padding:4px 12px;border-radius:20px;">GRATUIT</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+          <div style="border:1.5px solid var(--black);border-radius:14px;padding:20px;background:white;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray-400);">Campagne 01</div>
+              <span class="badge green" id="slot1Status">Prête</span>
+            </div>
+            <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px;">Prochain envoi</div>
+            <div style="font-size:22px;font-weight:700;font-family:'DM Serif Display',serif;color:var(--black);" id="slot1Timer">Maintenant</div>
+            <div style="margin-top:14px;height:3px;background:var(--gray-100);border-radius:2px;overflow:hidden;">
+              <div style="height:100%;width:100%;background:var(--black);border-radius:2px;"></div>
+            </div>
+          </div>
+          <div style="border:1.5px solid var(--gray-200);border-radius:14px;padding:20px;background:white;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray-400);">Campagne 02</div>
+              <span class="badge" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;" id="slot2Status">J+3</span>
+            </div>
+            <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px;">Prochain envoi</div>
+            <div style="font-size:22px;font-weight:700;font-family:'DM Serif Display',serif;color:var(--black);" id="slot2Timer">Dans 3 jours</div>
+            <div style="margin-top:14px;height:3px;background:var(--gray-100);border-radius:2px;overflow:hidden;">
+              <div style="height:100%;width:33%;background:#f59e0b;border-radius:2px;"></div>
+            </div>
+          </div>
+          <div style="border:1.5px solid var(--gray-200);border-radius:14px;padding:20px;background:white;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray-400);">Campagne 03</div>
+              <span class="badge" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;" id="slot3Status">J+6</span>
+            </div>
+            <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px;">Prochain envoi</div>
+            <div style="font-size:22px;font-weight:700;font-family:'DM Serif Display',serif;color:var(--black);" id="slot3Timer">Dans 6 jours</div>
+            <div style="margin-top:14px;height:3px;background:var(--gray-100);border-radius:2px;overflow:hidden;">
+              <div style="height:100%;width:0%;background:#f59e0b;border-radius:2px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Créer une campagne -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-head">
+          <div><h2>Créer une campagne</h2><p>Configurez le ciblage — Easyfy se charge de l'envoi automatique</p></div>
+        </div>
+        <div style="padding:22px;display:flex;flex-direction:column;gap:22px;">
+
+          <div class="fg">
+            <label class="lbl">Nom de la campagne <span class="req">*</span></label>
+            <input class="inp" type="text" id="campNom" placeholder="Ex : Promo Rentrée 2025" />
+          </div>
+
+          <div class="fg">
+            <label class="lbl">Emails cibles</label>
+            <div style="border:1px solid var(--gray-200);border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;cursor:text;min-height:46px;" id="emailTagsBox" onclick="document.getElementById('emailTagInput').focus()">
+              <input id="emailTagInput" type="email" placeholder="email@exemple.com · Entrée pour valider"
+                style="border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;flex:1;min-width:220px;background:transparent;"
+                onkeydown="addEmailTag(event)" />
+            </div>
+            <div style="font-size:11px;color:var(--gray-400);margin-top:6px;">Laissez vide — Easyfy cible automatiquement vos meilleurs prospects</div>
+          </div>
+
+          <div>
+            <label class="lbl">Appareil</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+              <button class="elisa-chip selected" data-group="device" data-val="tous"    onclick="selectChip(this)"><span>📱💻</span> Tous</button>
+              <button class="elisa-chip"          data-group="device" data-val="mobile"  onclick="selectChip(this)"><span>📱</span> Mobile</button>
+              <button class="elisa-chip"          data-group="device" data-val="desktop" onclick="selectChip(this)"><span>💻</span> Desktop</button>
+              <button class="elisa-chip"          data-group="device" data-val="tablet"  onclick="selectChip(this)"><span>📟</span> Tablette</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="lbl">Genre</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+              <button class="elisa-chip selected" data-group="genre" data-val="tous"   onclick="selectChip(this)"><span>👥</span> Tous</button>
+              <button class="elisa-chip"          data-group="genre" data-val="femme"  onclick="selectChip(this)"><span>👩</span> Femme</button>
+              <button class="elisa-chip"          data-group="genre" data-val="homme"  onclick="selectChip(this)"><span>👨</span> Homme</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="lbl">Tranche d'âge approximative</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+              <button class="elisa-chip selected" data-group="age" data-val="tous"  onclick="selectChip(this)">Tous</button>
+              <button class="elisa-chip"          data-group="age" data-val="18-24" onclick="selectChip(this)">18 – 24</button>
+              <button class="elisa-chip"          data-group="age" data-val="25-34" onclick="selectChip(this)">25 – 34</button>
+              <button class="elisa-chip"          data-group="age" data-val="35-44" onclick="selectChip(this)">35 – 44</button>
+              <button class="elisa-chip"          data-group="age" data-val="45-54" onclick="selectChip(this)">45 – 54</button>
+              <button class="elisa-chip"          data-group="age" data-val="55+"   onclick="selectChip(this)">55 +</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="lbl">Intérêts / Comportement</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+              <button class="elisa-chip" data-group="interet" data-val="acheteurs_frequents" onclick="toggleInterest(this)">🛍 Acheteurs fréquents</button>
+              <button class="elisa-chip" data-group="interet" data-val="promo_sensitive"     onclick="toggleInterest(this)">🏷 Sensible aux promos</button>
+              <button class="elisa-chip" data-group="interet" data-val="mobile_first"        onclick="toggleInterest(this)">📱 Mobile first</button>
+              <button class="elisa-chip" data-group="interet" data-val="nouveaux_visiteurs"  onclick="toggleInterest(this)">✨ Nouveaux visiteurs</button>
+              <button class="elisa-chip" data-group="interet" data-val="panier_abandonne"    onclick="toggleInterest(this)">🛒 Panier abandonné</button>
+              <button class="elisa-chip" data-group="interet" data-val="haute_valeur"        onclick="toggleInterest(this)">💎 Haute valeur (LTV)</button>
+            </div>
+          </div>
+
+          <div style="background:#f8fafc;border:1px solid var(--gray-100);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;">
+            <div style="font-size:24px;">🎯</div>
+            <div style="flex:1;">
+              <div style="font-size:12px;color:var(--gray-400);margin-bottom:2px;">Audience estimée</div>
+              <div style="font-size:16px;font-weight:700;color:var(--black);" id="elisaAudienceEst">Calcul en cours…</div>
+            </div>
+            <div style="font-size:11px;color:var(--gray-400);text-align:right;max-width:160px;line-height:1.5;">Basé sur vos<br>customer_profiles</div>
+          </div>
+
+          <div id="campError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;color:#dc2626;"></div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;padding-top:4px;">
+            <div style="font-size:12px;color:var(--gray-400);">⚡ Easyfy envoie automatiquement · Prochaine fenêtre : <strong>maintenant</strong></div>
+            <button class="btn-primary" onclick="lancerCampagne(this)"
+              style="padding:11px 28px;font-size:13px;font-weight:700;border-radius:10px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Lancer la campagne
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Historique -->
+      <div class="card" style="margin-bottom:32px;">
+        <div class="card-head"><div><h2>Historique des campagnes</h2><p>Résultats de vos derniers envois automatiques</p></div></div>
+        <div id="elisaHistorique" style="padding:8px 0;">
+          <div style="padding:32px;text-align:center;color:var(--gray-400);font-size:13px;">
+            <div style="font-size:28px;margin-bottom:8px;">📭</div>
+            Aucune campagne encore lancée.<br>Créez votre première campagne ci-dessus.
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- ── Fin Tab ELISA ── -->
+
   </div>
 </div>
+<!-- FIN MARKETING -->
+
 
 <!-- AFFILIATION -->
 <div class="page-view" id="page-affiliation">
@@ -2193,6 +2363,220 @@ async function marquerToutLu() {
     });
     loadNotifications();
   } catch (err) { console.error(err); }
+}
+
+// ══ ELISA ══
+let elisaActif     = false;
+let elisaTargeting = { device:'tous', genre:'tous', age:'tous', interets:[] };
+let elisaEmails    = [];
+let campagnesHistory = [];
+
+function toggleElisa(btn) {
+  elisaActif = !elisaActif;
+  const sub  = document.getElementById('elisaToggleSub');
+  if (elisaActif) {
+    btn.textContent      = 'ACTIF';
+    btn.style.background = '#16a34a';
+    btn.style.color      = 'white';
+    btn.style.border     = '1px solid #16a34a';
+    sub.textContent      = '✓ Campagnes activées';
+    sub.style.color      = 'rgba(255,255,255,0.5)';
+  } else {
+    btn.textContent      = 'INACTIF';
+    btn.style.background = 'rgba(255,255,255,0.08)';
+    btn.style.color      = 'rgba(255,255,255,0.5)';
+    btn.style.border     = '1px solid rgba(255,255,255,0.15)';
+    sub.textContent      = 'Cliquez pour activer';
+  }
+  // TODO: PATCH /api/boutiques/:id/elisa { actif: elisaActif }
+}
+
+// Chip sélection unique par groupe
+function selectChip(el) {
+  const group = el.dataset.group;
+  document.querySelectorAll(`.elisa-chip[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  elisaTargeting[group] = el.dataset.val;
+  estimerAudience();
+}
+
+// Intérêts — toggle multiple
+function toggleInterest(el) {
+  el.classList.toggle('interest-on');
+  const val = el.dataset.val;
+  if (el.classList.contains('interest-on')) {
+    if (!elisaTargeting.interets.includes(val)) elisaTargeting.interets.push(val);
+  } else {
+    elisaTargeting.interets = elisaTargeting.interets.filter(v => v !== val);
+  }
+  estimerAudience();
+}
+
+// Email tags
+function addEmailTag(e) {
+  if (e.key !== 'Enter' && e.key !== ',') return;
+  e.preventDefault();
+  const val = e.target.value.trim().replace(/,$/, '');
+  if (!val || !val.includes('@')) return;
+  if (elisaEmails.includes(val)) { e.target.value = ''; return; }
+  elisaEmails.push(val);
+  const tag = document.createElement('span');
+  tag.className = 'email-tag';
+  tag.innerHTML = `${val} <button onclick="removeEmailTag(this,'${val}')">×</button>`;
+  document.getElementById('emailTagInput').before(tag);
+  e.target.value = '';
+  estimerAudience();
+}
+
+function removeEmailTag(btn, email) {
+  btn.closest('.email-tag').remove();
+  elisaEmails = elisaEmails.filter(e => e !== email);
+  estimerAudience();
+}
+
+// Estimation audience (mock — à remplacer par vraie API)
+function estimerAudience() {
+  const el = document.getElementById('elisaAudienceEst');
+  el.textContent = 'Calcul…';
+  clearTimeout(window._audTimer);
+  window._audTimer = setTimeout(() => {
+    // TODO: GET /api/elisa/audience?device=X&genre=Y&age=Z
+    let base = 142;
+    if (elisaTargeting.device !== 'tous') base = Math.round(base * 0.6);
+    if (elisaTargeting.genre  !== 'tous') base = Math.round(base * 0.55);
+    if (elisaTargeting.age    !== 'tous') base = Math.round(base * 0.65);
+    base -= elisaTargeting.interets.length * 8;
+    base = Math.max(base, 12);
+    el.textContent = `~${base} contacts qualifiés`;
+  }, 500);
+}
+
+// Lancer une campagne
+async function lancerCampagne(btn) {
+  const nom    = document.getElementById('campNom').value.trim();
+  const errEl  = document.getElementById('campError');
+  errEl.style.display = 'none';
+
+  if (!nom) {
+    errEl.textContent   = 'Veuillez nommer votre campagne.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!elisaActif) {
+    errEl.textContent   = 'Activez ELISA d\'abord (bouton en haut).';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const slotsDispo = 3 - campagnesHistory.length;
+  if (slotsDispo <= 0) {
+    errEl.textContent   = 'Vos 3 campagnes gratuites sont utilisées ce cycle. Prochaine fenêtre dans 3 jours.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled     = true;
+  btn.innerHTML    = '⏳ Lancement…';
+
+  // Simuler envoi API
+  // TODO: POST /api/elisa/campagnes { nom, emails, targeting: elisaTargeting }
+  await new Promise(r => setTimeout(r, 1200));
+
+  const nouvelleCamp = {
+    id:        Date.now(),
+    nom,
+    statut:    'envoyée',
+    emails:    elisaEmails.length > 0 ? elisaEmails : ['ciblage auto'],
+    targeting: { ...elisaTargeting },
+    envoyes:   Math.floor(Math.random() * 80) + 20,
+    ouverts:   Math.floor(Math.random() * 30) + 5,
+    date:      new Date(),
+  };
+  campagnesHistory.unshift(nouvelleCamp);
+  renderElisaHistorique();
+  updateElisaSlots();
+
+  // Reset formulaire
+  document.getElementById('campNom').value = '';
+  document.getElementById('emailTagsBox').querySelectorAll('.email-tag').forEach(t => t.remove());
+  elisaEmails = [];
+  document.querySelectorAll('.elisa-chip.selected').forEach(c => {
+    if (c.dataset.val !== 'tous') c.classList.remove('selected');
+  });
+  document.querySelectorAll('[data-group="device"][data-val="tous"]').forEach(c => c.classList.add('selected'));
+  document.querySelectorAll('[data-group="genre"][data-val="tous"]').forEach(c => c.classList.add('selected'));
+  document.querySelectorAll('[data-group="age"][data-val="tous"]').forEach(c => c.classList.add('selected'));
+  document.querySelectorAll('.elisa-chip.interest-on').forEach(c => c.classList.remove('interest-on'));
+  elisaTargeting = { device:'tous', genre:'tous', age:'tous', interets:[] };
+  estimerAudience();
+
+  btn.innerHTML = '✅ Campagne lancée !';
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
+  }, 2500);
+}
+
+function updateElisaSlots() {
+  const used = campagnesHistory.length;
+  const slotStatuses = [
+    { id:'slot1', label: used > 0 ? 'Envoyée' : 'Prête',     timer: used > 0 ? 'Il y a peu' : 'Maintenant', pct: used > 0 ? 100 : 100, color: used > 0 ? '#16a34a' : 'var(--black)', badgeCls: used > 0 ? 'green' : 'green' },
+    { id:'slot2', label: used > 1 ? 'Envoyée' : 'J+3',        timer: used > 1 ? 'Il y a 3j' : 'Dans 3 jours', pct: used > 1 ? 100 : 33,  color: '#f59e0b', badgeCls: used > 1 ? 'green' : '' },
+    { id:'slot3', label: used > 2 ? 'Envoyée' : 'J+6',        timer: used > 2 ? 'Il y a 6j' : 'Dans 6 jours', pct: used > 2 ? 100 : 0,   color: '#f59e0b', badgeCls: '' },
+  ];
+  slotStatuses.forEach((s, i) => {
+    const statusEl = document.getElementById(s.id + 'Status');
+    const timerEl  = document.getElementById(s.id + 'Timer');
+    if (statusEl) { statusEl.textContent = s.label; statusEl.className = s.badgeCls === 'green' ? 'badge green' : 'badge'; if (!s.badgeCls) { statusEl.style.background='#fef3c7'; statusEl.style.color='#92400e'; } }
+    if (timerEl)  timerEl.textContent = s.timer;
+  });
+}
+
+function renderElisaHistorique() {
+  const el = document.getElementById('elisaHistorique');
+  if (campagnesHistory.length === 0) {
+    el.innerHTML = `<div style="padding:32px;text-align:center;color:var(--gray-400);font-size:13px;"><div style="font-size:28px;margin-bottom:8px;">📭</div>Aucune campagne encore lancée.</div>`;
+    return;
+  }
+  el.innerHTML = campagnesHistory.map(c => {
+    const tauxOuv  = Math.round((c.ouverts / c.envoyes) * 100);
+    const dateStr  = c.date.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    const deviceLbl = { tous:'Tous appareils', mobile:'Mobile', desktop:'Desktop', tablet:'Tablette' }[c.targeting.device] || c.targeting.device;
+    const genreLbl  = { tous:'Tous', femme:'Femme', homme:'Homme' }[c.targeting.genre] || c.targeting.genre;
+    return `
+      <div style="display:flex;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid var(--gray-100);">
+        <div style="width:36px;height:36px;border-radius:10px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📨</div>
+        <div style="flex:1;">
+          <div style="font-size:13.5px;font-weight:600;color:var(--black);margin-bottom:3px;">${c.nom}</div>
+          <div style="font-size:11.5px;color:var(--gray-400);">${deviceLbl} · ${genreLbl} · ${c.targeting.age === 'tous' ? 'Tous âges' : c.targeting.age + ' ans'} · ${dateStr}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:18px;font-weight:700;color:var(--black);">${c.envoyes}</div>
+          <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;">Envoyés</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:18px;font-weight:700;color:#16a34a;">${tauxOuv}%</div>
+          <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;">Ouverture</div>
+        </div>
+        <span class="badge green">Envoyée</span>
+      </div>`;
+  }).join('');
+}
+
+function loadElisa() {
+  estimerAudience();
+  renderElisaHistorique();
+  updateElisaSlots();
+}
+
+function showMktTab(tab) {
+  document.getElementById('mktPanelPromo').style.display  = tab === 'promo'  ? 'block' : 'none';
+  document.getElementById('mktPanelPixels').style.display = tab === 'pixels' ? 'block' : 'none';
+  document.getElementById('mktPanelElisa').style.display  = tab === 'elisa'  ? 'block' : 'none';
+  document.getElementById('mktTabPromo').style.background  = tab === 'promo'  ? 'var(--black)' : 'var(--gray-400)';
+  document.getElementById('mktTabPixels').style.background = tab === 'pixels' ? 'var(--black)' : 'var(--gray-400)';
+  document.getElementById('mktTabElisa').style.background  = tab === 'elisa'  ? 'var(--black)' : 'var(--gray-400)';
+  if (tab === 'elisa') loadElisa();
 }
 
 // ══ DÉMARRAGE ══
