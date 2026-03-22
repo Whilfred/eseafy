@@ -115,7 +115,6 @@ router.get('/audience', auth, async (req, res) => {
     if (boutiqueRes.rows.length === 0) return res.status(404).json({ message: 'Boutique introuvable' });
     const boutique_id = boutiqueRes.rows[0].id;
 
-    // Tous les clients avec email — peu importe le statut
     const conditions = ['c.boutique_id = $1', 'c.email_client IS NOT NULL'];
     const values     = [boutique_id];
     let   idx        = 2;
@@ -141,7 +140,7 @@ router.get('/audience', auth, async (req, res) => {
 
 // ══ POST /api/elisa/campagnes ══
 router.post('/campagnes', auth, async (req, res) => {
-  const { nom, emails, targeting } = req.body;
+  const { nom, emails, targeting, sequences } = req.body;
 
   if (!nom) return res.status(400).json({ message: 'Nom de campagne requis' });
 
@@ -173,11 +172,8 @@ router.post('/campagnes', auth, async (req, res) => {
     let destinataires = [];
 
     if (emails && emails.length > 0) {
-      // Emails saisis manuellement
       destinataires = emails.map(e => ({ email: e, prenom: null }));
-
     } else {
-      // Ciblage automatique — tous clients avec email peu importe statut
       const conditions = ['c.boutique_id = $1', 'c.email_client IS NOT NULL'];
       const values     = [boutique.id];
       let   idx        = 2;
@@ -218,13 +214,24 @@ router.post('/campagnes', auth, async (req, res) => {
     // ── Créer les 3 séquences J0 / J+3 / J+6 ──
     const now = new Date();
     for (let seq = 1; seq <= 3; seq++) {
-      const send_at = new Date(now);
+      const send_at    = new Date(now);
       send_at.setDate(send_at.getDate() + (seq - 1) * 3);
 
+      // Contenu personnalisé de cette séquence (saisi dans le frontend)
+      const seqContent = (sequences && sequences[seq]) ? sequences[seq] : null;
+
       await pool.query(
-        `INSERT INTO elisa_campagnes (boutique_id, nom, sequence_num, destinataires, targeting, send_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [boutique.id, nom, seq, JSON.stringify(destinataires), JSON.stringify(targeting || {}), send_at]
+        `INSERT INTO elisa_campagnes (boutique_id, nom, sequence_num, destinataires, targeting, send_at, sequences)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          boutique.id,
+          nom,
+          seq,
+          JSON.stringify(destinataires),
+          JSON.stringify(targeting || {}),
+          send_at,
+          JSON.stringify(seqContent || {})
+        ]
       );
     }
 
@@ -248,8 +255,12 @@ router.post('/campagnes', auth, async (req, res) => {
 
     console.log(`⚡ Campagne ELISA "${nom}" — ${destinataires.length} destinataires — 3 séquences programmées`);
 
+    // ── Envoi immédiat de la séquence J0 ──
+    const { envoyerCampagnesElisa } = require('../jobs/elisa.cron');
+    setImmediate(envoyerCampagnesElisa);
+
     res.json({
-      message:       'Campagne enregistrée — 3 emails programmés (J0, J+3, J+6)',
+      message:       'Campagne enregistrée — emails J0 en cours d\'envoi, J+3 et J+6 programmés',
       nom,
       destinataires: destinataires.length,
       emails_sent:   envoyes + 1,
