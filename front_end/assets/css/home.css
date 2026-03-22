@@ -370,3 +370,57 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
     padding: 32px 20px;
   }
 }
+
+/* ── ELISA chips ── */
+.elisa-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--gray-200);
+  background: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: all .18s;
+}
+.elisa-chip:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+.elisa-chip.selected {
+  background: var(--black);
+  border-color: var(--black);
+  color: white;
+}
+.elisa-chip.interest-on {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+/* ── Email tags ── */
+.email-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--black);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.email-tag button {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  line-height: 1;
+}
+.email-tag button:hover { color: white; }
