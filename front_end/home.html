@@ -2366,66 +2366,14 @@ async function marquerToutLu() {
 }
 
 // ══ ELISA ══
-let elisaActif       = false;
-let elisaTargeting   = { device:'tous', genre:'tous', age:'tous', interets:[] };
-let elisaEmails      = [];
+let elisaActif     = false;
+let elisaTargeting = { device:'tous', genre:'tous', age:'tous', interets:[] };
+let elisaEmails    = [];
 let campagnesHistory = [];
 
-// ── Charger config au démarrage ──
-async function loadElisa() {
-  try {
-    const res  = await fetch(`${API_URL}/elisa/config`, {
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    const data = await res.json();
-    if (!res.ok) { estimerAudience(); return; }
-
-    // Sync toggle
-    if (data.actif) {
-      elisaActif = true;
-      const btn = document.getElementById('elisaToggleBtn');
-      const sub = document.getElementById('elisaToggleSub');
-      if (btn) {
-        btn.textContent      = 'ACTIF';
-        btn.style.background = '#16a34a';
-        btn.style.color      = 'white';
-        btn.style.border     = '1px solid #16a34a';
-      }
-      if (sub) {
-        sub.textContent = '✓ Campagnes activées';
-        sub.style.color = 'rgba(255,255,255,0.5)';
-      }
-    }
-
-    // Limite plan
-    const isPro    = data.plan === 'pro';
-    const limitEl  = document.getElementById('elisaStatLimit');
-    if (limitEl) limitEl.textContent = isPro ? '∞' : `${data.emails_sent} / 3`;
-
-    if (isPro) {
-      const banner = document.getElementById('elisaFreeBanner');
-      if (banner) banner.style.display = 'none';
-    } else {
-      setTimeout(() => {
-        const bar = document.getElementById('elisaLimitBar');
-        if (bar) bar.style.width = Math.min((data.emails_sent / 3) * 100, 100) + '%';
-      }, 300);
-    }
-
-  } catch (err) {
-    console.warn('⚠️ loadElisa :', err);
-  }
-
-  estimerAudience();
-  renderElisaHistorique();
-  updateElisaSlots();
-}
-
-// ── Toggle ON/OFF ──
-async function toggleElisa(btn) {
+function toggleElisa(btn) {
   elisaActif = !elisaActif;
   const sub  = document.getElementById('elisaToggleSub');
-
   if (elisaActif) {
     btn.textContent      = 'ACTIF';
     btn.style.background = '#16a34a';
@@ -2439,21 +2387,11 @@ async function toggleElisa(btn) {
     btn.style.color      = 'rgba(255,255,255,0.5)';
     btn.style.border     = '1px solid rgba(255,255,255,0.15)';
     sub.textContent      = 'Cliquez pour activer';
-    sub.style.color      = 'rgba(255,255,255,0.3)';
   }
-
-  try {
-    await fetch(`${API_URL}/elisa/config`, {
-      method:  'PATCH',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body:    JSON.stringify({ actif: elisaActif })
-    });
-  } catch (err) {
-    console.warn('⚠️ toggleElisa :', err);
-  }
+  // TODO: PATCH /api/boutiques/:id/elisa { actif: elisaActif }
 }
 
-// ── Chip sélection unique par groupe ──
+// Chip sélection unique par groupe
 function selectChip(el) {
   const group = el.dataset.group;
   document.querySelectorAll(`.elisa-chip[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
@@ -2462,7 +2400,7 @@ function selectChip(el) {
   estimerAudience();
 }
 
-// ── Intérêts — toggle multiple ──
+// Intérêts — toggle multiple
 function toggleInterest(el) {
   el.classList.toggle('interest-on');
   const val = el.dataset.val;
@@ -2474,7 +2412,7 @@ function toggleInterest(el) {
   estimerAudience();
 }
 
-// ── Email tags ──
+// Email tags
 function addEmailTag(e) {
   if (e.key !== 'Enter' && e.key !== ',') return;
   e.preventDefault();
@@ -2496,42 +2434,27 @@ function removeEmailTag(btn, email) {
   estimerAudience();
 }
 
-// ── Estimation audience (vraie API) ──
+// Estimation audience (mock — à remplacer par vraie API)
 function estimerAudience() {
   const el = document.getElementById('elisaAudienceEst');
-  if (!el) return;
   el.textContent = 'Calcul…';
   clearTimeout(window._audTimer);
-  window._audTimer = setTimeout(async () => {
-    try {
-      const params = new URLSearchParams({
-        device: elisaTargeting.device,
-        genre:  elisaTargeting.genre,
-        age:    elisaTargeting.age,
-      });
-      const res  = await fetch(`${API_URL}/elisa/audience?${params}`, {
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-      const data = await res.json();
-      el.textContent = res.ok
-        ? `~${data.audience} contact${data.audience > 1 ? 's' : ''} qualifié${data.audience > 1 ? 's' : ''}`
-        : '— contacts';
-    } catch {
-      // Fallback estimation locale si API indisponible
-      let base = 142;
-      if (elisaTargeting.device !== 'tous') base = Math.round(base * 0.6);
-      if (elisaTargeting.genre  !== 'tous') base = Math.round(base * 0.55);
-      if (elisaTargeting.age    !== 'tous') base = Math.round(base * 0.65);
-      base -= elisaTargeting.interets.length * 8;
-      el.textContent = `~${Math.max(base, 12)} contacts qualifiés`;
-    }
+  window._audTimer = setTimeout(() => {
+    // TODO: GET /api/elisa/audience?device=X&genre=Y&age=Z
+    let base = 142;
+    if (elisaTargeting.device !== 'tous') base = Math.round(base * 0.6);
+    if (elisaTargeting.genre  !== 'tous') base = Math.round(base * 0.55);
+    if (elisaTargeting.age    !== 'tous') base = Math.round(base * 0.65);
+    base -= elisaTargeting.interets.length * 8;
+    base = Math.max(base, 12);
+    el.textContent = `~${base} contacts qualifiés`;
   }, 500);
 }
 
-// ── Lancer une campagne ──
+// Lancer une campagne
 async function lancerCampagne(btn) {
-  const nom   = document.getElementById('campNom').value.trim();
-  const errEl = document.getElementById('campError');
+  const nom    = document.getElementById('campNom').value.trim();
+  const errEl  = document.getElementById('campError');
   errEl.style.display = 'none';
 
   if (!nom) {
@@ -2545,68 +2468,35 @@ async function lancerCampagne(btn) {
     return;
   }
 
-  btn.disabled  = true;
-  btn.innerHTML = '⏳ Lancement…';
-
-  try {
-    const res  = await fetch(`${API_URL}/elisa/campagnes`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body:    JSON.stringify({
-        nom,
-        emails:    elisaEmails,
-        targeting: elisaTargeting
-      })
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      errEl.textContent   = data.message || 'Erreur lors du lancement.';
-      errEl.style.display = 'block';
-      btn.disabled        = false;
-      btn.innerHTML       = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
-      return;
-    }
-
-    // Ajouter à l'historique local
-    campagnesHistory.unshift({
-      nom,
-      statut:    'programmée',
-      targeting: { ...elisaTargeting },
-      envoyes:   data.destinataires,
-      ouverts:   0,
-      date:      new Date(),
-    });
-
-    // Mettre à jour le compteur limite
-    const limitEl = document.getElementById('elisaStatLimit');
-    if (limitEl) limitEl.textContent = data.reste === null ? '∞' : `${3 - data.reste} / 3`;
-    const bar = document.getElementById('elisaLimitBar');
-    if (bar && data.reste !== null) {
-      bar.style.width = Math.min(((3 - data.reste) / 3) * 100, 100) + '%';
-    }
-
-    renderElisaHistorique();
-    updateElisaSlots();
-    resetElisaForm();
-
-    btn.innerHTML = '✅ Campagne lancée !';
-    setTimeout(() => {
-      btn.disabled  = false;
-      btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
-    }, 2500);
-
-  } catch (err) {
-    console.error('❌ lancerCampagne DÉTAIL :', err);
-    errEl.textContent   = err.message || 'Erreur serveur.';
+  const slotsDispo = 3 - campagnesHistory.length;
+  if (slotsDispo <= 0) {
+    errEl.textContent   = 'Vos 3 campagnes gratuites sont utilisées ce cycle. Prochaine fenêtre dans 3 jours.';
     errEl.style.display = 'block';
-    btn.disabled        = false;
-    btn.innerHTML       = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
+    return;
   }
-}
 
-// ── Reset formulaire après lancement ──
-function resetElisaForm() {
+  btn.disabled     = true;
+  btn.innerHTML    = '⏳ Lancement…';
+
+  // Simuler envoi API
+  // TODO: POST /api/elisa/campagnes { nom, emails, targeting: elisaTargeting }
+  await new Promise(r => setTimeout(r, 1200));
+
+  const nouvelleCamp = {
+    id:        Date.now(),
+    nom,
+    statut:    'envoyée',
+    emails:    elisaEmails.length > 0 ? elisaEmails : ['ciblage auto'],
+    targeting: { ...elisaTargeting },
+    envoyes:   Math.floor(Math.random() * 80) + 20,
+    ouverts:   Math.floor(Math.random() * 30) + 5,
+    date:      new Date(),
+  };
+  campagnesHistory.unshift(nouvelleCamp);
+  renderElisaHistorique();
+  updateElisaSlots();
+
+  // Reset formulaire
   document.getElementById('campNom').value = '';
   document.getElementById('emailTagsBox').querySelectorAll('.email-tag').forEach(t => t.remove());
   elisaEmails = [];
@@ -2614,84 +2504,69 @@ function resetElisaForm() {
     if (c.dataset.val !== 'tous') c.classList.remove('selected');
   });
   document.querySelectorAll('[data-group="device"][data-val="tous"]').forEach(c => c.classList.add('selected'));
-  document.querySelectorAll('[data-group="genre"][data-val="tous"]').forEach(c  => c.classList.add('selected'));
-  document.querySelectorAll('[data-group="age"][data-val="tous"]').forEach(c    => c.classList.add('selected'));
+  document.querySelectorAll('[data-group="genre"][data-val="tous"]').forEach(c => c.classList.add('selected'));
+  document.querySelectorAll('[data-group="age"][data-val="tous"]').forEach(c => c.classList.add('selected'));
   document.querySelectorAll('.elisa-chip.interest-on').forEach(c => c.classList.remove('interest-on'));
   elisaTargeting = { device:'tous', genre:'tous', age:'tous', interets:[] };
   estimerAudience();
+
+  btn.innerHTML = '✅ Campagne lancée !';
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
+  }, 2500);
 }
 
-// ── Slots visuels ──
 function updateElisaSlots() {
   const used = campagnesHistory.length;
-  [
-    { id:'slot1', label: used > 0 ? 'Envoyée' : 'Prête',      timer: used > 0 ? 'Il y a peu'    : 'Maintenant',   green: true  },
-    { id:'slot2', label: used > 1 ? 'Envoyée' : 'J+3',         timer: used > 1 ? 'Il y a 3j'     : 'Dans 3 jours', green: used > 1 },
-    { id:'slot3', label: used > 2 ? 'Envoyée' : 'J+6',         timer: used > 2 ? 'Il y a 6j'     : 'Dans 6 jours', green: used > 2 },
-  ].forEach(s => {
+  const slotStatuses = [
+    { id:'slot1', label: used > 0 ? 'Envoyée' : 'Prête',     timer: used > 0 ? 'Il y a peu' : 'Maintenant', pct: used > 0 ? 100 : 100, color: used > 0 ? '#16a34a' : 'var(--black)', badgeCls: used > 0 ? 'green' : 'green' },
+    { id:'slot2', label: used > 1 ? 'Envoyée' : 'J+3',        timer: used > 1 ? 'Il y a 3j' : 'Dans 3 jours', pct: used > 1 ? 100 : 33,  color: '#f59e0b', badgeCls: used > 1 ? 'green' : '' },
+    { id:'slot3', label: used > 2 ? 'Envoyée' : 'J+6',        timer: used > 2 ? 'Il y a 6j' : 'Dans 6 jours', pct: used > 2 ? 100 : 0,   color: '#f59e0b', badgeCls: '' },
+  ];
+  slotStatuses.forEach((s, i) => {
     const statusEl = document.getElementById(s.id + 'Status');
     const timerEl  = document.getElementById(s.id + 'Timer');
-    if (statusEl) {
-      statusEl.textContent = s.label;
-      if (s.green) {
-        statusEl.className        = 'badge green';
-        statusEl.style.background = '';
-        statusEl.style.color      = '';
-      } else {
-        statusEl.className        = 'badge';
-        statusEl.style.background = '#fef3c7';
-        statusEl.style.color      = '#92400e';
-      }
-    }
-    if (timerEl) timerEl.textContent = s.timer;
+    if (statusEl) { statusEl.textContent = s.label; statusEl.className = s.badgeCls === 'green' ? 'badge green' : 'badge'; if (!s.badgeCls) { statusEl.style.background='#fef3c7'; statusEl.style.color='#92400e'; } }
+    if (timerEl)  timerEl.textContent = s.timer;
   });
 }
 
-// ── Historique ──
 function renderElisaHistorique() {
   const el = document.getElementById('elisaHistorique');
-  if (!el) return;
-
   if (campagnesHistory.length === 0) {
-    el.innerHTML = `
-      <div style="padding:32px;text-align:center;color:var(--gray-400);font-size:13px;">
-        <div style="font-size:28px;margin-bottom:8px;">📭</div>
-        Aucune campagne encore lancée.<br>Créez votre première campagne ci-dessus.
-      </div>`;
+    el.innerHTML = `<div style="padding:32px;text-align:center;color:var(--gray-400);font-size:13px;"><div style="font-size:28px;margin-bottom:8px;">📭</div>Aucune campagne encore lancée.</div>`;
     return;
   }
-
-  const deviceLbls = { tous:'Tous appareils', mobile:'Mobile', desktop:'Desktop', tablet:'Tablette' };
-  const genreLbls  = { tous:'Tous', femme:'Femme', homme:'Homme' };
-
   el.innerHTML = campagnesHistory.map(c => {
-    const tauxOuv  = c.envoyes > 0 ? Math.round((c.ouverts / c.envoyes) * 100) : 0;
-    const dateStr  = new Date(c.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
-    const deviceLbl = deviceLbls[c.targeting?.device] || 'Tous appareils';
-    const genreLbl  = genreLbls[c.targeting?.genre]   || 'Tous';
-    const ageLbl    = c.targeting?.age === 'tous' ? 'Tous âges' : (c.targeting?.age || 'Tous âges') + ' ans';
-    const isProg    = c.statut === 'programmée';
-
+    const tauxOuv  = Math.round((c.ouverts / c.envoyes) * 100);
+    const dateStr  = c.date.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    const deviceLbl = { tous:'Tous appareils', mobile:'Mobile', desktop:'Desktop', tablet:'Tablette' }[c.targeting.device] || c.targeting.device;
+    const genreLbl  = { tous:'Tous', femme:'Femme', homme:'Homme' }[c.targeting.genre] || c.targeting.genre;
     return `
       <div style="display:flex;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid var(--gray-100);">
         <div style="width:36px;height:36px;border-radius:10px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📨</div>
         <div style="flex:1;">
           <div style="font-size:13.5px;font-weight:600;color:var(--black);margin-bottom:3px;">${c.nom}</div>
-          <div style="font-size:11.5px;color:var(--gray-400);">${deviceLbl} · ${genreLbl} · ${ageLbl} · ${dateStr}</div>
+          <div style="font-size:11.5px;color:var(--gray-400);">${deviceLbl} · ${genreLbl} · ${c.targeting.age === 'tous' ? 'Tous âges' : c.targeting.age + ' ans'} · ${dateStr}</div>
         </div>
         <div style="text-align:center;">
           <div style="font-size:18px;font-weight:700;color:var(--black);">${c.envoyes}</div>
-          <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;">Destinataires</div>
+          <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;">Envoyés</div>
         </div>
         <div style="text-align:center;">
-          <div style="font-size:18px;font-weight:700;color:#16a34a;">${tauxOuv > 0 ? tauxOuv + '%' : '—'}</div>
+          <div style="font-size:18px;font-weight:700;color:#16a34a;">${tauxOuv}%</div>
           <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;">Ouverture</div>
         </div>
-        <span class="${isProg ? 'badge' : 'badge green'}" style="${isProg ? 'background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;' : ''}">
-          ${isProg ? 'Programmée' : 'Envoyée'}
-        </span>
+        <span class="badge green">Envoyée</span>
       </div>`;
   }).join('');
+}
+
+function loadElisa() {
+  estimerAudience();
+  renderElisaHistorique();
+  updateElisaSlots();
 }
 
 function showMktTab(tab) {
