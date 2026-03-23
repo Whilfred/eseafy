@@ -306,6 +306,8 @@
     </select>
     <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
     <button class="tb" onclick="document.execCommand('createLink',false,prompt('URL :','https://'))">🔗</button>
+<button class="tb" title="Insérer image/vidéo" onclick="document.getElementById('mediaInsertInput').click()">🖼️</button>
+<input type="file" id="mediaInsertInput" accept="image/*,video/mp4" style="display:none;" onchange="insererMediaLocal(this)" />
     <button class="tb" onclick="fmt('removeFormat')" style="font-size:11px;">✕fmt</button>
   </div>
   <div class="editor-body" id="editorBody" contenteditable="true"
@@ -1450,7 +1452,11 @@ function startCreation(type) {
   document.getElementById('editorBody').innerHTML = '';
   document.getElementById('prixInput').value     = '';
   document.getElementById('prixBarreInput').value = '';
-  selectedFiles = []; // ← ajout
+  selectedFiles  = [];
+  digitalFileUrl = null;
+  const lbl = document.getElementById('digitalFileLabel');
+  if (lbl) { lbl.innerHTML = '📎 Cliquez pour uploader · PDF, ZIP, MP3, MP4, MOV…'; lbl.style.color = ''; }
+  afficherChampsType(type);
   showProdSubview('subProdCreate');
   goStep(1);
   window.scrollTo({ top:0 });
@@ -3115,6 +3121,175 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+
+// ══ FICHIER DIGITAL ══
+let digitalFileUrl = null;
+
+async function handleDigitalFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const label = document.getElementById('digitalFileLabel');
+  const size  = (file.size / 1024 / 1024).toFixed(1);
+  label.innerHTML = `⏳ Upload en cours… ${size} Mo`;
+  label.style.color = 'var(--gray-400)';
+  const formData = new FormData();
+  formData.append('fichier', file);
+  try {
+    const res  = await fetch(`${API_URL}/produits/upload-digital`, {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: formData
+    });
+    const data = await res.json();
+    if (res.ok) {
+      digitalFileUrl = data.url;
+      label.innerHTML = `✅ <strong>${file.name}</strong> · ${size} Mo · Uploadé`;
+      label.style.color = '#16a34a';
+    } else {
+      label.innerHTML = `❌ ${data.message}`;
+      label.style.color = '#dc2626';
+    }
+  } catch (err) {
+    label.innerHTML = `❌ Erreur upload`;
+    label.style.color = '#dc2626';
+  }
+}
+
+// ══ INSÉRER IMAGE/VIDÉO DANS L'ÉDITEUR ══
+async function insererMedia(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const ext     = file.name.split('.').pop().toLowerCase();
+  const isVideo = ['mp4','mov','avi','webm'].includes(ext);
+  const editor  = document.getElementById('editorBody');
+
+  // Aperçu local pendant l'upload
+  const el = document.createElement(isVideo ? 'video' : 'img');
+  el.style.cssText = 'max-width:100%;border-radius:8px;margin:8px 0;opacity:0.5;display:block;';
+  el.src = URL.createObjectURL(file);
+  if (isVideo) el.controls = true;
+  editor.focus();
+  editor.appendChild(el);
+
+  const formData = new FormData();
+  formData.append('media', file);
+  try {
+    const res  = await fetch(`${API_URL}/produits/upload-media`, {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: formData
+    });
+    const data = await res.json();
+    if (res.ok) {
+      el.src = data.url;
+      el.style.opacity = '1';
+      console.log('🖼️ Media inséré :', data.url);
+    } else {
+      el.remove();
+      alert('❌ ' + data.message);
+    }
+  } catch (err) {
+    el.remove();
+    alert('❌ Erreur upload media');
+  }
+  input.value = '';
+}
+
+// ══ DONNÉES DIGITAL ══
+function getDigitalData() {
+  return {
+    fichier_url: digitalFileUrl || null,
+    lien:        document.getElementById('digitalLien')?.value   || '',
+    dl_max:      parseInt(document.getElementById('digitalDlMax')?.value) || null,
+    duree:       document.getElementById('digitalDuree')?.value  || 'illimitee',
+  };
+}
+
+// ══ DONNÉES PHYSIQUE ══
+function getPhysicalData() {
+  const livraisons = [];
+  if (document.getElementById('livrDomicile')?.checked) livraisons.push('domicile');
+  if (document.getElementById('livrRetrait')?.checked)  livraisons.push('retrait');
+  if (document.getElementById('livrRelais')?.checked)   livraisons.push('relais');
+  const variantes = [];
+  document.querySelectorAll('#variantesBox > div').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    if (inputs[0]?.value) variantes.push({ nom: inputs[0].value, options: inputs[1]?.value || '' });
+  });
+  return {
+    stock:      parseInt(document.getElementById('physStock')?.value)  || 0,
+    sku:        document.getElementById('physSku')?.value              || '',
+    poids:      parseFloat(document.getElementById('physPoids')?.value)|| 0,
+    delai:      document.getElementById('physDelai')?.value            || '3-5j',
+    livraisons, variantes,
+    stock_auto: document.getElementById('physStockAuto')?.checked      ?? true,
+  };
+}
+
+// ══ VARIANTES ══
+let variantesCount = 0;
+function ajouterVariante() {
+  variantesCount++;
+  const box = document.getElementById('variantesBox');
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  row.innerHTML = `
+    <input class="inp" type="text" placeholder="Nom (ex : Taille)" style="flex:1;" />
+    <input class="inp" type="text" placeholder="Options (ex : S, M, L, XL)" style="flex:2;" />
+    <button type="button" onclick="this.parentElement.remove()"
+      style="border:none;background:none;cursor:pointer;color:var(--gray-400);font-size:18px;padding:0 4px;">×</button>
+  `;
+  box.appendChild(row);
+}
+
+// ══ AFFICHER CHAMPS PAR TYPE ══
+function afficherChampsType(type) {
+  const digital   = document.getElementById('fieldsDigital');
+  const physical  = document.getElementById('fieldsPhysical');
+  const titre     = document.getElementById('conseilsTypeTitre');
+  const body      = document.getElementById('conseilsTypeBody');
+  if (type === 'digital') {
+    if (digital)  digital.style.display  = 'block';
+    if (physical) physical.style.display = 'none';
+    if (titre) titre.textContent = '📦 Produit digital';
+    if (body)  body.innerHTML = '<div class="info-box">💡 Uploadez votre fichier ou collez un lien Drive/Notion. Le client y accède automatiquement après paiement.</div>';
+  } else {
+    if (digital)  digital.style.display  = 'none';
+    if (physical) physical.style.display = 'block';
+    if (titre) titre.textContent = '🚚 Produit physique';
+    if (body)  body.innerHTML = '<div class="info-box">💡 Gérez votre stock et vos variantes. Le stock se décrémente automatiquement à chaque vente.</div>';
+  }
+}
+
+function insererMediaLocal(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const editor = document.getElementById('editorBody');
+    editor.focus();
+    const ext     = file.name.split('.').pop().toLowerCase();
+    const isVideo = ['mp4','mov','webm'].includes(ext);
+
+    const br1 = document.createElement('br');
+    const br2 = document.createElement('br');
+    const el  = isVideo ? document.createElement('video') : document.createElement('img');
+    el.src    = e.target.result;
+    el.style.cssText = 'max-width:100%;border-radius:8px;margin:8px 0;display:block;';
+    if (isVideo) el.controls = true;
+
+    editor.appendChild(br1);
+    editor.appendChild(el);
+    editor.appendChild(br2);
+
+    // Placer le curseur après l'image pour écrire dessous
+    const range = document.createRange();
+    const sel   = window.getSelection();
+    range.setStartAfter(br2);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
 
 // ══ DÉMARRAGE ══
 loadUserInfo();
