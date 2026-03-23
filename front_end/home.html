@@ -560,30 +560,60 @@
 
     <!-- ── Tab ELISA ── -->
     <div id="mktPanelElisa" style="display:none;">
+<!-- Hero -->
+<div style="border-radius:16px;background:var(--black);padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;">
+  
+  <div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:110px;font-weight:900;color:rgba(255,255,255,0.04);pointer-events:none;letter-spacing:-4px;">ELISA</div>
+  
+  <div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:700;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);padding:3px 10px;border-radius:20px;">IA · Automatisé</span>
+    </div>
 
-      <!-- Hero -->
-      <div style="border-radius:16px;background:var(--black);padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;">
-        <div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:110px;font-weight:900;color:rgba(255,255,255,0.04);pointer-events:none;letter-spacing:-4px;">ELISA</div>
-        <div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-            <span style="font-size:11px;font-weight:700;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);padding:3px 10px;border-radius:20px;">IA · Automatisé</span>
-          </div>
-          <div style="font-size:22px;font-weight:700;color:white;margin-bottom:6px;font-family:'DM Serif Display',serif;">Campagnes intelligentes</div>
-          <div style="font-size:13px;color:rgba(255,255,255,0.5);max-width:460px;line-height:1.6;">
-            Easyfy envoie automatiquement vos campagnes aux meilleurs prospects tous les 3 jours. Configurez votre ciblage une fois — on s'occupe du reste.
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;">
-          <button id="elisaToggleBtn" onclick="toggleElisa(this)"
-            style="padding:12px 28px;border-radius:24px;border:1px solid rgba(255,255,255,0.15);
-                   background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);
-                   font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
-                   cursor:pointer;transition:all .25s;min-width:120px;letter-spacing:.5px;">
-            INACTIF
-          </button>
-          <div style="font-size:11px;color:rgba(255,255,255,0.3);" id="elisaToggleSub">Cliquez pour activer</div>
-        </div>
-      </div>
+    <div style="font-size:22px;font-weight:700;color:white;margin-bottom:6px;font-family:'DM Serif Display',serif;">
+      Campagnes intelligentes
+    </div>
+
+    <div style="font-size:13px;color:rgba(255,255,255,0.5);max-width:460px;line-height:1.6;">
+      Easyfy envoie automatiquement vos campagnes aux meilleurs prospects tous les 3 jours. Configurez votre ciblage une fois.
+    </div>
+
+    <!-- Voir plus -->
+    <div onclick="toggleElisaInfo()" 
+         style="margin-top:10px;font-size:12px;color:#f59e0b;cursor:pointer;font-weight:600;">
+      Voir plus →
+    </div>
+
+    <!-- Texte caché -->
+    <div id="elisaInfo" 
+         style="display:none;margin-top:12px;font-size:13px;color:rgba(255,255,255,0.6);max-width:460px;line-height:1.6;">
+      <strong style="color:white;">ELISA</strong> — Engagement • Lead Intelligence • Intelligent Scoring • Automation — 
+      est une plateforme intelligente qui analyse le comportement de vos utilisateurs afin d’identifier les prospects les plus pertinents, 
+      leur attribuer un score et déclencher automatiquement des campagnes marketing ciblées. Grâce à cette approche, vous maximisez 
+      vos conversions tout en offrant une expérience client personnalisée et efficace.
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;">
+    <button id="elisaToggleBtn" onclick="toggleElisa(this)"
+      style="padding:12px 28px;border-radius:24px;border:1px solid rgba(255,255,255,0.15);
+             background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);
+             font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+             cursor:pointer;transition:all .25s;min-width:120px;letter-spacing:.5px;">
+      INACTIF
+    </button>
+    <div style="font-size:11px;color:rgba(255,255,255,0.3);" id="elisaToggleSub">
+      Cliquez pour activer
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleElisaInfo() {
+  const el = document.getElementById("elisaInfo");
+  el.style.display = (el.style.display === "none") ? "block" : "none";
+}
+</script>
 
       <!-- Slots 3 campagnes -->
       <div style="margin-bottom:24px;">
