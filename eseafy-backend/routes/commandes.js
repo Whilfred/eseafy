@@ -149,7 +149,14 @@ router.post('/', async (req, res) => {
 // ══════════════════════════════════════
 router.put('/:id/statut', auth, async (req, res) => {
   const { statut } = req.body;
-  const validStatuts = ['en_attente', 'paye', 'rembourse', 'annule'];
+  const validStatuts = [
+    'en_attente',
+    'traitement',
+    'expedie',
+    'paye',
+    'rembourse',
+    'annule'
+  ];
 
   if (!validStatuts.includes(statut)) {
     return res.status(400).json({ message: 'Statut invalide.' });
