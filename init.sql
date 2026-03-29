@@ -193,3 +193,17 @@ CREATE INDEX idx_events_boutique  ON events(boutique_id);
 CREATE INDEX idx_visitors_session ON visitors(session_id);
 CREATE INDEX idx_profiles_email   ON customer_profiles(email);
 CREATE INDEX idx_profiles_score   ON customer_profiles(purchase_score DESC);
+
+ALTER TABLE commandes 
+DROP CONSTRAINT commandes_statut_check;
+
+ALTER TABLE commandes 
+ADD CONSTRAINT commandes_statut_check 
+CHECK (statut IN (
+  'en_attente',
+  'paye',
+  'rembourse',
+  'annule',
+  'traitement',
+  'expedie'
+));
