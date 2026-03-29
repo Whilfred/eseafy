@@ -1,25 +1,4 @@
-# 🚀 ESEAFY Backend
 
-Backend officiel de la plateforme **ESEAFY**.
-
-Ce backend gère :
-
-* Authentification
-* Produits
-* Commandes
-* Paiements
-* Email automation (ELISA)
-* Analytics
-* Affiliation
-* Promotions
-* Upload fichiers
-* Tracking
-
----
-
-# 🧠 Architecture Backend
-
-```
 eseafy-backend
 │
 ├── config/
@@ -56,7 +35,22 @@ eseafy-backend
 ├── package.json
 ├── server.js
 └── setup.js
-```
+
+# 🚀 ESEAFY Backend
+
+Backend officiel de la plateforme **ESEAFY**.
+
+API Node.js complète pour la gestion de :
+
+* Authentification
+* Produits
+* Commandes
+* Paiements
+* Email Automation (ELISA)
+* Analytics
+* Affiliation
+* Promotions
+* Tracking
 
 ---
 
@@ -66,201 +60,31 @@ eseafy-backend
 * Express.js
 * PostgreSQL
 * Nodemailer
+* JWT
 * Cron Jobs
-* FeezPay / Feexpay
-* JWT Authentication
+* Feexpay
 
 ---
 
-# 📁 Dossiers détaillés
+# 📦 Installation
 
-# config/
+## 1. Installer les dépendances
 
-Configuration globale du backend
+```bash
+npm install
+```
 
-### db.js
+## 2. Lancer le serveur
 
-Connexion PostgreSQL
-
----
-
-# jobs/
-
-Tâches automatiques backend
-
-### elisa.cron.js
-
-Système ELISA :
-
-* Vérification automatique campagnes
-* Envoi automatique emails
-* Cron toutes les 6h
+```bash
+npm run dev
+```
 
 ---
 
-# middleware/
+# 🔐 Configuration (.env)
 
-Middleware Express
-
-### auth.js
-
-* Vérification token JWT
-* Protection routes privées
-
----
-
-# models/
-
-Modèles base de données
-
-### User.js
-
-Modèle utilisateur
-
----
-
-# routes/
-
-Routes principales API
-
-## Auth
-
-### auth.js
-
-* Inscription
-* Connexion
-* Gestion utilisateurs
-
----
-
-## Produits
-
-### produits.js
-
-* Ajouter produit
-* Modifier produit
-* Supprimer produit
-* Liste produits
-
----
-
-## Commandes
-
-### commandes.js
-
-* Créer commande
-* Liste commandes
-* Statut commandes
-
----
-
-## Paiement
-
-### paiement.js
-
-* Paiement Feexpay
-* Validation paiement
-* Webhooks paiement
-
----
-
-## ELISA
-
-### elisa.js
-
-* Campagnes emails
-* Automatisation
-* Gestion ELISA
-
----
-
-## Analytics
-
-### analytics.js
-
-* Statistiques
-* Tracking utilisateurs
-
----
-
-## Stats
-
-### stats.js
-
-* Statistiques globales
-
----
-
-## Tracker
-
-### tracker.js
-
-* Tracking visiteurs
-* Tracking campagnes
-
----
-
-## Affiliation
-
-### affiliation.js
-
-* Système affiliés
-* Commissions
-
----
-
-## Promo
-
-### promo.js
-
-* Codes promo
-* Réductions
-
----
-
-## Boutique
-
-### boutique.js
-
-* Gestion boutique
-
----
-
-## Upload
-
-### upload.js
-
-* Upload fichiers
-* Upload images
-
----
-
-# services/
-
-Services backend
-
-## emailService.js
-
-Service email :
-
-* Envoi email
-* Templates email
-* Automatisation ELISA
-
----
-
-## feexpay.js
-
-Service paiement :
-
-* Intégration Feexpay
-* Vérification paiement
-
----
-
-# 🔐 Variables d'environnement
-
-Exemple `.env`
+Créer un fichier `.env`
 
 ```
 PORT=3001
@@ -273,23 +97,323 @@ FEEXPAY_API_KEY=
 
 ---
 
-# 🚀 Lancer le projet
-
-Installation
+# 📁 Structure détaillée du projet
 
 ```
-npm install
-```
-
-Lancer serveur
-
-```
-npm run dev
+eseafy-backend
 ```
 
 ---
 
-# 📡 Serveur
+# ⚙️ server.js
+
+Point d'entrée principal du backend.
+
+Responsabilités :
+
+* Initialisation Express
+* Connexion PostgreSQL
+* Configuration middleware global
+* Chargement routes
+* Démarrage ELISA Cron
+* Gestion erreurs globales
+
+---
+
+# 📁 config/
+
+Contient les fichiers de configuration du projet.
+
+## db.js
+
+Gestion de la connexion PostgreSQL.
+
+Responsabilités :
+
+* Connexion base de données
+* Pool PostgreSQL
+* Gestion erreurs
+* Export connexion
+
+Utilisé par :
+
+* routes
+* services
+* server.js
+
+---
+
+# 📁 jobs/
+
+Contient les tâches automatisées du système.
+
+## elisa.cron.js
+
+Système ELISA Automation.
+
+Responsabilités :
+
+* Vérification campagnes
+* Envoi automatique emails
+* Planification cron (6h)
+* Logs système
+
+Utilise :
+
+* emailService.js
+* PostgreSQL
+
+---
+
+# 📁 middleware/
+
+Contient les middlewares Express.
+
+## auth.js
+
+Middleware d'authentification.
+
+Responsabilités :
+
+* Vérification JWT
+* Protection routes privées
+* Gestion accès utilisateurs
+* Injection user dans request
+
+Utilisé dans :
+
+* routes/auth.js
+* routes/commandes.js
+* routes/paiement.js
+
+---
+
+# 📁 models/
+
+Contient les modèles de données.
+
+## User.js
+
+Modèle utilisateur.
+
+Responsabilités :
+
+* Structure utilisateur
+* Gestion données utilisateur
+* Requêtes base de données utilisateur
+
+---
+
+# 📁 routes/
+
+Toutes les routes API du backend.
+
+---
+
+## auth.js
+
+Gestion authentification utilisateur.
+
+Routes possibles :
+
+* POST /login
+* POST /register
+* GET /profile
+* POST /logout
+
+Utilise :
+
+* db.js
+* auth middleware
+
+---
+
+## produits.js
+
+Gestion produits.
+
+Routes possibles :
+
+* GET /produits
+* POST /produits
+* PUT /produits/:id
+* DELETE /produits/:id
+
+---
+
+## commandes.js
+
+Gestion commandes.
+
+Routes possibles :
+
+* POST /commandes
+* GET /commandes
+* PUT /commandes/:id
+
+Utilise :
+
+* auth middleware
+
+---
+
+## paiement.js
+
+Gestion paiement.
+
+Routes possibles :
+
+* POST /paiement
+* POST /webhook
+* GET /paiement/status
+
+Utilise :
+
+* feexpay.js
+
+---
+
+## elisa.js
+
+Gestion campagnes emails.
+
+Fonctionnalités :
+
+* Création campagne
+* Planification
+* Envoi campagne
+
+Utilise :
+
+* emailService.js
+
+---
+
+## analytics.js
+
+Analytics plateforme.
+
+Fonctionnalités :
+
+* Tracking ventes
+* Statistiques utilisateurs
+
+---
+
+## stats.js
+
+Statistiques globales.
+
+Fonctionnalités :
+
+* Dashboard admin
+* Statistiques générales
+
+---
+
+## tracker.js
+
+Tracking visiteurs.
+
+Fonctionnalités :
+
+* Tracking page
+* Tracking campagne
+
+---
+
+## affiliation.js
+
+Système affiliés.
+
+Fonctionnalités :
+
+* Gestion affiliés
+* Calcul commissions
+
+---
+
+## promo.js
+
+Gestion promotions.
+
+Fonctionnalités :
+
+* Codes promo
+* Réduction
+
+---
+
+## boutique.js
+
+Gestion boutique.
+
+Fonctionnalités :
+
+* Paramètres boutique
+* Infos boutique
+
+---
+
+## upload.js
+
+Upload fichiers.
+
+Fonctionnalités :
+
+* Upload image
+* Upload fichiers
+
+---
+
+# 📁 services/
+
+Services métiers du backend.
+
+---
+
+## emailService.js
+
+Service email.
+
+Responsabilités :
+
+* Envoi email
+* Templates email
+* Automatisation ELISA
+
+Utilisé par :
+
+* elisa.js
+* elisa.cron.js
+
+---
+
+## feexpay.js
+
+Service paiement.
+
+Responsabilités :
+
+* Intégration Feexpay
+* Vérification paiement
+* Webhook paiement
+
+Utilisé par :
+
+* paiement.js
+
+---
+
+# 🔄 Flux Backend
+
+```
+Client → Routes → Middleware → Services → Database
+```
+
+---
+
+# 🚀 Serveur
 
 ```
 http://localhost:3001
@@ -299,9 +423,7 @@ http://localhost:3001
 
 # 📦 Scripts
 
-package.json
-
-```
+```bash
 npm run dev
 npm start
 ```
@@ -311,12 +433,11 @@ npm start
 # 🧠 Fonctionnalités principales
 
 * Authentification
-* Paiement Feexpay
-* Email automation ELISA
-* Affiliation
 * Produits
 * Commandes
-* Promo
+* Paiement
+* Email automation
+* Affiliation
 * Analytics
 * Tracking
 
