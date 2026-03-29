@@ -158,8 +158,6 @@
           <div class="filters-bar">
             <div class="search-box"><svg width="14" height="14" fill="none" stroke="var(--gray-400)" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input placeholder="Rechercher un produit…" /></div>
             <button class="filter-btn active-filter" data-filtre="tous">Tous</button>
-            <button class="filter-btn" data-filtre="digital">Digital</button>
-            <button class="filter-btn" data-filtre="physical">Physique</button>
             <button class="filter-btn" data-filtre="brouillon">Brouillon</button>
           </div>
           <div class="products-table" id="produitsTable">
@@ -1453,55 +1451,95 @@ function showProdSubview(id) {
 async function loadProduits(filtre = 'tous') {
   const table = document.getElementById('produitsTable');
   if (!table) return;
-  let url = `${API_URL}/produits`;
-  if (filtre === 'digital')   url += '?type=digital';
-  if (filtre === 'physical')  url += '?type=physical';
-  if (filtre === 'brouillon') url += '?statut=brouillon';
+
+  // 👉 Toujours produits physiques uniquement
+  let url = `${API_URL}/produits?type=physical`;
+
+  // 👉 Si filtre brouillon
+  if (filtre === 'brouillon') {
+    url += '&statut=brouillon';
+  }
+
   console.log('📦 Chargement produits → ' + url);
+
   try {
-    const res  = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+    const res = await fetch(url, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+
     const data = await res.json();
-    console.log('📦 Résultat :', data);
-    if (!res.ok) { console.error('❌', data.message); return; }
-    const produits = data.produits;
-    const cpt = document.getElementById('prodCount');
-    if (cpt) cpt.textContent = `${produits.length} produit${produits.length>1?'s':''} dans votre catalogue`;
-    const header = table.querySelector('.pt-head');
-    table.innerHTML = '';
-    table.appendChild(header);
-    if (produits.length === 0) {
-      table.innerHTML += `<div style="padding:40px;text-align:center;color:var(--gray-400);font-size:14px;">
-        Aucun produit. <a href="#" onclick="navigate('nouveau-produit')" style="color:var(--black);font-weight:500;">Créer votre premier produit →</a>
-      </div>`;
+
+    if (!res.ok) {
+      console.error('❌', data.message);
       return;
     }
+
+    const produits = data.produits;
+
+    // compteur
+    const cpt = document.getElementById('prodCount');
+    if (cpt) {
+      cpt.textContent = `${produits.length} produit${produits.length > 1 ? 's' : ''} dans votre catalogue`;
+    }
+
+    // reset table
+    const header = table.querySelector('.pt-head');
+    table.innerHTML = '';
+    if (header) table.appendChild(header);
+
+    // vide
+    if (produits.length === 0) {
+      table.innerHTML += `
+        <div style="padding:40px;text-align:center;color:var(--gray-400);font-size:14px;">
+          Aucun produit. 
+          <a href="#" onclick="navigate('nouveau-produit')" style="color:var(--black);font-weight:500;">
+            Créer votre premier produit →
+          </a>
+        </div>`;
+      return;
+    }
+
+    // rows
     produits.forEach(p => {
-      const d = p.type === 'digital';
-      const statutHtml = p.statut === 'publie' ? '<span class="badge green">Publié</span>' : '<span class="badge orange">Brouillon</span>';
-      const typeHtml   = d ? `<span class="badge" style="background:var(--accent-light);color:#a07c3a;border:1px solid var(--accent)">Digital</span>` : `<span class="badge gray">Physique</span>`;
-      console.log(`  → ${p.nom} | ${p.type} | ${p.statut} | ${p.prix} XOF`);
+
+      const statutHtml = p.statut === 'publie'
+        ? '<span class="badge green">Publié</span>'
+        : '<span class="badge orange">Brouillon</span>';
+
       table.innerHTML += `
         <div class="pt-row">
-          <div class="pt-prod"><div class="pt-thumb">${d?'📦':'🚚'}</div><div><div class="pt-name">${p.nom}</div><div class="pt-type">${p.categorie||'—'}</div></div></div>
-          <span class="pt-val">${typeHtml}</span>
-          <span class="pt-val" style="font-weight:600">${Number(p.prix).toLocaleString('fr-FR')} XOF</span>
+          <div class="pt-prod">
+            <div class="pt-thumb">🚚</div>
+            <div>
+              <div class="pt-name">${p.nom}</div>
+              <div class="pt-type">${p.categorie || '—'}</div>
+            </div>
+          </div>
+
+          <span class="pt-val">
+            <span class="badge gray">Physique</span>
+          </span>
+
+          <span class="pt-val" style="font-weight:600">
+            ${Number(p.prix).toLocaleString('fr-FR')} XOF
+          </span>
+
           <span>${statutHtml}</span>
-<div class="pt-actions">
-  <button class="icon-btn" title="Modifier" onclick="editProduit(${p.id})">
-    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-  </button>
-  <button class="icon-btn" title="Copier lien" onclick="copyLien('${p.slug}')">
-    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-  </button>
-  <button class="icon-btn" title="Supprimer" onclick="deleteProduit(${p.id}, this)">
-    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-  </button>
-</div>
+
+          <div class="pt-actions">
+            <button class="icon-btn" title="Modifier" onclick="editProduit(${p.id})">✏️</button>
+            <button class="icon-btn" title="Copier lien" onclick="copyLien('${p.slug}')">🔗</button>
+            <button class="icon-btn" title="Supprimer" onclick="deleteProduit(${p.id}, this)">🗑️</button>
+          </div>
         </div>`;
     });
+
   } catch (err) {
     console.error('❌ Erreur loadProduits :', err);
-    table.innerHTML += `<div style="padding:20px;color:red;font-size:13px;">❌ Erreur : ${err.message}</div>`;
+    table.innerHTML += `
+      <div style="padding:20px;color:red;font-size:13px;">
+        ❌ Erreur : ${err.message}
+      </div>`;
   }
 }
 
