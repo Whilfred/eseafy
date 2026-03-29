@@ -125,6 +125,21 @@ router.get('/dashboard', auth, async (req, res) => {
     const typeMap = {};
     visitesParType.rows.forEach(r => { typeMap[r.type] = parseInt(r.total); });
 
+    // ── Produits vendus par jour (30 derniers jours) ──
+const graph_ventes = await pool.query(`
+  SELECT
+    DATE(c.created_at) AS jour,
+    COUNT(v.id) AS nb_ventes
+  FROM ventes v
+  JOIN commandes c ON c.id = v.commande_id
+  WHERE v.user_id = $1
+    AND c.created_at >= NOW() - INTERVAL '30 days'
+  GROUP BY DATE(c.created_at)
+  ORDER BY jour;
+`, [req.user.id]);
+
+console.log("RESULT DB:", result.rows);
+
     return res.json({
       kpis: {
         visites_totales:    parseInt(visitesTotales.rows[0].total),
@@ -136,6 +151,7 @@ router.get('/dashboard', auth, async (req, res) => {
       },
       graph_visites: visitesGraph.rows,
       top_produits:  topProduits.rows,
+      graph_ventes: ventesGraph.rows,
     });
 
   } catch (err) {

@@ -1,0 +1,3428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eseafy — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./assets/css/home.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="brand" onclick="navigate('accueil')">easyfy<span class="brand-dot">.</span></span>
+  <div class="topbar-sep"></div>
+  <span class="topbar-crumb" id="topCrumb"><strong>Ma boutique</strong></span>
+  <div class="topbar-right">
+    <button class="btn-sm btn-outline" id="draftBtn" style="display:none" onclick="saveDraft(this)">Enregistrer brouillon</button>
+    <div class="avatar" id="userAvatar" onclick="logout()" title="Se déconnecter" style="cursor:pointer">AB</div>
+  </div>
+</header>
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-shop">
+      <div class="shop-icon">
+        <svg width="16" height="16" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div>
+        <div class="shop-name" id="sideShopName">Ma boutique</div>
+        <div class="shop-plan" id="shopPlan">Starter</div>
+      </div>
+    </div>
+    <div class="nav-section">Menu</div>
+    <button class="nav-item" id="nav-accueil" onclick="navigate('accueil')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Accueil
+    </button>
+    <button class="nav-item" id="nav-ventes" onclick="navigate('ventes')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Ventes
+    </button>
+    <button class="nav-item" id="nav-produits" onclick="navigate('produits')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Produits
+    </button>
+    <button class="nav-item" id="nav-clients" onclick="navigate('clients')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Clients
+    </button>
+    <button class="nav-item" id="nav-revenus" onclick="navigate('revenus')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Revenus
+    </button>
+    <button class="nav-item" id="nav-analytiques" onclick="navigate('analytiques')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Analytiques
+    </button>
+    <button class="nav-item" id="nav-marketing" onclick="navigate('marketing')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Marketing
+    </button>
+    <button class="nav-item" id="nav-affiliation" onclick="navigate('affiliation')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>Affiliation
+    </button>
+    <div class="nav-section">Compte</div>
+    <button class="nav-item" id="nav-profil" onclick="navigate('profil')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Profil
+    </button>
+    <button class="nav-item" id="nav-notifications" onclick="navigate('notifications')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notifications
+    </button>
+    <button class="nav-item" id="nav-parametres" onclick="navigate('parametres')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Paramètres
+    </button>
+    <div class="sidebar-footer">
+      <button class="nav-item" onclick="logout()" style="padding:8px 0;margin-top:4px;">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Se déconnecter
+      </button>
+    </div>
+  </aside>
+
+  <div class="main-content" id="main-container">
+
+    <!-- ACCUEIL -->
+    <div class="page-view" id="page-accueil">
+      <div class="dash-wrap">
+        <div class="dash-header">
+          <h1 id="welcomeMsg">Bonjour 👋</h1>
+          <p>Voici un aperçu de votre boutique aujourd'hui</p>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-label">Revenus ce mois</div><div class="kpi-val">487 500 <span style="font-size:16px;font-family:'DM Sans'">XOF</span></div><div class="kpi-delta up">↑ +12,4%</div></div>
+          <div class="kpi"><div class="kpi-label">Ventes</div><div class="kpi-val">34</div><div class="kpi-delta up">↑ +5 cette semaine</div></div>
+          <div class="kpi"><div class="kpi-label">Clients</div><div class="kpi-val">128</div><div class="kpi-delta up">↑ +8 nouveaux</div></div>
+<div class="kpi"><div class="kpi-label">Produits publiés</div><div class="kpi-val" id="kpiProduits">—</div><div class="kpi-delta up" id="kpiProduitsTotal"></div></div>        </div>
+        <div class="dash-grid">
+          <div>
+            <div class="card">
+              <div class="card-head"><div><h2>Revenus — 30 derniers jours</h2></div></div>
+              <div class="card-body">
+                <div class="chart-placeholder" style="height:200px;align-items:flex-end;padding:16px 8px 0;">
+                  <div class="chart-bars" style="width:100%;height:160px;">
+                    <div class="bar" style="height:40%"></div><div class="bar" style="height:55%"></div><div class="bar" style="height:35%"></div>
+                    <div class="bar" style="height:70%"></div><div class="bar" style="height:50%"></div><div class="bar" style="height:80%"></div>
+                    <div class="bar accent" style="height:65%"></div><div class="bar" style="height:45%"></div><div class="bar" style="height:90%"></div>
+                    <div class="bar" style="height:60%"></div><div class="bar" style="height:75%"></div><div class="bar" style="height:55%"></div>
+                    <div class="bar" style="height:85%"></div><div class="bar" style="height:70%"></div><div class="bar accent" style="height:95%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head"><div><h2>Dernières ventes</h2></div></div>
+              <div class="card-body" style="padding:8px 16px;">
+                <div class="recent-list">
+                  <div class="recent-item"><div class="ri-icon">📚</div><div><div class="ri-name">Guide Facebook Ads</div><div class="ri-sub">il y a 2h · <span class="badge green">Payé</span></div></div><div class="ri-price">15 000 XOF</div></div>
+                  <div class="recent-item"><div class="ri-icon">🎓</div><div><div class="ri-name">Formation Canva Pro</div><div class="ri-sub">il y a 5h · <span class="badge green">Payé</span></div></div><div class="ri-price">25 000 XOF</div></div>
+                  <div class="recent-item"><div class="ri-icon">🎨</div><div><div class="ri-name">Pack Templates Instagram</div><div class="ri-sub">hier · <span class="badge orange">En attente</span></div></div><div class="ri-price">8 500 XOF</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- VENTES -->
+<div class="page-view" id="page-ventes">
+  <div class="ventes-wrap">
+    <div class="page-header">
+      <div>
+        <h1>Ventes</h1>
+        <p id="ventesCount" style="font-size:14px;color:var(--gray-600);margin-top:4px;">Chargement…</p>
+      </div>
+    </div>
+    <div class="filters-bar">
+      <div class="search-box">
+        <svg width="14" height="14" fill="none" stroke="var(--gray-400)" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input placeholder="Rechercher une vente…" oninput="searchVentes(this.value)" />
+      </div>
+      <button class="filter-btn active-filter" data-statut="tous">Tous</button>
+      <button class="filter-btn" data-statut="paye">Payé</button>
+      <button class="filter-btn" data-statut="en_attente">En attente</button>
+      <button class="filter-btn" data-statut="rembourse">Remboursé</button>
+      <button class="filter-btn" data-statut="annule">Annulé</button>
+    </div>
+    <div class="ventes-table" id="ventesTable">
+      <div class="vt-head">
+        <span>Commande</span><span>Produit</span><span>Client</span><span>Montant</span><span>Statut</span><span></span>
+      </div>
+      <div style="padding:40px;text-align:center;color:var(--gray-400);">Chargement…</div>
+    </div>
+  </div>
+</div>
+
+    <!-- PRODUITS -->
+    <div class="page-view" id="page-produits">
+      <div class="prod-subview active" id="subProdList">
+        <div class="produits-wrap">
+          <div class="page-header">
+            <div><h1>Produits</h1><p id="prodCount" style="font-size:14px;color:var(--gray-600);margin-top:4px;">Chargement…</p></div>
+            <button class="btn-primary" onclick="navigate('nouveau-produit')">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nouveau produit
+            </button>
+          </div>
+          <div class="filters-bar">
+            <div class="search-box"><svg width="14" height="14" fill="none" stroke="var(--gray-400)" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input placeholder="Rechercher un produit…" /></div>
+            <button class="filter-btn active-filter" data-filtre="tous">Tous</button>
+            <button class="filter-btn" data-filtre="digital">Digital</button>
+            <button class="filter-btn" data-filtre="physical">Physique</button>
+            <button class="filter-btn" data-filtre="brouillon">Brouillon</button>
+          </div>
+          <div class="products-table" id="produitsTable">
+            <div class="pt-head"><span>Produit</span><span>Type</span><span>Prix</span><span>Statut</span><span></span></div>
+            <div style="padding:40px;text-align:center;color:var(--gray-400);">Chargement…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="prod-subview" id="subProdChoix">
+        <div class="main-center">
+          <div class="select-wrap">
+            <button class="page-back" onclick="showProdSubview('subProdList')">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+              Retour aux produits
+            </button>
+            <div class="select-header">
+              <h1>Quel type de produit<br>souhaitez-vous vendre ?</h1>
+              <p>Choisissez une catégorie pour commencer.</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;width:100%;box-sizing:border-box;">
+              <div class="type-pick digital" onclick="startCreation('digital')" style="min-width:0;box-sizing:border-box;">
+                <div class="pick-icon">📦</div>
+                <div class="pick-body">
+                  <div class="pick-title">Produit digital</div>
+                  <div class="pick-desc">Vendez des fichiers numériques téléchargeables ou un accès à du contenu en ligne.</div>
+                  <div class="pick-tags"><span class="pick-tag">Ebook / PDF</span><span class="pick-tag">Cours en ligne</span><span class="pick-tag">Template</span></div>
+                </div>
+                <div class="pick-footer"><span class="pick-cta">Commencer</span><span class="pick-arrow"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+              </div>
+              <div class="type-pick physical" onclick="startCreation('physical')" style="min-width:0;box-sizing:border-box;">
+                <div class="pick-icon">🚚</div>
+                <div class="pick-body">
+                  <div class="pick-title">Produit physique</div>
+                  <div class="pick-desc">Vendez des articles tangibles expédiés ou disponibles en retrait.</div>
+                  <div class="pick-tags"><span class="pick-tag">Vêtements</span><span class="pick-tag">Alimentation</span><span class="pick-tag">Artisanat</span></div>
+                </div>
+                <div class="pick-footer"><span class="pick-cta">Commencer</span><span class="pick-arrow"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+              </div>
+            </div>
+            <p class="bottom-note">Vous pouvez créer autant de produits que vous souhaitez.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="prod-subview" id="subProdCreate">
+        <div class="main-create">
+          <button class="page-back" onclick="showProdSubview('subProdChoix')">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Changer de type
+          </button>
+          <div id="typeBadge" class="type-badge digital">📦 Produit digital</div>
+          <div class="steps-wrap">
+            <div class="step active" onclick="goStep(1)"><div class="step-bubble" id="b1">1</div><span class="step-name">Statut & Type</span></div>
+            <div class="step-line" id="l1"></div>
+            <div class="step" onclick="goStep(2)"><div class="step-bubble" id="b2">2</div><span class="step-name">Détails</span></div>
+            <div class="step-line" id="l2"></div>
+            <div class="step" onclick="goStep(3)"><div class="step-bubble" id="b3">3</div><span class="step-name">Médias</span></div>
+            <div class="step-line" id="l3"></div>
+            <div class="step" onclick="goStep(4)"><div class="step-bubble" id="b4">4</div><span class="step-name">Tarification & Publication</span></div>
+          </div>
+          <!-- Étape 1 -->
+          <div class="step-panel active" id="panel1">
+            <div class="create-grid">
+              <div>
+                <div class="card">
+                  <div class="card-head"><div><h2>Statut</h2><p>Visible dès maintenant ou brouillon ?</p></div></div>
+                  <div class="card-body-p">
+                    <div class="toggle-row">
+                      <div><div class="tl">Visible en boutique</div><div class="td">Les clients peuvent voir et acheter ce produit</div></div>
+                      <button class="tgl on" id="visibleToggle" onclick="this.classList.toggle('on')"></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="actions-bar"><span></span><button class="btn-next" onclick="goStep(2)">Continuer : Détails <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button></div>
+              </div>
+              <div><div class="card"><div class="card-head"><div><h2>À savoir</h2></div></div><div class="card-body-p"><div class="info-box">Vous pouvez modifier le statut à tout moment.</div></div></div></div>
+            </div>
+          </div>
+          <!-- Étape 2 -->
+          <div class="step-panel" id="panel2">
+            <div class="create-grid">
+              <div>
+                <div class="card">
+                  <div class="card-head"><div><h2>Informations du produit</h2></div></div>
+                  <div class="card-body-p">
+                    <div class="fg"><label class="lbl">Nom du produit <span class="req">*</span></label><input class="inp" id="pName" type="text" placeholder="Ex : Guide Facebook Ads 2025" oninput="updateSEO()" /></div>
+                    <div class="fg">
+                      <label class="lbl">Description</label>
+<div class="editor-box" style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;">
+  <div class="editor-bar" style="display:flex;flex-wrap:wrap;gap:2px;padding:8px 10px;background:#fafafa;border-bottom:1px solid var(--gray-100);align-items:center;">
+    <button class="tb" onclick="fmt('undo')">↩</button>
+    <button class="tb" onclick="fmt('redo')">↪</button>
+    <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+    <select onchange="document.execCommand('fontName',false,this.value);this.blur()" style="font-size:12px;padding:3px 6px;border:1px solid var(--gray-200);border-radius:5px;background:white;cursor:pointer;height:26px;">
+      <option value="'DM Sans',sans-serif">DM Sans</option>
+      <option value="Arial,sans-serif">Arial</option>
+      <option value="'Times New Roman',serif">Times New Roman</option>
+      <option value="Georgia,serif">Georgia</option>
+    </select>
+    <select onchange="document.execCommand('fontSize',false,this.value);this.blur()" style="font-size:12px;padding:3px 6px;border:1px solid var(--gray-200);border-radius:5px;background:white;cursor:pointer;height:26px;width:56px;">
+      <option value="2">10</option>
+      <option value="3" selected>12</option>
+      <option value="4">14</option>
+      <option value="5">18</option>
+      <option value="6">24</option>
+      <option value="7">36</option>
+    </select>
+    <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+    <button class="tb" onclick="fmt('bold')"><b>B</b></button>
+    <button class="tb" onclick="fmt('italic')"><i>I</i></button>
+    <button class="tb" onclick="fmt('underline')"><u>U</u></button>
+    <button class="tb" onclick="fmt('strikeThrough')" style="text-decoration:line-through;">S</button>
+    <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+    <label title="Couleur du texte" style="position:relative;cursor:pointer;">
+      <span class="tb" style="font-weight:700;border-bottom:3px solid #ef4444;">A</span>
+      <input type="color" value="#ef4444" onchange="document.execCommand('foreColor',false,this.value)" style="position:absolute;opacity:0;width:0;height:0;" />
+    </label>
+    <label title="Surlignage" style="position:relative;cursor:pointer;">
+      <span class="tb" style="background:#fef08a;padding:2px 5px;border-radius:3px;font-size:11px;">ab</span>
+      <input type="color" value="#fef08a" onchange="document.execCommand('hiliteColor',false,this.value)" style="position:absolute;opacity:0;width:0;height:0;" />
+    </label>
+    <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+    <button class="tb" onclick="fmt('justifyLeft')">⬅</button>
+    <button class="tb" onclick="fmt('justifyCenter')">≡</button>
+    <button class="tb" onclick="fmt('justifyRight')">➡</button>
+    <button class="tb" onclick="fmt('justifyFull')">☰</button>
+    <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+    <button class="tb" onclick="fmt('insertUnorderedList')">• —</button>
+    <button class="tb" onclick="fmt('insertOrderedList')">1. —</button>
+    <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+    <select onchange="document.execCommand('formatBlock',false,this.value);this.value='p'" style="font-size:12px;padding:3px 6px;border:1px solid var(--gray-200);border-radius:5px;background:white;cursor:pointer;height:26px;">
+      <option value="p">Paragraphe</option>
+      <option value="h1">Titre 1</option>
+      <option value="h2">Titre 2</option>
+      <option value="h3">Titre 3</option>
+      <option value="blockquote">Citation</option>
+    </select>
+    <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+    <button class="tb" onclick="document.execCommand('createLink',false,prompt('URL :','https://'))">🔗</button>
+<button class="tb" title="Insérer image/vidéo" onclick="document.getElementById('mediaInsertInput').click()">🖼️</button>
+<input type="file" id="mediaInsertInput" accept="image/*,video/mp4" style="display:none;" onchange="insererMediaLocal(this)" />
+    <button class="tb" onclick="fmt('removeFormat')" style="font-size:11px;">✕fmt</button>
+  </div>
+  <div class="editor-body" id="editorBody" contenteditable="true"
+    style="min-height:180px;padding:16px;font-size:13px;line-height:1.7;outline:none;font-family:'DM Sans',sans-serif;"
+    placeholder="Décrivez votre produit…"></div>
+</div>
+                    </div>
+                    <div class="fg"><label class="lbl">Catégorie <span class="req">*</span></label><select class="sel" id="catSelect"></select></div>
+                    <div class="fg"><label class="lbl">Tags</label><div class="tags-box" onclick="document.getElementById('tgInp').focus()"><input class="tag-inp" id="tgInp" placeholder="Tag, Entrée pour valider…" onkeydown="addTag(event)" /></div></div>
+
+                    <!-- ── Champs DIGITAL ── -->
+                    <div id="fieldsDigital" style="display:none;">
+                      <div style="margin:16px 0 8px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray-400);padding-top:12px;border-top:1px solid var(--gray-100);">📦 Spécifique digital</div>
+                      <div class="fg">
+                        <label class="lbl">Fichier téléchargeable</label>
+                        <label for="digitalFileInput" style="border:1.5px dashed var(--gray-200);border-radius:8px;padding:16px;text-align:center;cursor:pointer;display:block;" onclick="event.stopPropagation()">
+                          <input type="file" id="digitalFileInput" style="display:none;" onchange="handleDigitalFile(this)" />
+                          <div id="digitalFileLabel" style="font-size:13px;color:var(--gray-400);">📎 Cliquez pour uploader · PDF, ZIP, MP3, MP4, MOV…</div>
+                        </label>
+                        <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">Max 500 Mo · Le client reçoit le lien après paiement</div>
+                        <div id="digitalFilePreview" style="display:none;margin-top:10px;"></div>
+                      </div>
+                      <div class="fg">
+                        <label class="lbl">Ou lien d'accès externe</label>
+                        <input class="inp" type="url" id="digitalLien" placeholder="Ex : https://drive.google.com/…" />
+                        <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">Google Drive, Notion, YouTube privé, Dropbox…</div>
+                      </div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                        <div class="fg">
+                          <label class="lbl">Téléchargements max</label>
+                          <input class="inp" type="number" id="digitalDlMax" placeholder="Illimité" min="1" />
+                        </div>
+                        <div class="fg">
+                          <label class="lbl">Durée d'accès</label>
+                          <select class="sel" id="digitalDuree">
+                            <option value="illimitee">Illimitée</option>
+                            <option value="30j">30 jours</option>
+                            <option value="90j">90 jours</option>
+                            <option value="1an">1 an</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- ── Champs PHYSIQUE ── -->
+                    <div id="fieldsPhysical" style="display:none;">
+                      <div style="margin:16px 0 8px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray-400);padding-top:12px;border-top:1px solid var(--gray-100);">🚚 Spécifique physique</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                        <div class="fg">
+                          <label class="lbl">Stock disponible <span class="req">*</span></label>
+                          <input class="inp" type="number" id="physStock" placeholder="Ex : 50" min="0" />
+                        </div>
+                        <div class="fg">
+                          <label class="lbl">SKU / Référence</label>
+                          <input class="inp" type="text" id="physSku" placeholder="Ex : REF-001" />
+                        </div>
+                        <div class="fg">
+                          <label class="lbl">Poids (kg)</label>
+                          <input class="inp" type="number" id="physPoids" placeholder="Ex : 0.5" step="0.1" min="0" />
+                        </div>
+                        <div class="fg">
+                          <label class="lbl">Délai livraison</label>
+                          <select class="sel" id="physDelai">
+                            <option value="24h">Sous 24h</option>
+                            <option value="2-3j">2 à 3 jours</option>
+                            <option value="3-5j">3 à 5 jours</option>
+                            <option value="1-2sem">1 à 2 semaines</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="fg">
+                        <label class="lbl">Modes de livraison</label>
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;">
+                          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" id="livrDomicile" /> 🏠 Domicile</label>
+                          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" id="livrRetrait" /> 🏪 Retrait en boutique</label>
+                          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" id="livrRelais" /> 📦 Point relais</label>
+                        </div>
+                      </div>
+                      <div class="fg">
+                        <label class="lbl">Variantes</label>
+                        <div id="variantesBox" style="display:flex;flex-direction:column;gap:8px;"></div>
+                        <button type="button" onclick="ajouterVariante()" style="margin-top:8px;font-size:12px;padding:6px 14px;border:1px dashed var(--gray-300);border-radius:6px;background:white;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--gray-600);">+ Ajouter une variante (taille, couleur…)</button>
+                      </div>
+                      <div class="fg">
+                        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+                          <input type="checkbox" id="physStockAuto" checked />
+                          <span>Décrémenter le stock automatiquement à chaque vente</span>
+                        </label>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+                <div class="actions-bar">
+                  <button class="btn-back-step" onclick="goStep(1)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Retour</button>
+                  <button class="btn-next" onclick="goStep(3)">Continuer : Médias <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+                </div>
+              </div>
+              <div>
+                <div class="card"><div class="card-head"><div><h2>Conseils</h2></div></div><div class="card-body-p"><div class="info-box">💡 Les produits avec une description complète se vendent <strong>3× plus</strong>.</div></div></div>
+                <div class="card" style="margin-top:12px;" id="conseilsTypeBox">
+                  <div class="card-head"><div><h2 id="conseilsTypeTitre">💡 Astuce</h2></div></div>
+                  <div class="card-body-p" id="conseilsTypeBody"><div class="info-box">Choisissez un type de produit pour voir les conseils.</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Étape 3 -->
+          <div class="step-panel" id="panel3">
+            <div class="create-grid">
+              <div>
+                <div class="card">
+                  <div class="card-head"><div><h2>Images du produit</h2></div></div>
+                  <div class="card-body-p">
+                    <div class="drop">
+                      <input type="file" accept="image/*" multiple onchange="handleImages(this)" />
+                      <div class="drop-ico"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+                      <div class="drop-t">Glissez vos images ici</div>
+                      <div class="drop-s">PNG, JPG, WEBP · Max 5 Mo</div>
+                    </div>
+                    <div class="img-grid-p" id="imgGrid"></div>
+                  </div>
+                </div>
+                <div class="actions-bar">
+                  <button class="btn-back-step" onclick="goStep(2)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Retour</button>
+                  <button class="btn-next" onclick="goStep(4)">Continuer : Tarification <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+                </div>
+              </div>
+              <div><div class="card"><div class="card-head"><div><h2>Recommandations</h2></div></div><div class="card-body-p"><div class="info-box">💡 Un fond blanc ou neutre donne un rendu professionnel.</div></div></div></div>
+            </div>
+          </div>
+          <!-- Étape 4 -->
+          <div class="step-panel" id="panel4">
+            <div class="create-grid">
+              <div>
+                <div class="card">
+                  <div class="card-head"><div><h2>Tarification</h2></div></div>
+                  <div class="card-body-p">
+                    <div class="fg"><label class="lbl">Modèle <span class="req">*</span></label><select class="sel"><option>Paiement unique</option><option>Abonnement mensuel</option><option>Paiement libre</option></select></div>
+                    <div class="price-grid">
+                      <div class="fg"><label class="lbl">Prix <span class="req">*</span></label><div class="price-wrap"><span class="curr">XOF</span><input class="inp" id="prixInput" type="number" placeholder="0" min="0" /></div></div>
+                      <div class="fg"><label class="lbl">Prix barré</label><div class="price-wrap"><span class="curr">XOF</span><input class="inp" id="prixBarreInput" type="number" placeholder="0" min="0" /></div></div>
+                    </div>
+                    <div class="info-box">💰 Frais eseafy : <strong>5%</strong> par transaction.</div>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-head"><div><h2>SEO</h2></div></div>
+                  <div class="card-body-p">
+                    <div class="fg"><label class="lbl">Titre SEO</label><input class="inp" id="seoTitle" type="text" placeholder="Titre pour Google…" oninput="updateSEO()" /></div>
+                    <div class="fg"><label class="lbl">Description SEO</label><textarea class="inp" id="seoDescInp" rows="3" placeholder="Courte description…" style="resize:vertical;" oninput="updateSEO()"></textarea></div>
+                    <div class="fg">
+                      <label class="lbl">Aperçu</label>
+                      <div class="seo-prev">
+                        <div class="seo-url" id="seoUrl">eseafy.com/boutique/…</div>
+                        <div class="seo-ttl" id="seoTtl">Votre titre s'affichera ici</div>
+                        <div class="seo-dsc" id="seoDsc">La description s'affiche dans les résultats de recherche.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="actions-bar">
+                  <button class="btn-back-step" onclick="goStep(3)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Retour</button>
+                  <button class="btn-next btn-publish" id="publishBtn" onclick="publishProduct(this)">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Publier le produit
+                  </button>
+                </div>
+              </div>
+              <div>
+                <div class="card">
+                  <div class="card-head"><div><h2>Résumé</h2></div></div>
+                  <div class="card-body-p">
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                      <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--gray-600);">Type</span><span id="sumType" style="font-weight:500;">—</span></div>
+                      <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--gray-600);">Nom</span><span id="sumName" style="font-weight:500;">—</span></div>
+                    </div>
+                    <div style="border-top:1px solid var(--gray-100);padding-top:14px;"><div class="info-box">Vérifiez les informations avant de publier.</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- CLIENTS -->
+<div class="page-view" id="page-clients">
+  <div class="clients-wrap">
+    <div class="page-header">
+      <div>
+        <h1>Clients</h1>
+        <p id="clientsCount" style="font-size:14px;color:var(--gray-600);margin-top:4px;">Chargement…</p>
+      </div>
+    </div>
+    <div class="filters-bar">
+      <div class="search-box">
+        <svg width="14" height="14" fill="none" stroke="var(--gray-400)" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input placeholder="Rechercher un client…" oninput="searchClients(this.value)" />
+      </div>
+    </div>
+    <div class="clients-table" id="clientsTable">
+      <div class="ct-head"><span>Client</span><span>Téléphone</span><span>Commandes</span><span>Total dépensé</span><span>Dernier achat</span></div>
+      <div style="padding:40px;text-align:center;color:var(--gray-400);">Chargement…</div>
+    </div>
+  </div>
+</div>
+
+    <!-- REVENUS -->
+    <div class="page-view" id="page-revenus">
+      <div class="revenus-wrap">
+        <div class="page-header"><div><h1>Revenus</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Suivi financier</p></div></div>
+        <div class="rev-kpis">
+          <div class="kpi"><div class="kpi-label">Revenus ce mois</div><div class="kpi-val">487 500 <span style="font-size:14px;font-family:'DM Sans'">XOF</span></div><div class="kpi-delta up">↑ +12,4%</div></div>
+          <div class="kpi"><div class="kpi-label">Frais eseafy (5%)</div><div class="kpi-val">24 375 <span style="font-size:14px;font-family:'DM Sans'">XOF</span></div></div>
+          <div class="kpi"><div class="kpi-label">Net disponible</div><div class="kpi-val">463 125 <span style="font-size:14px;font-family:'DM Sans'">XOF</span></div><div class="kpi-delta up">Solde actuel</div></div>
+        </div>
+        <div id="revDetail"></div>
+      </div>
+    </div>
+
+<!-- ANALYTIQUES -->
+<div class="page-view" id="page-analytiques">
+  <div class="analytics-wrap">
+    <div class="page-header"><div><h1>Analytiques</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Trafic et performances de votre boutique</p></div></div>
+
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-label">Visiteurs uniques</div><div class="kpi-val" id="anaVisiteurs">—</div><div class="kpi-delta" id="anaVisiteursDelta"></div></div>
+      <div class="kpi"><div class="kpi-label">Pages vues ce mois</div><div class="kpi-val" id="anaPagesvues">—</div><div class="kpi-delta" id="anaPagesvuesDelta"></div></div>
+      <div class="kpi"><div class="kpi-label">Vues produits</div><div class="kpi-val" id="anaVuesProduits">—</div><div class="kpi-delta" id="anaVuesProduitsD"></div></div>
+      <div class="kpi"><div class="kpi-label">Taux de conversion</div><div class="kpi-val" id="anaTaux">—</div><div class="kpi-delta" id="anaTauxDelta"></div></div>
+    </div>
+
+<!-- Graphe visites -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-head"><div><h2>Visites — 30 derniers jours</h2></div></div>
+  <div class="card-body">
+    <div style="position:relative;height:220px;">
+      <canvas id="anaGraph"></canvas>
+    </div>
+  </div>
+</div>
+
+    <!-- Top produits vus -->
+    <div class="card">
+      <div class="card-head"><div><h2>Produits les plus vus</h2></div></div>
+      <div class="card-body" style="padding:8px 16px;">
+        <div id="anaTopProduits" style="color:var(--gray-400);font-size:13px;padding:20px 0;text-align:center;">Chargement…</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- MARKETING -->
+<div class="page-view" id="page-marketing">
+  <div class="marketing-wrap">
+    <div class="page-header"><div><h1>Marketing</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Boostez vos ventes</p></div></div>
+
+    <!-- Onglets -->
+    <div style="display:flex;gap:12px;margin-bottom:28px;">
+      <button class="btn-primary" id="mktTabPromo"  onclick="showMktTab('promo')"  style="background:var(--black);">🎟 Codes promo</button>
+      <button class="btn-primary" id="mktTabPixels" onclick="showMktTab('pixels')" style="background:var(--gray-400);">📊 Pixels & Tracking</button>
+      <button class="btn-primary" id="mktTabElisa"  onclick="showMktTab('elisa')"  style="background:var(--gray-400);">⚡ ELISA</button>
+    </div>
+
+    <!-- ── Tab Codes Promo ── -->
+    <div id="mktPanelPromo">
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-head"><div><h2>Créer un code promo</h2></div></div>
+        <div class="card-body-p">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="fg">
+              <label class="lbl">Code <span class="req">*</span></label>
+              <input class="inp" type="text" id="promoCode" placeholder="Ex : NOEL20" style="text-transform:uppercase;" />
+            </div>
+            <div class="fg">
+              <label class="lbl">Type <span class="req">*</span></label>
+              <select class="sel" id="promoType">
+                <option value="pourcentage">Pourcentage (%)</option>
+                <option value="montant_fixe">Montant fixe (XOF)</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="lbl">Valeur <span class="req">*</span></label>
+              <input class="inp" type="number" id="promoValeur" placeholder="Ex : 20" min="1" />
+            </div>
+            <div class="fg">
+              <label class="lbl">Montant minimum commande</label>
+              <input class="inp" type="number" id="promoMin" placeholder="Ex : 5000" min="0" />
+            </div>
+            <div class="fg">
+              <label class="lbl">Nb utilisations max</label>
+              <input class="inp" type="number" id="promoMax" placeholder="Illimité" min="1" />
+            </div>
+            <div class="fg">
+              <label class="lbl">Expire le</label>
+              <input class="inp" type="datetime-local" id="promoExpire" />
+            </div>
+          </div>
+          <div id="promoError" style="display:none;background:#f8d7da;border:1px solid #f5c6cb;border-radius:8px;padding:10px 14px;font-size:13px;color:#721c24;margin-top:8px;"></div>
+          <button class="btn-primary" onclick="creerCodePromo(this)" style="margin-top:8px;">➕ Créer le code promo</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>Mes codes promo</h2></div></div>
+        <div id="promoList" style="padding:8px 0;">
+          <div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Chargement…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tab Pixels ── -->
+    <div id="mktPanelPixels" style="display:none;">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head"><div><h2>Facebook Pixel</h2></div></div>
+        <div class="card-body-p">
+          <p style="font-size:13px;color:var(--gray-600);margin-bottom:12px;">Collez votre Pixel ID Facebook pour tracker les conversions sur votre boutique.</p>
+          <div class="fg">
+            <label class="lbl">Facebook Pixel ID</label>
+            <input class="inp" type="text" id="fbPixelId" placeholder="Ex : 1234567890123456" />
+          </div>
+          <button class="btn-primary" onclick="savePixel('facebook')" style="margin-top:4px;">💾 Sauvegarder</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>Google Analytics</h2></div></div>
+        <div class="card-body-p">
+          <p style="font-size:13px;color:var(--gray-600);margin-bottom:12px;">Collez votre ID de mesure Google Analytics (GA4).</p>
+          <div class="fg">
+            <label class="lbl">Google Analytics ID</label>
+            <input class="inp" type="text" id="gaId" placeholder="Ex : G-XXXXXXXXXX" />
+          </div>
+          <button class="btn-primary" onclick="savePixel('google')" style="margin-top:4px;">💾 Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tab ELISA ── -->
+    <div id="mktPanelElisa" style="display:none;">
+
+      <!-- Hero -->
+      <div style="border-radius:16px;background:var(--black);padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;">
+        <div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:110px;font-weight:900;color:rgba(255,255,255,0.04);pointer-events:none;letter-spacing:-4px;">ELISA</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="font-size:11px;font-weight:700;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);padding:3px 10px;border-radius:20px;">IA · Automatisé</span>
+          </div>
+          <div style="font-size:22px;font-weight:700;color:white;margin-bottom:6px;font-family:'DM Serif Display',serif;">Campagnes intelligentes</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);max-width:460px;line-height:1.6;">
+            Easyfy envoie automatiquement vos campagnes aux meilleurs prospects tous les 3 jours. Configurez votre ciblage une fois — on s'occupe du reste.
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;">
+          <button id="elisaToggleBtn" onclick="toggleElisa(this)"
+            style="padding:12px 28px;border-radius:24px;border:1px solid rgba(255,255,255,0.15);
+                   background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);
+                   font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+                   cursor:pointer;transition:all .25s;min-width:120px;letter-spacing:.5px;">
+            INACTIF
+          </button>
+          <div style="font-size:11px;color:rgba(255,255,255,0.3);" id="elisaToggleSub">Cliquez pour activer</div>
+        </div>
+      </div>
+
+      <!-- Slots 3 campagnes -->
+      <div style="margin-bottom:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--black);">Vos 3 campagnes gratuites</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">Envoyées automatiquement par Easyfy toutes les 3 jours</div>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:1px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;padding:4px 12px;border-radius:20px;">GRATUIT</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+          <div style="border:1.5px solid var(--black);border-radius:14px;padding:20px;background:white;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray-400);">Campagne 01</div>
+              <span class="badge green" id="slot1Status">Prête</span>
+            </div>
+            <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px;">Prochain envoi</div>
+            <div style="font-size:22px;font-weight:700;font-family:'DM Serif Display',serif;color:var(--black);" id="slot1Timer">Maintenant</div>
+            <div style="margin-top:14px;height:3px;background:var(--gray-100);border-radius:2px;overflow:hidden;">
+              <div style="height:100%;width:100%;background:var(--black);border-radius:2px;"></div>
+            </div>
+          </div>
+          <div style="border:1.5px solid var(--gray-200);border-radius:14px;padding:20px;background:white;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray-400);">Campagne 02</div>
+              <span class="badge" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;" id="slot2Status">J+3</span>
+            </div>
+            <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px;">Prochain envoi</div>
+            <div style="font-size:22px;font-weight:700;font-family:'DM Serif Display',serif;color:var(--black);" id="slot2Timer">Dans 3 jours</div>
+            <div style="margin-top:14px;height:3px;background:var(--gray-100);border-radius:2px;overflow:hidden;">
+              <div style="height:100%;width:33%;background:#f59e0b;border-radius:2px;"></div>
+            </div>
+          </div>
+          <div style="border:1.5px solid var(--gray-200);border-radius:14px;padding:20px;background:white;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray-400);">Campagne 03</div>
+              <span class="badge" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;" id="slot3Status">J+6</span>
+            </div>
+            <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px;">Prochain envoi</div>
+            <div style="font-size:22px;font-weight:700;font-family:'DM Serif Display',serif;color:var(--black);" id="slot3Timer">Dans 6 jours</div>
+            <div style="margin-top:14px;height:3px;background:var(--gray-100);border-radius:2px;overflow:hidden;">
+              <div style="height:100%;width:0%;background:#f59e0b;border-radius:2px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Créer une campagne -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-head">
+          <div><h2>Créer une campagne</h2><p>Configurez le ciblage — Easyfy se charge de l'envoi automatique</p></div>
+        </div>
+        <div style="padding:22px;display:flex;flex-direction:column;gap:22px;">
+
+          <div class="fg">
+            <label class="lbl">Nom de la campagne <span class="req">*</span></label>
+            <input class="inp" type="text" id="campNom" placeholder="Ex : Promo Rentrée 2025" />
+          </div>
+
+          <div class="fg">
+            <label class="lbl">Emails cibles</label>
+            <div style="border:1px solid var(--gray-200);border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;cursor:text;min-height:46px;" id="emailTagsBox" onclick="document.getElementById('emailTagInput').focus()">
+              <input id="emailTagInput" type="email" placeholder="email@exemple.com · Entrée pour valider"
+                style="border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;flex:1;min-width:220px;background:transparent;"
+                onkeydown="addEmailTag(event)" />
+            </div>
+            <div style="font-size:11px;color:var(--gray-400);margin-top:6px;">Laissez vide — Easyfy cible automatiquement vos meilleurs prospects</div>
+          </div>
+
+          <div>
+            <label class="lbl">Appareil</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+              <button class="elisa-chip selected" data-group="device" data-val="tous"    onclick="selectChip(this)"><span>📱💻</span> Tous</button>
+              <button class="elisa-chip"          data-group="device" data-val="mobile"  onclick="selectChip(this)"><span>📱</span> Mobile</button>
+              <button class="elisa-chip"          data-group="device" data-val="desktop" onclick="selectChip(this)"><span>💻</span> Desktop</button>
+              <button class="elisa-chip"          data-group="device" data-val="tablet"  onclick="selectChip(this)"><span>📟</span> Tablette</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="lbl">Genre</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+              <button class="elisa-chip selected" data-group="genre" data-val="tous"   onclick="selectChip(this)"><span>👥</span> Tous</button>
+              <button class="elisa-chip"          data-group="genre" data-val="femme"  onclick="selectChip(this)"><span>👩</span> Femme</button>
+              <button class="elisa-chip"          data-group="genre" data-val="homme"  onclick="selectChip(this)"><span>👨</span> Homme</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="lbl">Tranche d'âge approximative</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+              <button class="elisa-chip selected" data-group="age" data-val="tous"  onclick="selectChip(this)">Tous</button>
+              <button class="elisa-chip"          data-group="age" data-val="18-24" onclick="selectChip(this)">18 – 24</button>
+              <button class="elisa-chip"          data-group="age" data-val="25-34" onclick="selectChip(this)">25 – 34</button>
+              <button class="elisa-chip"          data-group="age" data-val="35-44" onclick="selectChip(this)">35 – 44</button>
+              <button class="elisa-chip"          data-group="age" data-val="45-54" onclick="selectChip(this)">45 – 54</button>
+              <button class="elisa-chip"          data-group="age" data-val="55+"   onclick="selectChip(this)">55 +</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="lbl">Intérêts / Comportement</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+              <button class="elisa-chip" data-group="interet" data-val="acheteurs_frequents" onclick="toggleInterest(this)">🛍 Acheteurs fréquents</button>
+              <button class="elisa-chip" data-group="interet" data-val="promo_sensitive"     onclick="toggleInterest(this)">🏷 Sensible aux promos</button>
+              <button class="elisa-chip" data-group="interet" data-val="mobile_first"        onclick="toggleInterest(this)">📱 Mobile first</button>
+              <button class="elisa-chip" data-group="interet" data-val="nouveaux_visiteurs"  onclick="toggleInterest(this)">✨ Nouveaux visiteurs</button>
+              <button class="elisa-chip" data-group="interet" data-val="panier_abandonne"    onclick="toggleInterest(this)">🛒 Panier abandonné</button>
+              <button class="elisa-chip" data-group="interet" data-val="haute_valeur"        onclick="toggleInterest(this)">💎 Haute valeur (LTV)</button>
+            </div>
+          </div>
+
+          <div style="background:#f8fafc;border:1px solid var(--gray-100);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;">
+            <div style="font-size:24px;">🎯</div>
+            <div style="flex:1;">
+              <div style="font-size:12px;color:var(--gray-400);margin-bottom:2px;">Audience estimée</div>
+              <div style="font-size:16px;font-weight:700;color:var(--black);" id="elisaAudienceEst">Calcul en cours…</div>
+            </div>
+            <div style="font-size:11px;color:var(--gray-400);text-align:right;max-width:160px;line-height:1.5;">Basé sur vos<br>customer_profiles</div>
+          </div>
+
+          <div id="campError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;color:#dc2626;"></div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;padding-top:4px;">
+            <div style="font-size:12px;color:var(--gray-400);">⚡ Easyfy envoie automatiquement · Prochaine fenêtre : <strong>maintenant</strong></div>
+            <button class="btn-primary" onclick="lancerCampagne(this)"
+              style="padding:11px 28px;font-size:13px;font-weight:700;border-radius:10px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Lancer la campagne
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <!-- Éditeur séquence emails -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-head">
+    <div><h2>Contenu des emails</h2><p>Personnalisez chaque email de la séquence</p></div>
+    <div style="font-size:11px;color:var(--gray-400);background:#f8fafc;padding:6px 12px;border-radius:6px;border:1px solid var(--gray-100);">
+      Variables dispo : <code style="background:#f1f5f9;padding:2px 5px;border-radius:4px;">{{prenom}}</code>
+      <code style="background:#f1f5f9;padding:2px 5px;border-radius:4px;margin-left:4px;">{{boutique_nom}}</code>
+    </div>
+  </div>
+
+  <!-- Onglets J0 / J+3 / J+6 -->
+  <div style="display:flex;border-bottom:1px solid var(--gray-100);">
+    <button class="elisa-seq-tab active" onclick="switchSeqTab(1)" id="seqTab1"
+      style="flex:1;padding:14px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid var(--black);color:var(--black);">
+      📧 Email 01 · J0
+    </button>
+    <button class="elisa-seq-tab" onclick="switchSeqTab(2)" id="seqTab2"
+      style="flex:1;padding:14px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--gray-400);">
+      📧 Email 02 · J+3
+    </button>
+    <button class="elisa-seq-tab" onclick="switchSeqTab(3)" id="seqTab3"
+      style="flex:1;padding:14px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--gray-400);">
+      📧 Email 03 · J+6
+    </button>
+  </div>
+
+  <!-- Panel Email 01 -->
+  <div class="elisa-seq-panel" id="seqPanel1" style="padding:22px;display:flex;flex-direction:column;gap:18px;">
+    <div class="fg">
+      <label class="lbl">Objet de l'email <span class="req">*</span></label>
+      <input class="inp" type="text" id="e1Objet" placeholder="Ex : {{prenom}}, on a quelque chose pour vous 👀"
+        value="{{prenom}}, on a quelque chose pour vous 👀" />
+    </div>
+    <div class="fg">
+      <label class="lbl">Corps du message</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;">
+        <div style="display:flex;gap:4px;padding:8px 12px;background:#fafafa;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;">
+          <button class="tb" onclick="fmtSeq('e1Body','bold')"><b>B</b></button>
+          <button class="tb" onclick="fmtSeq('e1Body','italic')"><i>I</i></button>
+          <button class="tb" onclick="fmtSeq('e1Body','underline')"><u>U</u></button>
+          <div style="width:1px;background:var(--gray-200);margin:2px 4px;"></div>
+          <button class="tb" onclick="fmtSeq('e1Body','insertUnorderedList')">• Liste</button>
+          <button class="tb" onclick="fmtSeq('e1Body','formatBlock','h3')">Titre</button>
+        </div>
+        <div id="e1Body" contenteditable="true"
+          style="min-height:120px;padding:14px;font-size:13px;line-height:1.7;outline:none;font-family:'DM Sans',sans-serif;">
+Bonjour {{prenom}},
+
+Vous avez visité notre boutique récemment. Nous avons sélectionné des produits qui pourraient vous intéresser.
+
+Ne manquez pas cette offre exclusive — disponible 48h seulement.
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Code promo</label>
+        <input class="inp" type="text" id="e1Code" placeholder="Ex : ELISA10" style="text-transform:uppercase;font-family:monospace;letter-spacing:1px;" />
+        <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">Laissez vide si pas de promo</div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Valeur du code</label>
+        <input class="inp" type="text" id="e1CodeVal" placeholder="Ex : -10% ou -5000 XOF" />
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Texte du bouton CTA</label>
+        <input class="inp" type="text" id="e1CtaText" placeholder="Ex : Découvrir la boutique →" value="Découvrir la boutique →" />
+      </div>
+      <div class="fg">
+        <label class="lbl">Lien du bouton</label>
+        <input class="inp" type="url" id="e1CtaLink" placeholder="https://..." />
+        <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">Laissez vide → lien auto vers votre boutique</div>
+      </div>
+    </div>
+    <!-- Aperçu -->
+    <div>
+      <label class="lbl">Aperçu email</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;margin-top:8px;">
+        <div style="background:#f8fafc;padding:8px 14px;border-bottom:1px solid var(--gray-100);font-size:11px;color:var(--gray-400);display:flex;align-items:center;gap:8px;">
+          <span>📧</span> Aperçu · <span id="e1ObjetPreview" style="color:var(--black);font-weight:500;">—</span>
+        </div>
+        <iframe id="e1Preview" style="width:100%;height:280px;border:none;" srcdoc=""></iframe>
+      </div>
+      <button onclick="genererApercu(1)" style="margin-top:8px;font-size:12px;padding:6px 16px;border:1px solid var(--gray-200);border-radius:6px;background:white;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        🔄 Actualiser l'aperçu
+      </button>
+    </div>
+  </div>
+
+  <!-- Panel Email 02 -->
+  <div class="elisa-seq-panel" id="seqPanel2" style="padding:22px;display:none;flex-direction:column;gap:18px;">
+    <div class="fg">
+      <label class="lbl">Objet de l'email <span class="req">*</span></label>
+      <input class="inp" type="text" id="e2Objet" placeholder="Ex : Votre offre expire dans 24h ⏳"
+        value="Votre offre expire dans 24h ⏳" />
+    </div>
+    <div class="fg">
+      <label class="lbl">Corps du message</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;">
+        <div style="display:flex;gap:4px;padding:8px 12px;background:#fafafa;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;">
+          <button class="tb" onclick="fmtSeq('e2Body','bold')"><b>B</b></button>
+          <button class="tb" onclick="fmtSeq('e2Body','italic')"><i>I</i></button>
+          <button class="tb" onclick="fmtSeq('e2Body','underline')"><u>U</u></button>
+          <div style="width:1px;background:var(--gray-200);margin:2px 4px;"></div>
+          <button class="tb" onclick="fmtSeq('e2Body','insertUnorderedList')">• Liste</button>
+          <button class="tb" onclick="fmtSeq('e2Body','formatBlock','h3')">Titre</button>
+        </div>
+        <div id="e2Body" contenteditable="true"
+          style="min-height:120px;padding:14px;font-size:13px;line-height:1.7;outline:none;font-family:'DM Sans',sans-serif;">
+Bonjour {{prenom}},
+
+Votre code promo expire dans 24 heures. Ne passez pas à côté de cette offre !
+
+C'est le bon moment pour passer commande.
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Code promo</label>
+        <input class="inp" type="text" id="e2Code" placeholder="Ex : ELISA10" style="text-transform:uppercase;font-family:monospace;letter-spacing:1px;" />
+      </div>
+      <div class="fg">
+        <label class="lbl">Valeur du code</label>
+        <input class="inp" type="text" id="e2CodeVal" placeholder="Ex : -10% ou -5000 XOF" />
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Texte du bouton CTA</label>
+        <input class="inp" type="text" id="e2CtaText" placeholder="En profiter maintenant →" value="En profiter maintenant →" />
+      </div>
+      <div class="fg">
+        <label class="lbl">Lien du bouton</label>
+        <input class="inp" type="url" id="e2CtaLink" placeholder="https://..." />
+      </div>
+    </div>
+    <div>
+      <label class="lbl">Aperçu email</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;margin-top:8px;">
+        <div style="background:#f8fafc;padding:8px 14px;border-bottom:1px solid var(--gray-100);font-size:11px;color:var(--gray-400);display:flex;align-items:center;gap:8px;">
+          <span>📧</span> Aperçu · <span id="e2ObjetPreview" style="color:var(--black);font-weight:500;">—</span>
+        </div>
+        <iframe id="e2Preview" style="width:100%;height:280px;border:none;" srcdoc=""></iframe>
+      </div>
+      <button onclick="genererApercu(2)" style="margin-top:8px;font-size:12px;padding:6px 16px;border:1px solid var(--gray-200);border-radius:6px;background:white;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        🔄 Actualiser l'aperçu
+      </button>
+    </div>
+  </div>
+
+  <!-- Panel Email 03 -->
+  <div class="elisa-seq-panel" id="seqPanel3" style="padding:22px;display:none;flex-direction:column;gap:18px;">
+    <div class="fg">
+      <label class="lbl">Objet de l'email <span class="req">*</span></label>
+      <input class="inp" type="text" id="e3Objet" placeholder="Ex : Dernière chance — -15% pour vous 🎁"
+        value="Dernière chance — on vous offre -15% 🎁" />
+    </div>
+    <div class="fg">
+      <label class="lbl">Corps du message</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;">
+        <div style="display:flex;gap:4px;padding:8px 12px;background:#fafafa;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;">
+          <button class="tb" onclick="fmtSeq('e3Body','bold')"><b>B</b></button>
+          <button class="tb" onclick="fmtSeq('e3Body','italic')"><i>I</i></button>
+          <button class="tb" onclick="fmtSeq('e3Body','underline')"><u>U</u></button>
+          <div style="width:1px;background:var(--gray-200);margin:2px 4px;"></div>
+          <button class="tb" onclick="fmtSeq('e3Body','insertUnorderedList')">• Liste</button>
+          <button class="tb" onclick="fmtSeq('e3Body','formatBlock','h3')">Titre</button>
+        </div>
+        <div id="e3Body" contenteditable="true"
+          style="min-height:120px;padding:14px;font-size:13px;line-height:1.7;outline:none;font-family:'DM Sans',sans-serif;">
+Bonjour {{prenom}},
+
+C'est notre dernière offre pour vous. On ne se verra peut-être plus de si tôt 😉
+
+Profitez-en avant qu'il soit trop tard.
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Code promo</label>
+        <input class="inp" type="text" id="e3Code" placeholder="Ex : ELISA15" style="text-transform:uppercase;font-family:monospace;letter-spacing:1px;" />
+      </div>
+      <div class="fg">
+        <label class="lbl">Valeur du code</label>
+        <input class="inp" type="text" id="e3CodeVal" placeholder="Ex : -15% ou -7500 XOF" />
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fg">
+        <label class="lbl">Texte du bouton CTA</label>
+        <input class="inp" type="text" id="e3CtaText" placeholder="Saisir cette offre →" value="Saisir cette offre →" />
+      </div>
+      <div class="fg">
+        <label class="lbl">Lien du bouton</label>
+        <input class="inp" type="url" id="e3CtaLink" placeholder="https://..." />
+      </div>
+    </div>
+    <div>
+      <label class="lbl">Aperçu email</label>
+      <div style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;margin-top:8px;">
+        <div style="background:#f8fafc;padding:8px 14px;border-bottom:1px solid var(--gray-100);font-size:11px;color:var(--gray-400);display:flex;align-items:center;gap:8px;">
+          <span>📧</span> Aperçu · <span id="e3ObjetPreview" style="color:var(--black);font-weight:500;">—</span>
+        </div>
+        <iframe id="e3Preview" style="width:100%;height:280px;border:none;" srcdoc=""></iframe>
+      </div>
+      <button onclick="genererApercu(3)" style="margin-top:8px;font-size:12px;padding:6px 16px;border:1px solid var(--gray-200);border-radius:6px;background:white;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        🔄 Actualiser l'aperçu
+      </button>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+      <!-- Historique -->
+      <div class="card" style="margin-bottom:32px;">
+        <div class="card-head"><div><h2>Historique des campagnes</h2><p>Résultats de vos derniers envois automatiques</p></div></div>
+        <div id="elisaHistorique" style="padding:8px 0;">
+          <div style="padding:32px;text-align:center;color:var(--gray-400);font-size:13px;">
+            <div style="font-size:28px;margin-bottom:8px;">📭</div>
+            Aucune campagne encore lancée.<br>Créez votre première campagne ci-dessus.
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- ── Fin Tab ELISA ── -->
+
+  </div>
+</div>
+<!-- FIN MARKETING -->
+
+
+<!-- AFFILIATION -->
+<div class="page-view" id="page-affiliation">
+  <div class="affil-wrap">
+    <div class="page-header">
+      <div><h1>Affiliation</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Gérez votre réseau d'affiliés</p></div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-row" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
+      <div class="kpi"><div class="kpi-label">Affiliés actifs</div><div class="kpi-val" id="affilNb">—</div></div>
+      <div class="kpi"><div class="kpi-label">Ventes générées</div><div class="kpi-val" id="affilVentes">—</div></div>
+      <div class="kpi"><div class="kpi-label">Commissions dues</div><div class="kpi-val" id="affilCommissions">—</div></div>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-head"><div><h2>Inviter un affilié</h2></div></div>
+      <div class="card-body-p">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+          <div class="fg">
+            <label class="lbl">Nom <span class="req">*</span></label>
+            <input class="inp" type="text" id="affilNom" placeholder="Ex : Kofi Asante" />
+          </div>
+          <div class="fg">
+            <label class="lbl">Email</label>
+            <input class="inp" type="email" id="affilEmail" placeholder="kofi@email.com" />
+          </div>
+          <div class="fg">
+            <label class="lbl">Commission (%)</label>
+            <input class="inp" type="number" id="affilCommission" placeholder="10" min="1" max="50" value="10" />
+          </div>
+        </div>
+        <div id="affilMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+        <button class="btn-primary" onclick="creerAffilie(this)" style="margin-top:8px;">➕ Créer l'affilié</button>
+      </div>
+    </div>
+
+    <!-- Liste affiliés -->
+    <div class="card">
+      <div class="card-head"><div><h2>Mes affiliés</h2></div></div>
+      <div id="affilList" style="padding:8px 0;">
+        <div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Chargement…</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PROFIL -->
+<div class="page-view" id="page-profil">
+  <div class="settings-wrap">
+    <div class="page-header" style="margin-bottom:28px;"><div><h1>Profil</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Vos informations personnelles</p></div></div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-head"><div><h2>Informations personnelles</h2></div></div>
+      <div style="padding:22px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="fg"><label class="lbl">Prénom</label><input class="inp" id="profilPrenom" type="text" placeholder="Votre prénom" /></div>
+          <div class="fg"><label class="lbl">Nom</label><input class="inp" id="profilNom" type="text" placeholder="Votre nom" /></div>
+        </div>
+        <div class="fg"><label class="lbl">Email</label><input class="inp" id="profilEmail" type="email" placeholder="votre@email.com" /></div>
+        <div class="fg"><label class="lbl">Téléphone</label><input class="inp" id="profilTel" type="tel" placeholder="Ex : +226 70 00 00 00" /></div>
+        <div id="profilMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+        <button class="btn-primary" onclick="sauvegarderProfil(this)" style="margin-top:8px;">💾 Sauvegarder</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div><h2>Changer le mot de passe</h2></div></div>
+      <div style="padding:22px;">
+        <div class="fg"><label class="lbl">Nouveau mot de passe</label><input class="inp" id="newPassword" type="password" placeholder="••••••••" /></div>
+        <div class="fg"><label class="lbl">Confirmer</label><input class="inp" id="confirmPassword" type="password" placeholder="••••••••" /></div>
+        <div id="pwdMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+        <button class="btn-primary" onclick="changerMotDePasse(this)" style="margin-top:8px;">🔒 Changer le mot de passe</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS -->
+<div class="page-view" id="page-notifications">
+  <div class="notif-wrap">
+    <div class="page-header" style="margin-bottom:24px;">
+      <div>
+        <h1>Notifications</h1>
+        <p id="notifNbNonLues" style="font-size:14px;color:var(--gray-600);margin-top:4px;">Chargement…</p>
+      </div>
+      <button class="btn-primary" onclick="marquerToutLu()" style="font-size:13px;padding:8px 16px;">✅ Tout marquer comme lu</button>
+    </div>
+    <div id="notifList">
+      <div style="padding:40px;text-align:center;color:var(--gray-400);font-size:13px;">Chargement…</div>
+    </div>
+  </div>
+</div>
+
+<!-- PARAMÈTRES -->
+<div class="page-view" id="page-parametres">
+  <div class="settings-wrap">
+    <div class="page-header" style="margin-bottom:28px;"><div><h1>Paramètres</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Configuration de votre boutique</p></div></div>
+
+<!-- Informations boutique -->
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-head"><div><h2>Informations de la boutique</h2></div></div>
+  <div style="padding:22px;">
+    <div class="fg">
+      <label class="lbl">Nom de la boutique</label>
+      <input class="inp" type="text" id="shopNameInp" placeholder="Ma boutique" />
+    </div>
+    <div style="font-size:12px;color:var(--gray-400);padding:8px 12px;background:var(--gray-100);border-radius:8px;">
+      ⚠️ Le lien de votre boutique ne peut pas être modifié pour éviter de casser vos liens existants.
+    </div>
+    <div id="settingsMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+    <button class="btn-primary" onclick="saveSettings(this)" style="margin-top:8px;">💾 Sauvegarder</button>
+  </div>
+</div>
+
+    <!-- Paramètres généraux -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-head"><div><h2>Paramètres généraux</h2></div></div>
+      <div style="padding:22px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="fg">
+            <label class="lbl">Devise</label>
+            <select class="sel" id="shopDevise">
+              <option value="XOF">XOF — Franc CFA</option>
+              <option value="EUR">EUR — Euro</option>
+              <option value="USD">USD — Dollar américain</option>
+              <option value="GHS">GHS — Cedi ghanéen</option>
+              <option value="NGN">NGN — Naira nigérian</option>
+              <option value="MAD">MAD — Dirham marocain</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="lbl">Langue</label>
+            <select class="sel" id="shopLangue">
+              <option value="fr">🇫🇷 Français</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="ar">🇸🇦 العربية</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="lbl">Pays</label>
+            <select class="sel" id="shopPays">
+              <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
+              <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
+              <option value="Sénégal">🇸🇳 Sénégal</option>
+              <option value="Mali">🇲🇱 Mali</option>
+              <option value="Niger">🇳🇪 Niger</option>
+              <option value="Togo">🇹🇬 Togo</option>
+              <option value="Bénin">🇧🇯 Bénin</option>
+              <option value="Ghana">🇬🇭 Ghana</option>
+              <option value="Nigeria">🇳🇬 Nigeria</option>
+              <option value="Cameroun">🇨🇲 Cameroun</option>
+              <option value="Maroc">🇲🇦 Maroc</option>
+            </select>
+          </div>
+        </div>
+        <div id="generalMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+        <button class="btn-primary" onclick="saveGeneralSettings(this)" style="margin-top:8px;">💾 Sauvegarder</button>
+      </div>
+    </div>
+
+    <!-- Paiement & Retrait -->
+    <div class="card">
+      <div class="card-head"><div><h2>Paiement & Retrait</h2></div></div>
+      <div style="padding:22px;">
+        <div class="fg"><label class="lbl">Numéro Mobile Money</label><input class="inp" type="tel" id="mobileMoneyNum" placeholder="Ex : +226 70 00 00 00" /></div>
+        <div class="fg">
+          <label class="lbl">Opérateur</label>
+          <select class="sel" id="mobileMoneyOp">
+            <option value="orange">Orange Money</option>
+            <option value="moov">Moov Money</option>
+            <option value="wave">Wave</option>
+            <option value="mtn">MTN Mobile Money</option>
+            <option value="airtel">Airtel Money</option>
+          </select>
+        </div>
+        <div id="paymentMsg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:8px;"></div>
+        <button class="btn-primary" onclick="savePaymentSettings(this)">💾 Enregistrer</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div><div class="ov-spinner"></div><div class="ov-text" id="ovText">Chargement…</div><div class="ov-sub" id="ovSub"></div></div>
+</div>
+
+<script>
+// ══ CONFIG ══
+const API_URL = 'http://localhost:3001/api';
+const token   = localStorage.getItem('token');
+const user    = JSON.parse(localStorage.getItem('user') || 'null');
+
+// ══ PROTECTION ══
+if (!token || !user) {
+  console.warn('❌ Non connecté → redirection login');
+  window.location.href = 'login.html';
+}
+console.log('✅ Connecté :', user);
+
+// ══ INFOS UTILISATEUR ══
+function loadUserInfo() {
+  const initiales = [user.prenom, user.nom].filter(Boolean).map(s => s[0].toUpperCase()).join('');
+  document.getElementById('userAvatar').textContent   = initiales || 'AB';
+  document.getElementById('sideShopName').textContent = user.prenom ? `Boutique de ${user.prenom}` : 'Ma boutique';
+  document.getElementById('shopPlan').textContent     = user.plan  || 'Starter';
+  const h = new Date().getHours();
+  document.getElementById('welcomeMsg').textContent   = `${h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir'}, ${user.prenom||user.nom||''} 👋`;
+  const pp = document.getElementById('profilPrenom'); if(pp) pp.value = user.prenom||'';
+  const pn = document.getElementById('profilNom');    if(pn) pn.value = user.nom   ||'';
+  const pe = document.getElementById('profilEmail');  if(pe) pe.value = user.email ||'';
+}
+// ══ CHARGER LES STATS DU DASHBOARD ══
+async function loadDashboardStats() {
+  console.log('📊 Chargement des stats...');
+  try {
+    const res  = await fetch(`${API_URL}/stats/dashboard`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    console.log('📊 Stats reçues :', data);
+
+    if (!res.ok) { console.error('❌', data.message); return; }
+
+    const k = data.kpis;
+
+    // ── KPI 1 : Revenus payés ce mois ──
+    document.querySelector('#page-accueil .kpi:nth-child(1) .kpi-val').innerHTML =
+      Number(k.revenus_paye).toLocaleString('fr-FR') + ' <span style="font-size:16px;font-family:\'DM Sans\'">XOF</span>';
+    const deltaRev = document.querySelector('#page-accueil .kpi:nth-child(1) .kpi-delta');
+    deltaRev.innerHTML = k.variation_revenus !== null
+      ? `${k.variation_revenus >= 0 ? '↑' : '↓'} ${k.variation_revenus >= 0 ? '+' : ''}${k.variation_revenus}% vs mois dernier`
+      : 'Premier mois';
+    deltaRev.className = 'kpi-delta ' + (k.variation_revenus >= 0 ? 'up' : 'down');
+
+    // ── KPI 2 : Total ventes ce mois (tous statuts) ──
+    const totalVentes = k.ventes_paye + k.ventes_en_attente + k.ventes_rembourse + k.ventes_annule;
+    document.querySelector('#page-accueil .kpi:nth-child(2) .kpi-val').textContent = totalVentes;
+    document.querySelector('#page-accueil .kpi:nth-child(2) .kpi-delta').innerHTML =
+      `✅ ${k.ventes_paye} payées &nbsp;⏳ ${k.ventes_en_attente} en attente`;
+    document.querySelector('#page-accueil .kpi:nth-child(2) .kpi-delta').className = 'kpi-delta';
+
+    // ── KPI 3 : Clients ──
+    document.querySelector('#page-accueil .kpi:nth-child(3) .kpi-val').textContent = k.clients_total;
+    document.querySelector('#page-accueil .kpi:nth-child(3) .kpi-delta').textContent =
+      `↑ +${k.nouveaux_clients} cette semaine`;
+    document.querySelector('#page-accueil .kpi:nth-child(3) .kpi-delta').className = 'kpi-delta up';
+
+    // ── KPI 4 : Produits publiés ──
+    const kpiProd = document.getElementById('kpiProduits');
+    if (kpiProd) kpiProd.textContent = k.produits_publies;
+    const kpiProdTotal = document.getElementById('kpiProduitsTotal');
+    if (kpiProdTotal) kpiProdTotal.textContent = `${k.produits_total} au total`;
+
+    // ── Page Revenus ──
+    const revEl   = document.querySelector('#page-revenus .kpi:nth-child(1) .kpi-val');
+    const fraisEl = document.querySelector('#page-revenus .kpi:nth-child(2) .kpi-val');
+    const netEl   = document.querySelector('#page-revenus .kpi:nth-child(3) .kpi-val');
+    if (revEl)   revEl.innerHTML   = Number(k.total_paye).toLocaleString('fr-FR')        + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
+    if (fraisEl) fraisEl.innerHTML = Number(k.frais_eseafy).toLocaleString('fr-FR')      + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
+    if (netEl)   netEl.innerHTML   = Number(k.net_disponible).toLocaleString('fr-FR')    + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
+
+    // ── Détail revenus par statut sur page revenus ──
+    const revDetail = document.getElementById('revDetail');
+    if (revDetail) {
+      revDetail.innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;">
+          <div class="kpi"><div class="kpi-label">En attente</div>
+            <div class="kpi-val" style="font-size:20px;">${Number(k.total_en_attente).toLocaleString('fr-FR')} <span style="font-size:12px">XOF</span></div>
+            <div class="kpi-delta" style="color:var(--gray-400);">${k.nb_total_en_attente} commande(s)</div>
+          </div>
+          <div class="kpi"><div class="kpi-label">Remboursé</div>
+            <div class="kpi-val" style="font-size:20px;">${Number(k.total_rembourse).toLocaleString('fr-FR')} <span style="font-size:12px">XOF</span></div>
+            <div class="kpi-delta" style="color:var(--gray-400);">${k.nb_total_rembourse} commande(s)</div>
+          </div>
+          <div class="kpi"><div class="kpi-label">Annulé</div>
+            <div class="kpi-val" style="font-size:20px;">${Number(k.total_annule).toLocaleString('fr-FR')} <span style="font-size:12px">XOF</span></div>
+            <div class="kpi-delta" style="color:var(--gray-400);">${k.nb_total_annule} commande(s)</div>
+          </div>
+          <div class="kpi"><div class="kpi-label">Total commandes</div>
+            <div class="kpi-val" style="font-size:20px;">${k.nb_total_paye + k.nb_total_en_attente + k.nb_total_rembourse + k.nb_total_annule}</div>
+            <div class="kpi-delta up">Toutes périodes</div>
+          </div>
+        </div>`;
+    }
+
+    // ── Dernières ventes ──
+    const recentList = document.querySelector('#page-accueil .recent-list');
+    if (recentList && data.dernieres_ventes.length > 0) {
+      recentList.innerHTML = '';
+      data.dernieres_ventes.forEach(v => {
+        const statutClass = v.statut === 'paye' ? 'green' : v.statut === 'en_attente' ? 'orange' : 'gray';
+        const statutLabel = v.statut === 'paye' ? 'Payé' : v.statut === 'en_attente' ? 'En attente' : v.statut === 'rembourse' ? 'Remboursé' : 'Annulé';
+        const date  = new Date(v.created_at);
+        const now   = new Date();
+        const diff  = Math.floor((now - date) / 60000);
+        const quand = diff < 60 ? `il y a ${diff}min` : diff < 1440 ? `il y a ${Math.floor(diff/60)}h` : 'hier';
+        recentList.innerHTML += `
+          <div class="recent-item">
+            <div class="ri-icon">📦</div>
+            <div>
+              <div class="ri-name">${v.nom_produit || 'Produit'}</div>
+              <div class="ri-sub">${quand} · <span class="badge ${statutClass}">${statutLabel}</span></div>
+            </div>
+            <div class="ri-price">${Number(v.total).toLocaleString('fr-FR')} XOF</div>
+          </div>`;
+      });
+    } else if (recentList) {
+      recentList.innerHTML = `<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Aucune vente pour l'instant.</div>`;
+    }
+
+    // ── Graphe barres (30 jours — payées seulement) ──
+    const chartBars = document.querySelector('#page-accueil .chart-bars');
+    if (chartBars) {
+      const payees = data.graph_revenus.filter(r => r.statut === 'paye');
+      if (payees.length > 0) {
+        const maxVal = Math.max(...payees.map(r => parseFloat(r.total)));
+        chartBars.innerHTML = payees.map(r => {
+          const pct = maxVal > 0 ? Math.max(Math.round((parseFloat(r.total) / maxVal) * 100), 5) : 10;
+          return `<div class="bar accent" style="height:${pct}%" title="${r.jour} : ${Number(r.total).toLocaleString('fr-FR')} XOF"></div>`;
+        }).join('');
+      }
+    }
+
+  } catch (err) {
+    console.error('❌ Erreur stats :', err);
+  }
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = 'login.html';
+}
+
+// ══ NAVIGATION ══
+let currentPage = 'accueil';
+let productType = 'digital';
+
+const pageTitles = {
+  'accueil':'<strong>Ma boutique</strong>','ventes':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Ventes',
+  'produits':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Produits','nouveau-produit':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Nouveau produit',
+  'clients':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Clients','revenus':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Revenus',
+  'analytiques':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Analytiques','marketing':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Marketing',
+  'affiliation':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Affiliation','profil':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Profil',
+  'notifications':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Notifications','parametres':'<strong>Ma boutique</strong> &nbsp;/&nbsp; Paramètres',
+};
+
+function navigate(page) {
+  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navKey = page === 'nouveau-produit' ? 'produits' : page;
+  const nav    = document.getElementById('nav-' + navKey);
+  if (nav) nav.classList.add('active');
+  document.getElementById('topCrumb').innerHTML     = pageTitles[page] || '<strong>Ma boutique</strong>';
+  document.getElementById('draftBtn').style.display = page === 'nouveau-produit' ? '' : 'none';
+  if (page === 'nouveau-produit') {
+    document.getElementById('page-produits').classList.add('active');
+    showProdSubview('subProdChoix');
+  } else if (page === 'produits') {
+    document.getElementById('page-produits').classList.add('active');
+    showProdSubview('subProdList');
+    loadProduits();
+  } else {
+    const el = document.getElementById('page-' + page);
+    if (el) el.classList.add('active');
+    if (page === 'accueil') loadDashboardStats();
+    if (page === 'ventes')  loadVentes();
+    if (page === 'clients') loadClients();
+    if (page === 'analytiques') loadAnalytics();
+    if (page === 'marketing') loadCodesPromo();
+    if (page === 'profil') loadUserInfo();
+    if (page === 'affiliation') loadAffiliation();
+    if (page === 'parametres') loadSettings();
+    if (page === 'notifications') loadNotifications();
+  }
+  currentPage = page;
+  window.scrollTo({ top: 0 });
+}
+
+function showProdSubview(id) {
+  document.querySelectorAll('.prod-subview').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ══ PRODUITS ══
+async function loadProduits(filtre = 'tous') {
+  const table = document.getElementById('produitsTable');
+  if (!table) return;
+  let url = `${API_URL}/produits`;
+  if (filtre === 'digital')   url += '?type=digital';
+  if (filtre === 'physical')  url += '?type=physical';
+  if (filtre === 'brouillon') url += '?statut=brouillon';
+  console.log('📦 Chargement produits → ' + url);
+  try {
+    const res  = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    console.log('📦 Résultat :', data);
+    if (!res.ok) { console.error('❌', data.message); return; }
+    const produits = data.produits;
+    const cpt = document.getElementById('prodCount');
+    if (cpt) cpt.textContent = `${produits.length} produit${produits.length>1?'s':''} dans votre catalogue`;
+    const header = table.querySelector('.pt-head');
+    table.innerHTML = '';
+    table.appendChild(header);
+    if (produits.length === 0) {
+      table.innerHTML += `<div style="padding:40px;text-align:center;color:var(--gray-400);font-size:14px;">
+        Aucun produit. <a href="#" onclick="navigate('nouveau-produit')" style="color:var(--black);font-weight:500;">Créer votre premier produit →</a>
+      </div>`;
+      return;
+    }
+    produits.forEach(p => {
+      const d = p.type === 'digital';
+      const statutHtml = p.statut === 'publie' ? '<span class="badge green">Publié</span>' : '<span class="badge orange">Brouillon</span>';
+      const typeHtml   = d ? `<span class="badge" style="background:var(--accent-light);color:#a07c3a;border:1px solid var(--accent)">Digital</span>` : `<span class="badge gray">Physique</span>`;
+      console.log(`  → ${p.nom} | ${p.type} | ${p.statut} | ${p.prix} XOF`);
+      table.innerHTML += `
+        <div class="pt-row">
+          <div class="pt-prod"><div class="pt-thumb">${d?'📦':'🚚'}</div><div><div class="pt-name">${p.nom}</div><div class="pt-type">${p.categorie||'—'}</div></div></div>
+          <span class="pt-val">${typeHtml}</span>
+          <span class="pt-val" style="font-weight:600">${Number(p.prix).toLocaleString('fr-FR')} XOF</span>
+          <span>${statutHtml}</span>
+<div class="pt-actions">
+  <button class="icon-btn" title="Modifier" onclick="editProduit(${p.id})">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  </button>
+  <button class="icon-btn" title="Copier lien" onclick="copyLien('${p.slug}')">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+  </button>
+  <button class="icon-btn" title="Supprimer" onclick="deleteProduit(${p.id}, this)">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+  </button>
+</div>
+        </div>`;
+    });
+  } catch (err) {
+    console.error('❌ Erreur loadProduits :', err);
+    table.innerHTML += `<div style="padding:20px;color:red;font-size:13px;">❌ Erreur : ${err.message}</div>`;
+  }
+}
+
+function copyLien(slug) {
+  const lien = `http://localhost:3001/boutique/boutique-${user.id}/${slug}`;
+  navigator.clipboard.writeText(lien).then(() => alert('✅ Lien copié !\n' + lien));
+  console.log('🔗 Lien :', lien);
+}
+
+async function deleteProduit(id, btn) {
+  if (!confirm('Supprimer ce produit définitivement ?')) return;
+  console.log('🗑️ Suppression id :', id);
+  const res  = await fetch(`${API_URL}/produits/${id}`, { method:'DELETE', headers:{'Authorization':'Bearer '+token} });
+  const data = await res.json();
+  console.log('🗑️ Résultat :', data);
+  if (res.ok) btn.closest('.pt-row').remove();
+  else alert('❌ ' + data.message);
+}
+
+// ══ CRÉATION PRODUIT ══
+const cats = {
+  digital:  ['📚 Ebooks & Guides','🎓 Formation & Cours','🎨 Design & Graphisme','💻 Développement & Tech','📈 Marketing & Business','🎵 Audio & Musique','🔧 Templates & Outils'],
+  physical: ['👗 Vêtements & Mode','🍽 Alimentation','🌿 Beauté & Bien-être','🏠 Maison & Déco','⚡ Électronique','🎨 Artisanat & Art','🧸 Jouets & Loisirs'],
+};
+
+function startCreation(type) {
+  productType = type;
+  const badge = document.getElementById('typeBadge');
+  badge.className = 'type-badge ' + type;
+  badge.textContent = type === 'digital' ? '📦 Produit digital' : '🚚 Produit physique';
+  document.getElementById('topCrumb').innerHTML = '<strong>Ma boutique</strong> &nbsp;/&nbsp; Nouveau produit ' + (type==='digital'?'digital':'physique');
+  const sel = document.getElementById('catSelect');
+  sel.innerHTML = '<option value="">Choisir une catégorie</option>' + cats[type].map(c=>`<option>${c}</option>`).join('');
+  document.getElementById('sumType').textContent = type === 'digital' ? 'Produit digital' : 'Produit physique';
+  document.getElementById('pName').value         = '';
+  document.getElementById('editorBody').innerHTML = '';
+  document.getElementById('prixInput').value     = '';
+  document.getElementById('prixBarreInput').value = '';
+  selectedFiles  = [];
+  digitalFileUrl = null;
+  const lbl = document.getElementById('digitalFileLabel');
+  if (lbl) { lbl.innerHTML = '📎 Cliquez pour uploader · PDF, ZIP, MP3, MP4, MOV…'; lbl.style.color = ''; }
+  afficherChampsType(type);
+  showProdSubview('subProdCreate');
+  goStep(1);
+  window.scrollTo({ top:0 });
+}
+function goStep(n) {
+  document.querySelectorAll('.step-panel').forEach((p,i) => p.classList.toggle('active', i+1===n));
+  for (let i=1; i<=4; i++) {
+    const b = document.getElementById('b'+i);
+    const s = b.closest('.step');
+    s.classList.remove('active','done');
+    if (i<n)       { s.classList.add('done');   b.innerHTML  ='✓'; }
+    else if (i===n){ s.classList.add('active'); b.textContent=i;  }
+    else           { b.textContent=i; }
+    if (i<4) document.getElementById('l'+i).classList.toggle('done', i<n);
+  }
+  if (n===4) document.getElementById('sumName').textContent = document.getElementById('pName').value || '—';
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function fmt(cmd) { document.execCommand(cmd,false,null); }
+
+function addTag(e) {
+  if (e.key!=='Enter' && e.key!==',') return;
+  e.preventDefault();
+  const v = e.target.value.trim().replace(/,$/,'');
+  if (!v) return;
+  const chip = document.createElement('span');
+  chip.className = 'chip';
+  chip.innerHTML = v + ' <button onclick="this.parentElement.remove()">×</button>';
+  document.getElementById('tgInp').before(chip);
+  e.target.value = '';
+}
+
+function handleImages(input) {
+  const grid = document.getElementById('imgGrid');
+  selectedFiles = Array.from(input.files).slice(0, 8); // ← sauvegarder les fichiers
+  selectedFiles.forEach(file => {
+    const r = new FileReader();
+    r.onload = e => {
+      const d = document.createElement('div');
+      d.className = 'img-th';
+      d.innerHTML = `<img src="${e.target.result}"/><button class="rm" onclick="this.parentElement.remove()">×</button>`;
+      grid.appendChild(d);
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+function updateSEO() {
+  const name  = document.getElementById('pName')?.value||'';
+  const title = document.getElementById('seoTitle')?.value||'';
+  const desc  = document.getElementById('seoDescInp')?.value||'';
+  const slug  = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')||'nom-du-produit';
+  const u=document.getElementById('seoUrl'); if(u) u.textContent=`eseafy.com/boutique/boutique-${user?.id}/${slug}`;
+  const t=document.getElementById('seoTtl'); if(t) t.textContent=title||name||"Votre titre s'affichera ici";
+  const d=document.getElementById('seoDsc'); if(d) d.textContent=desc||"La description s'affiche dans les résultats de recherche.";
+}
+
+async function saveDraft(btn) {
+  const nom = document.getElementById('pName').value.trim();
+  if (!nom) { alert('Ajoutez un nom avant de sauvegarder.'); return; }
+  const prix = parseFloat(document.getElementById('prixInput')?.value)||0;
+  console.log('💾 Brouillon :', {nom, prix, type:productType});
+  btn.textContent = 'Sauvegarde…';
+  try {
+    const res  = await fetch(`${API_URL}/produits`, {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({ nom, prix, type:productType, categorie:document.getElementById('catSelect').value, statut:'brouillon',
+        seo_titre:document.getElementById('seoTitle')?.value||'', seo_desc:document.getElementById('seoDescInp')?.value||'' })
+    });
+    const data = await res.json();
+    console.log('💾 Réponse :', data);
+    if (res.ok) { btn.textContent='✓ Sauvegardé'; btn.style.color='var(--success)'; setTimeout(()=>{btn.textContent='Enregistrer brouillon';btn.style.color='';},2000); }
+    else { alert('❌ '+data.message); btn.textContent='Enregistrer brouillon'; }
+  } catch(err) { console.error('❌',err); btn.textContent='Enregistrer brouillon'; }
+}
+
+async function publishProduct(btn) {
+  const nom         = document.getElementById('pName').value.trim();
+  const description = document.getElementById('editorBody')?.innerHTML || '';
+  const categorie   = document.getElementById('catSelect').value;
+  const prix        = parseFloat(document.getElementById('prixInput')?.value);
+  const prix_barre  = parseFloat(document.getElementById('prixBarreInput')?.value) || null;
+  const seo_titre   = document.getElementById('seoTitle')?.value   || '';
+  const seo_desc    = document.getElementById('seoDescInp')?.value || '';
+  const visible     = document.getElementById('visibleToggle')?.classList.contains('on') ?? true;
+  const tags        = Array.from(document.querySelectorAll('.chip')).map(c => c.textContent.replace('×','').trim()).filter(Boolean);
+
+  if (!nom)         { alert('Veuillez saisir un nom.'); goStep(2); return; }
+  if (!prix||prix<=0){ alert('Veuillez saisir un prix valide.'); goStep(4); return; }
+
+  btn.disabled  = true;
+  btn.innerHTML = '⏳ Upload images…';
+
+// ── 1. Uploader les images ──
+let imageUrls = [];
+if (selectedFiles.length > 0) {
+  const formData = new FormData();
+  selectedFiles.forEach(file => formData.append('images', file));
+  try {
+    const uploadRes  = await fetch(`${API_URL}/upload/images`, {
+      method:  'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body:    formData
+    });
+    const uploadData = await uploadRes.json();
+    console.log('📸 Images :', uploadData);
+    if (uploadRes.ok) imageUrls = uploadData.urls;
+  } catch (err) {
+    console.warn('⚠️ Upload échoué :', err);
+  }
+}
+
+  btn.innerHTML = '⏳ Publication…';
+
+  // ── 2. Créer le produit avec les URLs ──
+  try {
+    const res  = await fetch(`${API_URL}/produits`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        nom, description, prix, prix_barre,
+        type: productType, categorie, tags,
+        statut: 'publie', visible,
+        seo_titre, seo_desc,
+        images: imageUrls   // ← URLs des images
+      })
+    });
+    const data = await res.json();
+    console.log('🚀 Produit créé :', data);
+
+    if (res.ok) {
+      btn.innerHTML = '✅ Publié !';
+      setTimeout(() => {
+        if (data.lien_public) alert(`✅ Produit publié !\n\n🔗 Lien :\n${data.lien_public}`);
+        navigate('produits');
+      }, 800);
+    } else {
+      alert('❌ ' + data.message);
+      btn.disabled  = false;
+      btn.innerHTML = '✅ Publier le produit';
+    }
+  } catch (err) {
+    console.error('❌', err);
+    alert('Erreur serveur.');
+    btn.disabled  = false;
+    btn.innerHTML = 'Publier le produit';
+  }
+}
+
+function saveShopName() {
+  const name = document.getElementById('shopNameInp').value;
+  if (name) document.getElementById('sideShopName').textContent = name;
+}
+
+function initFilters() {
+  document.querySelectorAll('.filter-btn[data-filtre]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.closest('.filters-bar').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
+      this.classList.add('active-filter');
+      if (currentPage === 'produits') loadProduits(this.dataset.filtre);
+    });
+  });
+
+  document.querySelectorAll('.filter-btn[data-statut]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.closest('.filters-bar').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
+      this.classList.add('active-filter');
+      if (currentPage === 'ventes') loadVentes(this.dataset.statut);
+    });
+  });
+}
+
+// ══ CHARGER LES VENTES ══
+async function loadVentes(statut = 'tous') {
+  const table = document.getElementById('ventesTable');
+  if (!table) return;
+
+  let url = `${API_URL}/commandes`;
+  if (statut !== 'tous') url += `?statut=${statut}`;
+
+  console.log('📋 Chargement ventes → ' + url);
+
+  try {
+    const res  = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    console.log('📋 Ventes reçues :', data);
+
+    if (!res.ok) { console.error('❌', data.message); return; }
+
+    const commandes = data.commandes;
+    const count     = document.getElementById('ventesCount');
+    if (count) count.textContent = `${commandes.length} commande${commandes.length > 1 ? 's' : ''} au total`;
+
+    const header = table.querySelector('.vt-head');
+    table.innerHTML = '';
+    table.appendChild(header);
+
+    if (commandes.length === 0) {
+      table.innerHTML += `<div style="padding:40px;text-align:center;color:var(--gray-400);font-size:14px;">Aucune commande trouvée.</div>`;
+      return;
+    }
+
+    commandes.forEach(c => {
+      const statutMap = {
+        paye:       { label: 'Payé',       cls: 'green'  },
+        en_attente: { label: 'En attente', cls: 'orange' },
+        rembourse:  { label: 'Remboursé',  cls: 'gray'   },
+        annule:     { label: 'Annulé',     cls: 'gray'   },
+      };
+      const s     = statutMap[c.statut] || { label: c.statut, cls: 'gray' };
+      const date  = new Date(c.created_at);
+      const dateStr = date.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
+      const total = Number(c.total).toLocaleString('fr-FR');
+
+      table.innerHTML += `
+        <div class="vt-row">
+          <span class="vt-id">#${c.reference}</span>
+          <span class="vt-val">${c.nom_produit || '—'}</span>
+          <span class="vt-val">${c.nom_client || '—'}</span>
+          <span class="vt-val" style="font-weight:600">${total} XOF</span>
+          <span><span class="badge ${s.cls}">${s.label}</span></span>
+          <span>
+<span>
+  <button onclick="updateStatutCommande(${c.id}, '${c.statut}')" 
+    style="font-size:11px;padding:4px 10px;border:1px solid var(--gray-200);border-radius:6px;background:var(--white);cursor:pointer;color:var(--gray-600);">
+    ✏️ Modifier
+  </button>
+</span>
+          </span>
+        </div>`;
+    });
+
+  } catch (err) {
+    console.error('❌ Erreur ventes :', err);
+  }
+}
+
+// ══ CHANGER LE STATUT D'UNE COMMANDE ══
+async function updateStatutCommande(id, statut) {
+  console.log('🔄 Changement statut commande', id, '→', statut);
+  try {
+    const res  = await fetch(`${API_URL}/commandes/${id}/statut`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ statut })
+    });
+    const data = await res.json();
+    console.log('🔄 Résultat :', data);
+    if (res.ok) loadVentes(); // recharger
+    else alert('❌ ' + data.message);
+  } catch (err) {
+    console.error('❌', err);
+  }
+}
+
+// ══ RECHERCHE VENTES ══
+function searchVentes(val) {
+  const rows = document.querySelectorAll('#ventesTable .vt-row');
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(val.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// ══ CHARGER LES CLIENTS ══
+async function loadClients() {
+  const table = document.getElementById('clientsTable');
+  if (!table) return;
+
+  console.log('👥 Chargement clients…');
+
+  try {
+    const res  = await fetch(`${API_URL}/commandes`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!res.ok) return;
+
+    // Grouper par client (email ou téléphone)
+    const clientsMap = {};
+    data.commandes.forEach(c => {
+      const key = c.email_client || c.telephone || c.nom_client;
+      if (!clientsMap[key]) {
+        clientsMap[key] = {
+          nom:       c.nom_client,
+          email:     c.email_client,
+          telephone: c.telephone,
+          nb:        0,
+          total:     0,
+          dernier:   c.created_at,
+        };
+      }
+      clientsMap[key].nb++;
+      clientsMap[key].total += parseFloat(c.total);
+      if (new Date(c.created_at) > new Date(clientsMap[key].dernier)) {
+        clientsMap[key].dernier = c.created_at;
+      }
+    });
+
+    const clients = Object.values(clientsMap).sort((a,b) => b.total - a.total);
+
+    const count = document.getElementById('clientsCount');
+    if (count) count.textContent = `${clients.length} client${clients.length > 1 ? 's' : ''} au total`;
+
+    const header = table.querySelector('.ct-head');
+    table.innerHTML = '';
+    table.appendChild(header);
+
+    if (clients.length === 0) {
+      table.innerHTML += `<div style="padding:40px;text-align:center;color:var(--gray-400);font-size:14px;">Aucun client pour l'instant.</div>`;
+      return;
+    }
+
+    clients.forEach(c => {
+      const initiales = c.nom.split(' ').map(s => s[0]?.toUpperCase() || '').join('').slice(0, 2);
+      const date      = new Date(c.dernier).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
+      const total     = Number(c.total).toLocaleString('fr-FR');
+
+      console.log(`  → ${c.nom} | ${c.nb} commande(s) | ${total} XOF`);
+
+      table.innerHTML += `
+        <div class="ct-row">
+          <div class="ct-user">
+            <div class="ct-av">${initiales}</div>
+            <div>
+              <div class="ct-name">${c.nom}</div>
+              <div class="ct-email">${c.email || '—'}</div>
+            </div>
+          </div>
+          <span class="ct-val">${c.telephone || '—'}</span>
+          <span class="ct-val">${c.nb} commande${c.nb > 1 ? 's' : ''}</span>
+          <span class="ct-val" style="font-weight:600">${total} XOF</span>
+          <span class="ct-val" style="color:var(--gray-400)">${date}</span>
+        </div>`;
+    });
+
+  } catch (err) {
+    console.error('❌ Erreur clients :', err);
+  }
+}
+
+// ══ RECHERCHE CLIENTS ══
+function searchClients(val) {
+  const rows = document.querySelectorAll('#clientsTable .ct-row');
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(val.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// ══ ÉDITER UN PRODUIT ══
+async function editProduit(id) {
+  console.log('✏️ Édition produit id :', id);
+  editingProduitId = id;
+
+  try {
+    const res  = await fetch(`${API_URL}/produits/${id}`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!res.ok) { alert('❌ Produit introuvable'); return; }
+
+    const p = data.produit;
+
+    // Aller sur le formulaire
+    productType = p.type;
+    navigate('nouveau-produit');
+    startCreation(p.type);
+
+    // Pré-remplir après un court délai
+    setTimeout(() => {
+      document.getElementById('pName').value          = p.nom || '';
+      document.getElementById('editorBody').innerHTML = p.description || '';
+      document.getElementById('prixInput').value      = p.prix || '';
+      document.getElementById('prixBarreInput').value = p.prix_barre || '';
+      document.getElementById('seoTitle').value       = p.seo_titre || '';
+      document.getElementById('seoDescInp').value     = p.seo_desc || '';
+
+      // Catégorie
+      const sel = document.getElementById('catSelect');
+      Array.from(sel.options).forEach(opt => {
+        if (opt.text === p.categorie) opt.selected = true;
+      });
+
+      // Tags
+      if (p.tags && p.tags.length > 0) {
+        const tgInp = document.getElementById('tgInp');
+        p.tags.forEach(tag => {
+          const chip = document.createElement('span');
+          chip.className = 'chip';
+          chip.innerHTML = tag + ' <button onclick="this.parentElement.remove()">×</button>';
+          tgInp.before(chip);
+        });
+      }
+
+      // Statut toggle
+      const toggle = document.getElementById('visibleToggle');
+      if (p.visible) toggle.classList.add('on');
+      else toggle.classList.remove('on');
+
+      // Changer le bouton publier
+      const publishBtn = document.getElementById('publishBtn');
+      publishBtn.innerHTML = '💾 Mettre à jour';
+      publishBtn.onclick   = () => updateProduit(publishBtn);
+
+      // Changer le titre
+      document.getElementById('topCrumb').innerHTML =
+        '<strong>Ma boutique</strong> &nbsp;/&nbsp; Modifier le produit';
+
+      updateSEO();
+      console.log('✅ Formulaire pré-rempli pour :', p.nom);
+    }, 300);
+
+  } catch (err) {
+    console.error('❌ Erreur editProduit :', err);
+  }
+}
+
+// ══ METTRE À JOUR UN PRODUIT ══
+async function updateProduit(btn) {
+  const nom         = document.getElementById('pName').value.trim();
+  const description = document.getElementById('editorBody')?.innerHTML || '';
+  const categorie   = document.getElementById('catSelect').value;
+  const prix        = parseFloat(document.getElementById('prixInput')?.value);
+  const prix_barre  = parseFloat(document.getElementById('prixBarreInput')?.value) || null;
+  const seo_titre   = document.getElementById('seoTitle')?.value   || '';
+  const seo_desc    = document.getElementById('seoDescInp')?.value || '';
+  const visible     = document.getElementById('visibleToggle')?.classList.contains('on') ?? true;
+  const statut      = visible ? 'publie' : 'brouillon';
+  const tags        = Array.from(document.querySelectorAll('.chip')).map(c => c.textContent.replace('×','').trim()).filter(Boolean);
+
+  if (!nom)          { alert('Veuillez saisir un nom.'); goStep(2); return; }
+  if (!prix||prix<=0){ alert('Veuillez saisir un prix valide.'); goStep(4); return; }
+
+  btn.disabled  = true;
+  btn.innerHTML = '⏳ Mise à jour…';
+
+  // Upload nouvelles images si sélectionnées
+  let imageUrls = [];
+  if (selectedFiles.length > 0) {
+    const formData = new FormData();
+    selectedFiles.forEach(file => formData.append('images', file));
+    try {
+      const uploadRes  = await fetch(`${API_URL}/upload/images`, {
+        method:  'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body:    formData
+      });
+      const uploadData = await uploadRes.json();
+      if (uploadRes.ok) imageUrls = uploadData.urls;
+    } catch (err) {
+      console.warn('⚠️ Upload échoué :', err);
+    }
+  }
+
+  try {
+    const body = { nom, description, prix, prix_barre, categorie, tags, statut, visible, seo_titre, seo_desc };
+    if (imageUrls.length > 0) body.images = imageUrls;
+
+    const res  = await fetch(`${API_URL}/produits/${editingProduitId}`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify(body)
+    });
+    const data = await res.json();
+    console.log('💾 Mise à jour :', data);
+
+    if (res.ok) {
+      btn.innerHTML    = '✅ Mis à jour !';
+      editingProduitId = null;
+      setTimeout(() => navigate('produits'), 1000);
+    } else {
+      alert('❌ ' + data.message);
+      btn.disabled  = false;
+      btn.innerHTML = '💾 Mettre à jour';
+    }
+  } catch (err) {
+    console.error('❌', err);
+    alert('Erreur serveur.');
+    btn.disabled  = false;
+    btn.innerHTML = '💾 Mettre à jour';
+  }
+}
+// ══ CHARGER LES ANALYTICS ══
+async function loadAnalytics() {
+  console.log('📊 Chargement analytics…');
+  try {
+    const res  = await fetch(`${API_URL}/analytics/dashboard`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    console.log('📊 Analytics :', data);
+    if (!res.ok) return;
+
+    const k = data.kpis;
+
+    // ── KPIs ──
+    document.getElementById('anaVisiteurs').textContent      = k.visiteurs_uniques;
+    document.getElementById('anaVisiteursDelta').textContent = `${k.visites_totales} visites au total`;
+    document.getElementById('anaPagesvues').textContent      = k.visites_mois;
+    document.getElementById('anaPagesvuesDelta').textContent = 'ce mois';
+    document.getElementById('anaVuesProduits').textContent   = k.visites_produits;
+    document.getElementById('anaVuesProduitsD').textContent  = `${k.visites_boutique} vues boutique`;
+    document.getElementById('anaTaux').textContent           = k.taux_conversion + '%';
+    document.getElementById('anaTauxDelta').textContent      = 'commandes / vues produits';
+    document.getElementById('anaTauxDelta').className        = 'kpi-delta ' + (k.taux_conversion > 0 ? 'up' : '');
+
+    // ── Graphe Chart.js ──
+    const ctx = document.getElementById('anaGraph').getContext('2d');
+    if (window.anaChart) window.anaChart.destroy();
+
+    if (data.graph_visites.length > 0) {
+      const labels = data.graph_visites.map(r => {
+        const d = new Date(r.jour);
+        return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
+      });
+      const values = data.graph_visites.map(r => parseInt(r.total));
+
+      window.anaChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Visites',
+            data: values,
+            borderColor: '#1A6BFF',
+            backgroundColor: 'rgba(26,107,255,.08)',
+            borderWidth: 2.5,
+            pointBackgroundColor: '#1A6BFF',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            fill: true,
+            tension: 0.4,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.parsed.y} visite${ctx.parsed.y > 1 ? 's' : ''}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9b97' }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(0,0,0,.05)' },
+              ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9b97', precision: 0 }
+            }
+          }
+        }
+      });
+    } else {
+      ctx.canvas.parentElement.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:220px;color:var(--gray-400);font-size:13px;">Aucune visite pour l'instant. Partagez votre boutique !</div>`;
+    }
+
+    // ── Top produits ──
+    const topEl = document.getElementById('anaTopProduits');
+    if (data.top_produits.length > 0) {
+      topEl.innerHTML = data.top_produits.map((p, i) => `
+        <div class="recent-item">
+          <div class="ri-icon">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]}</div>
+          <div><div class="ri-name">${p.nom}</div><div class="ri-sub">${p.vues} vue(s)</div></div>
+          <div class="ri-price" style="font-size:13px;color:var(--gray-600);">${p.vues} 👁</div>
+        </div>`).join('');
+    } else {
+      topEl.innerHTML = `<div style="color:var(--gray-400);font-size:13px;padding:20px 0;text-align:center;">Aucune visite produit enregistrée.</div>`;
+    }
+
+  } catch (err) {
+    console.error('❌ Erreur analytics :', err);
+  }
+}
+
+// ══ MARKETING TABS ══
+function showMktTab(tab) {
+  document.getElementById('mktPanelPromo').style.display  = tab === 'promo'  ? 'block' : 'none';
+  document.getElementById('mktPanelPixels').style.display = tab === 'pixels' ? 'block' : 'none';
+  document.getElementById('mktTabPromo').style.background  = tab === 'promo'  ? 'var(--black)' : 'var(--gray-400)';
+  document.getElementById('mktTabPixels').style.background = tab === 'pixels' ? 'var(--black)' : 'var(--gray-400)';
+}
+
+// ══ CHARGER LES CODES PROMO ══
+async function loadCodesPromo() {
+  const list = document.getElementById('promoList');
+  if (!list) return;
+  try {
+    const res  = await fetch(`${API_URL}/promo`, { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!res.ok || data.codes.length === 0) {
+      list.innerHTML = `<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Aucun code promo. Créez-en un !</div>`;
+      return;
+    }
+    list.innerHTML = data.codes.map(c => {
+      const valeur  = c.type === 'pourcentage' ? `${c.valeur}%` : `${Number(c.valeur).toLocaleString('fr-FR')} XOF`;
+      const expire  = c.expire_le ? new Date(c.expire_le).toLocaleDateString('fr-FR') : 'Sans limite';
+      const statut  = c.actif ? '<span class="badge green">Actif</span>' : '<span class="badge gray">Inactif</span>';
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid var(--gray-100);">
+          <div style="flex:1;">
+            <div style="font-family:monospace;font-size:15px;font-weight:700;color:var(--black);">${c.code}</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">
+              ${valeur} de réduction · Min : ${Number(c.min_commande).toLocaleString('fr-FR')} XOF · Expire : ${expire} · ${c.nb_utilisations} utilisation(s)
+            </div>
+          </div>
+          ${statut}
+          <button class="icon-btn" onclick="togglePromo(${c.id})" title="${c.actif ? 'Désactiver' : 'Activer'}">
+            ${c.actif ? '⏸' : '▶'}
+          </button>
+          <button class="icon-btn" onclick="deletePromo(${c.id}, this)" title="Supprimer">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          </button>
+        </div>`;
+    }).join('');
+  } catch (err) {
+    console.error('❌ Erreur codes promo :', err);
+  }
+}
+
+// ══ CRÉER UN CODE PROMO ══
+async function creerCodePromo(btn) {
+  const code     = document.getElementById('promoCode').value.trim().toUpperCase();
+  const type     = document.getElementById('promoType').value;
+  const valeur   = parseFloat(document.getElementById('promoValeur').value);
+  const min      = parseFloat(document.getElementById('promoMin').value)   || 0;
+  const max      = parseInt(document.getElementById('promoMax').value)     || null;
+  const expire   = document.getElementById('promoExpire').value            || null;
+  const errBox   = document.getElementById('promoError');
+
+  errBox.style.display = 'none';
+  if (!code)   { errBox.textContent = 'Veuillez saisir un code.';  errBox.style.display='block'; return; }
+  if (!valeur) { errBox.textContent = 'Veuillez saisir une valeur.'; errBox.style.display='block'; return; }
+
+  btn.disabled = true; btn.textContent = '⏳ Création…';
+
+  try {
+    const res  = await fetch(`${API_URL}/promo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ code, type, valeur, min_commande: min, max_utilisations: max, expire_le: expire })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      // Reset formulaire
+      ['promoCode','promoValeur','promoMin','promoMax','promoExpire'].forEach(id => document.getElementById(id).value = '');
+      loadCodesPromo();
+    } else {
+      errBox.textContent   = '❌ ' + data.message;
+      errBox.style.display = 'block';
+    }
+  } catch (err) {
+    errBox.textContent   = 'Erreur serveur.';
+    errBox.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = '➕ Créer le code promo';
+  }
+}
+
+// ══ TOGGLE PROMO ══
+async function togglePromo(id) {
+  await fetch(`${API_URL}/promo/${id}/toggle`, { method:'PUT', headers:{'Authorization':'Bearer '+token} });
+  loadCodesPromo();
+}
+
+// ══ SUPPRIMER PROMO ══
+async function deletePromo(id, btn) {
+  if (!confirm('Supprimer ce code promo ?')) return;
+  await fetch(`${API_URL}/promo/${id}`, { method:'DELETE', headers:{'Authorization':'Bearer '+token} });
+  loadCodesPromo();
+}
+
+async function savePixel(type) {
+  const fbId = document.getElementById('fbPixelId').value.trim();
+  const gaId = document.getElementById('gaId').value.trim();
+
+  try {
+    const res  = await fetch(`${API_URL}/boutique/pixels`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ fb_pixel_id: fbId, ga_id: gaId })
+    });
+    const data = await res.json();
+    if (res.ok) alert('✅ Pixels sauvegardés !');
+    else alert('❌ ' + data.message);
+  } catch (err) {
+    alert('Erreur serveur.');
+  }
+}
+
+// ══ SAUVEGARDER PROFIL ══
+async function sauvegarderProfil(btn) {
+  const nom      = document.getElementById('profilNom').value.trim();
+  const prenom   = document.getElementById('profilPrenom').value.trim();
+  const telephone= document.getElementById('profilTel').value.trim();
+  const msgEl    = document.getElementById('profilMsg');
+
+  btn.disabled = true; btn.textContent = '⏳ Sauvegarde…';
+
+  try {
+    const res  = await fetch(`${API_URL}/profil`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ nom, prenom, telephone })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      // Mettre à jour le localStorage
+      const u = JSON.parse(localStorage.getItem('user') || '{}');
+      u.nom = nom; u.prenom = prenom;
+      localStorage.setItem('user', JSON.stringify(u));
+
+      // Mettre à jour la sidebar
+      document.getElementById('sideShopName').textContent = prenom ? `Boutique de ${prenom}` : 'Ma boutique';
+      document.getElementById('userAvatar').textContent   = [prenom, nom].filter(Boolean).map(s => s[0].toUpperCase()).join('');
+
+      msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+      msgEl.textContent = '✅ Profil sauvegardé !';
+    } else {
+      msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+      msgEl.textContent = '❌ ' + data.message;
+    }
+    msgEl.style.display = 'block';
+    setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+
+  } catch (err) {
+    msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+    msgEl.textContent = 'Erreur serveur.';
+    msgEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Sauvegarder';
+  }
+}
+
+// ══ CHANGER MOT DE PASSE ══
+async function changerMotDePasse(btn) {
+  const pwd     = document.getElementById('newPassword').value;
+  const confirm = document.getElementById('confirmPassword').value;
+  const msgEl   = document.getElementById('pwdMsg');
+
+  msgEl.style.display = 'none';
+  if (pwd !== confirm) {
+    msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+    msgEl.textContent = '❌ Les mots de passe ne correspondent pas.';
+    msgEl.style.display = 'block'; return;
+  }
+  if (pwd.length < 6) {
+    msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+    msgEl.textContent = '❌ Minimum 6 caractères.';
+    msgEl.style.display = 'block'; return;
+  }
+
+  btn.disabled = true; btn.textContent = '⏳ Modification…';
+
+  try {
+    const res  = await fetch(`${API_URL}/profil/password`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ password: pwd })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+      msgEl.textContent = '✅ Mot de passe changé !';
+      document.getElementById('newPassword').value    = '';
+      document.getElementById('confirmPassword').value = '';
+    } else {
+      msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+      msgEl.textContent = '❌ ' + data.message;
+    }
+    msgEl.style.display = 'block';
+    setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+
+  } catch (err) {
+    msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+    msgEl.textContent = 'Erreur serveur.';
+    msgEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = '🔒 Changer le mot de passe';
+  }
+}
+
+// ══ CHARGER LES AFFILIÉS ══
+async function loadAffiliation() {
+  try {
+    const res  = await fetch(`${API_URL}/affiliation`, { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!res.ok) return;
+
+    const affilies = data.affilies;
+
+    // KPIs
+    const actifs      = affilies.filter(a => a.actif);
+    const totalVentes = affilies.reduce((s, a) => s + parseInt(a.nb_ventes), 0);
+    const totalComm   = affilies.reduce((s, a) => s + parseFloat(a.total_ventes) * (parseFloat(a.commission_pct) / 100), 0);
+
+    document.getElementById('affilNb').textContent          = actifs.length;
+    document.getElementById('affilVentes').textContent      = totalVentes;
+    document.getElementById('affilCommissions').textContent = Number(Math.round(totalComm)).toLocaleString('fr-FR') + ' XOF';
+
+    // Liste
+    const list = document.getElementById('affilList');
+    if (affilies.length === 0) {
+      list.innerHTML = `<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Aucun affilié. Invitez-en un !</div>`;
+      return;
+    }
+
+    list.innerHTML = affilies.map(a => {
+      const commission = Math.round(parseFloat(a.total_ventes) * parseFloat(a.commission_pct) / 100);
+      const lien       = `http://localhost:3001/boutique/boutique-${a.user_id}?ref=${a.code}`;
+      const statut     = a.actif ? '<span class="badge green">Actif</span>' : '<span class="badge gray">Inactif</span>';
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid var(--gray-100);">
+          <div class="ct-av">${a.nom[0].toUpperCase()}</div>
+          <div style="flex:1;">
+            <div style="font-size:13.5px;font-weight:500;">${a.nom}</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">
+              Code : <strong style="font-family:monospace;">${a.code}</strong> · 
+              ${a.commission_pct}% commission · 
+              ${a.nb_ventes} vente(s) · 
+              ${Number(commission).toLocaleString('fr-FR')} XOF dûs
+            </div>
+          </div>
+          ${statut}
+          <button class="icon-btn" title="Copier le lien" onclick="copyAffilLien('${lien}')">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <button class="icon-btn" title="${a.actif ? 'Désactiver' : 'Activer'}" onclick="toggleAffilie(${a.id})">
+            ${a.actif ? '⏸' : '▶'}
+          </button>
+          <button class="icon-btn" title="Supprimer" onclick="deleteAffilie(${a.id})">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          </button>
+        </div>`;
+    }).join('');
+
+  } catch (err) {
+    console.error('❌ Erreur affiliation :', err);
+  }
+}
+
+// ══ CRÉER UN AFFILIÉ ══
+async function creerAffilie(btn) {
+  const nom        = document.getElementById('affilNom').value.trim();
+  const email      = document.getElementById('affilEmail').value.trim();
+  const commission = parseFloat(document.getElementById('affilCommission').value) || 10;
+  const msgEl      = document.getElementById('affilMsg');
+
+  msgEl.style.display = 'none';
+  if (!nom) { msgEl.style.background='#f8d7da'; msgEl.style.color='#721c24'; msgEl.textContent='Veuillez saisir un nom.'; msgEl.style.display='block'; return; }
+
+  btn.disabled = true; btn.textContent = '⏳ Création…';
+
+  try {
+    const res  = await fetch(`${API_URL}/affiliation`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ nom, email, commission_pct: commission })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+      msgEl.textContent = `✅ Affilié créé ! Lien : ${data.lien}`;
+      msgEl.style.display = 'block';
+      document.getElementById('affilNom').value   = '';
+      document.getElementById('affilEmail').value = '';
+      loadAffiliation();
+    } else {
+      msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+      msgEl.textContent = '❌ ' + data.message;
+      msgEl.style.display = 'block';
+    }
+  } catch (err) {
+    msgEl.textContent = 'Erreur serveur.'; msgEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = '➕ Créer l\'affilié';
+  }
+}
+
+// ══ COPIER LE LIEN AFFILIÉ ══
+function copyAffilLien(lien) {
+  navigator.clipboard.writeText(lien).then(() => alert('✅ Lien affilié copié !\n' + lien));
+}
+
+// ══ TOGGLE AFFILIÉ ══
+async function toggleAffilie(id) {
+  await fetch(`${API_URL}/affiliation/${id}/toggle`, { method:'PUT', headers:{'Authorization':'Bearer '+token} });
+  loadAffiliation();
+}
+
+// ══ SUPPRIMER AFFILIÉ ══
+async function deleteAffilie(id) {
+  if (!confirm('Supprimer cet affilié ?')) return;
+  await fetch(`${API_URL}/affiliation/${id}`, { method:'DELETE', headers:{'Authorization':'Bearer '+token} });
+  loadAffiliation();
+}
+
+// ══ CHARGER LES PARAMÈTRES BOUTIQUE ══
+async function loadSettings() {
+  try {
+    const res  = await fetch(`${API_URL}/auth/me`, { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!res.ok) return;
+
+    // Charger les infos boutique
+    const boutiqueRes  = await fetch(`${API_URL}/boutique/settings`, { headers: { 'Authorization': 'Bearer ' + token } });
+    if (boutiqueRes.ok) {
+      const boutiqueData = await boutiqueRes.json();
+      const b = boutiqueData.boutique;
+      if (b) {
+        const inp = document.getElementById('shopNameInp'); if (inp) inp.value = b.nom || '';
+        const slug = document.getElementById('shopSlugInp'); if (slug) slug.value = b.slug || '';
+        const devise = document.getElementById('shopDevise'); if (devise) devise.value = b.devise || 'XOF';
+        const langue = document.getElementById('shopLangue'); if (langue) langue.value = b.langue || 'fr';
+        const pays   = document.getElementById('shopPays');   if (pays)   pays.value   = b.pays   || 'Burkina Faso';
+      }
+    }
+  } catch (err) { console.error('❌ loadSettings :', err); }
+}
+
+async function saveSettings(btn) {
+  const nom   = document.getElementById('shopNameInp').value.trim();
+  const msgEl = document.getElementById('settingsMsg');
+
+  btn.disabled = true; btn.textContent = '⏳ Sauvegarde…';
+  try {
+    const res  = await fetch(`${API_URL}/boutique/settings`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ nom }) // ← slug retiré
+    });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('sideShopName').textContent = nom || 'Ma boutique';
+      msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+      msgEl.textContent = '✅ Nom sauvegardé !';
+    } else {
+      msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+      msgEl.textContent = '❌ ' + data.message;
+    }
+    msgEl.style.display = 'block';
+    setTimeout(() => msgEl.style.display = 'none', 3000);
+  } catch (err) { msgEl.textContent = 'Erreur serveur.'; msgEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = '💾 Sauvegarder'; }
+}
+
+// ══ SAUVEGARDER DEVISE + LANGUE + PAYS ══
+async function saveGeneralSettings(btn) {
+  const devise = document.getElementById('shopDevise').value;
+  const langue = document.getElementById('shopLangue').value;
+  const pays   = document.getElementById('shopPays').value;
+  const msgEl  = document.getElementById('generalMsg');
+
+  btn.disabled = true; btn.textContent = '⏳ Sauvegarde…';
+  try {
+    const res  = await fetch(`${API_URL}/boutique/settings`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ devise, langue, pays })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+      msgEl.textContent = '✅ Paramètres sauvegardés !';
+    } else {
+      msgEl.style.background = '#f8d7da'; msgEl.style.color = '#721c24';
+      msgEl.textContent = '❌ ' + data.message;
+    }
+    msgEl.style.display = 'block';
+    setTimeout(() => msgEl.style.display = 'none', 3000);
+  } catch (err) { msgEl.textContent = 'Erreur serveur.'; msgEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = '💾 Sauvegarder'; }
+}
+
+// ══ SAUVEGARDER MOBILE MONEY ══
+async function savePaymentSettings(btn) {
+  const num = document.getElementById('mobileMoneyNum').value.trim();
+  const op  = document.getElementById('mobileMoneyOp').value;
+  const msgEl = document.getElementById('paymentMsg');
+
+  if (!num) { msgEl.style.background='#f8d7da'; msgEl.style.color='#721c24'; msgEl.textContent='Veuillez saisir un numéro.'; msgEl.style.display='block'; return; }
+
+  // Sauvegarder en localStorage pour l'instant
+  localStorage.setItem('mobile_money', JSON.stringify({ num, op }));
+  msgEl.style.background = '#d4edda'; msgEl.style.color = '#1c7a4a';
+  msgEl.textContent = `✅ ${op === 'orange' ? 'Orange Money' : op === 'moov' ? 'Moov Money' : op === 'wave' ? 'Wave' : op} sauvegardé : ${num}`;
+  msgEl.style.display = 'block';
+  setTimeout(() => msgEl.style.display = 'none', 3000);
+}
+
+// ══ NOTIFICATIONS TEMPS RÉEL ══
+let notifEventSource = null;
+let notifCount = 0;
+
+function connectNotifications() {
+  if (notifEventSource) notifEventSource.close();
+
+  notifEventSource = new EventSource(`${API_URL}/notifications/stream?token=${token}`);
+
+  notifEventSource.addEventListener('notification', (e) => {
+    const data = JSON.parse(e.data);
+    console.log('🔔 Notification reçue :', data);
+
+    if (data.type === 'nouvelle_commande') {
+      notifCount++;
+      afficherNotif(data);
+      updateNotifBadge();
+
+      // Rafraîchir les stats si on est sur l'accueil
+      if (currentPage === 'accueil') loadDashboardStats();
+      if (currentPage === 'ventes')  loadVentes();
+    }
+  });
+
+  notifEventSource.addEventListener('ping', () => {
+    console.log('🏓 Ping serveur reçu');
+  });
+
+  notifEventSource.onerror = () => {
+    console.warn('⚠️ Connexion notifications perdue, reconnexion dans 5s…');
+    notifEventSource.close();
+    setTimeout(connectNotifications, 5000);
+  };
+
+  console.log('🔔 Connexion notifications établie');
+}
+
+function afficherNotif(data) {
+  // Ajouter l'animation CSS
+  if (!document.getElementById('notifStyle')) {
+    const style = document.createElement('style');
+    style.id = 'notifStyle';
+    style.textContent = `
+      @keyframes slideIn { from { transform:translateX(120%); opacity:0; } to { transform:none; opacity:1; } }
+      @keyframes slideOut { from { transform:none; opacity:1; } to { transform:translateX(120%); opacity:0; } }
+      .toast-notif { animation: slideIn .35s cubic-bezier(.34,1.56,.64,1); }
+      .toast-notif.removing { animation: slideOut .25s ease forwards; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = 'toast-notif';
+  toast.style.cssText = `
+    position:fixed; bottom:28px; right:28px; z-index:9999;
+    background:var(--white);
+    border:1px solid var(--blue-light);
+    border-left:4px solid var(--blue);
+    padding:16px 18px; border-radius:16px;
+    box-shadow:0 12px 40px rgba(26,107,255,.15);
+    font-family:'DM Sans',sans-serif; font-size:13px;
+    display:flex; align-items:flex-start; gap:12px;
+    max-width:360px; min-width:300px;
+    color:var(--black);
+  `;
+
+  toast.innerHTML = `
+    <div style="width:40px;height:40px;border-radius:10px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🛒</div>
+    <div style="flex:1;">
+      <div style="font-weight:700;font-size:13.5px;color:var(--black);margin-bottom:3px;">Nouvelle commande !</div>
+      <div style="font-size:12.5px;color:var(--blue);font-weight:500;margin-bottom:2px;">${data.client} · ${Number(data.montant).toLocaleString('fr-FR')} XOF</div>
+      <div style="font-size:11.5px;color:var(--gray-400);">${data.produit} · <span style="font-family:monospace;">#${data.reference}</span></div>
+    </div>
+    <button onclick="
+      this.closest('.toast-notif').classList.add('removing');
+      setTimeout(() => this.closest('.toast-notif').remove(), 250);
+    " style="background:none;border:none;color:var(--gray-400);cursor:pointer;font-size:18px;padding:0;line-height:1;flex-shrink:0;">×</button>
+  `;
+
+  document.body.appendChild(toast);
+
+  // Supprimer après 6 secondes avec animation
+  setTimeout(() => {
+    if (toast.parentElement) {
+      toast.classList.add('removing');
+      setTimeout(() => toast.remove(), 250);
+    }
+  }, 6000);
+
+  // Son de notification
+  try {
+    const ctx  = new AudioContext();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    osc.start(); osc.stop(ctx.currentTime + 0.4);
+  } catch(e) {}
+
+  // Badge nav notifications
+  if (currentPage !== 'notifications') {
+    const navNotif = document.getElementById('nav-notifications');
+    if (navNotif && !navNotif.querySelector('.notif-nav-badge')) {
+      const b = document.createElement('span');
+      b.className = 'notif-nav-badge';
+      b.style.cssText = 'background:#ef4444;color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;margin-left:6px;';
+      b.textContent = '•';
+      navNotif.appendChild(b);
+    }
+  }
+}
+
+function updateNotifBadge() {
+  let badge = document.getElementById('notifBadge');
+  if (!badge) {
+    const nav = document.getElementById('nav-ventes');
+    if (nav) {
+      badge = document.createElement('span');
+      badge.id = 'notifBadge';
+      badge.style.cssText = `
+        background:#ef4444; color:white; font-size:10px; font-weight:700;
+        padding:1px 6px; border-radius:20px; margin-left:6px;
+      `;
+      nav.appendChild(badge);
+    }
+  }
+  if (badge) badge.textContent = notifCount;
+}
+
+// ══ CHARGER LES NOTIFICATIONS ══
+async function loadNotifications() {
+  const list = document.getElementById('notifList');
+  if (!list) return;
+
+  try {
+    const res  = await fetch(`${API_URL}/notifications`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!res.ok) return;
+
+    const notifs   = data.notifications;
+    const nonLues  = notifs.filter(n => !n.lu).length;
+    const nbEl     = document.getElementById('notifNbNonLues');
+    if (nbEl) nbEl.textContent = nonLues > 0 ? `${nonLues} non lue(s)` : 'Tout est à jour ✅';
+
+    if (notifs.length === 0) {
+      list.innerHTML = `<div style="padding:40px;text-align:center;color:var(--gray-400);font-size:13px;">Aucune notification pour l'instant.</div>`;
+      return;
+    }
+
+    list.innerHTML = notifs.map(n => {
+      const date  = new Date(n.created_at);
+      const now   = new Date();
+      const diff  = Math.floor((now - date) / 60000);
+      const quand = diff < 60 ? `il y a ${diff}min` : diff < 1440 ? `il y a ${Math.floor(diff/60)}h` : diff < 2880 ? 'hier' : date.toLocaleDateString('fr-FR');
+      const iconMap = { nouvelle_commande: '🛒', nouvelle_visite: '👁', code_promo: '🎟' };
+      const icon  = iconMap[n.type] || '🔔';
+
+      return `
+        <div class="notif-item ${n.lu ? '' : 'unread'}" onclick="marquerLu(${n.id}, this)" style="cursor:pointer;${!n.lu ? 'background:var(--blue-xlight);' : ''}">
+          <div class="notif-dot ${n.lu ? 'read' : ''}" style="${!n.lu ? 'background:var(--blue);' : ''}"></div>
+          <div style="font-size:22px;margin:0 12px;">${icon}</div>
+          <div class="notif-content">
+            <div class="notif-title" style="${!n.lu ? 'font-weight:600;' : ''}">${n.titre}</div>
+            <div class="notif-sub">${n.message}</div>
+          </div>
+          <div class="notif-time">${quand}</div>
+        </div>`;
+    }).join('');
+
+  } catch (err) {
+    console.error('❌ Erreur notifications :', err);
+  }
+}
+
+// ══ MARQUER UNE NOTIFICATION COMME LUE ══
+async function marquerLu(id, el) {
+  try {
+    await fetch(`${API_URL}/notifications/${id}/lire`, {
+      method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }
+    });
+    el.style.background = '';
+    el.querySelector('.notif-dot')?.classList.add('read');
+    el.querySelector('.notif-dot')?.style.setProperty('background', '');
+    const titre = el.querySelector('.notif-title');
+    if (titre) titre.style.fontWeight = '';
+    loadNotifications();
+  } catch (err) { console.error(err); }
+}
+
+// ══ MARQUER TOUT COMME LU ══
+async function marquerToutLu() {
+  try {
+    await fetch(`${API_URL}/notifications/lire-tout`, {
+      method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }
+    });
+    loadNotifications();
+  } catch (err) { console.error(err); }
+}
+
+// ══ ELISA ══
+let elisaActif       = false;
+let elisaTargeting   = { device:'tous', genre:'tous', age:'tous', interets:[] };
+let elisaEmails      = [];
+let campagnesHistory = [];
+
+// ── Charger config au démarrage ──
+async function loadElisa() {
+  try {
+    const res  = await fetch(`${API_URL}/elisa/config`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!res.ok) { estimerAudience(); return; }
+
+    if (data.actif) {
+      elisaActif = true;
+      const btn = document.getElementById('elisaToggleBtn');
+      const sub = document.getElementById('elisaToggleSub');
+      if (btn) {
+        btn.textContent      = 'ACTIF';
+        btn.style.background = '#16a34a';
+        btn.style.color      = 'white';
+        btn.style.border     = '1px solid #16a34a';
+      }
+      if (sub) {
+        sub.textContent = '✓ Campagnes activées';
+        sub.style.color = 'rgba(255,255,255,0.5)';
+      }
+    }
+
+    const isPro   = data.plan === 'pro';
+    const limitEl = document.getElementById('elisaStatLimit');
+    if (limitEl) limitEl.textContent = isPro ? '∞' : `${data.emails_sent} / 3`;
+
+    if (isPro) {
+      const banner = document.getElementById('elisaFreeBanner');
+      if (banner) banner.style.display = 'none';
+    } else {
+      setTimeout(() => {
+        const bar = document.getElementById('elisaLimitBar');
+        if (bar) bar.style.width = Math.min((data.emails_sent / 3) * 100, 100) + '%';
+      }, 300);
+    }
+
+  } catch (err) {
+    console.warn('⚠️ loadElisa config :', err);
+  }
+
+  // ── Charger l'historique depuis la DB ──
+  try {
+    const res  = await fetch(`${API_URL}/elisa/campagnes`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (res.ok && data.campagnes.length > 0) {
+      campagnesHistory = data.campagnes.map(c => ({
+        nom:       c.nom,
+        statut:    c.statut === 'envoyee' ? 'envoyée' : 'programmée',
+        targeting: c.targeting || {},
+        envoyes:   c.envoyes  || 0,
+        ouverts:   0,
+        date:      new Date(c.created_at),
+      }));
+    }
+  } catch (err) {
+    console.warn('⚠️ loadElisa campagnes :', err);
+  }
+  estimerAudience();
+  renderElisaHistorique();
+  updateElisaSlots();
+}
+
+// ── Toggle ON/OFF ──
+async function toggleElisa(btn) {
+  elisaActif = !elisaActif;
+  const sub  = document.getElementById('elisaToggleSub');
+
+  if (elisaActif) {
+    btn.textContent      = 'ACTIF';
+    btn.style.background = '#16a34a';
+    btn.style.color      = 'white';
+    btn.style.border     = '1px solid #16a34a';
+    sub.textContent      = '✓ Campagnes activées';
+    sub.style.color      = 'rgba(255,255,255,0.5)';
+  } else {
+    btn.textContent      = 'INACTIF';
+    btn.style.background = 'rgba(255,255,255,0.08)';
+    btn.style.color      = 'rgba(255,255,255,0.5)';
+    btn.style.border     = '1px solid rgba(255,255,255,0.15)';
+    sub.textContent      = 'Cliquez pour activer';
+    sub.style.color      = 'rgba(255,255,255,0.3)';
+  }
+
+  try {
+    await fetch(`${API_URL}/elisa/config`, {
+      method:  'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ actif: elisaActif })
+    });
+  } catch (err) {
+    console.warn('⚠️ toggleElisa :', err);
+  }
+}
+
+// ── Chip sélection unique par groupe ──
+function selectChip(el) {
+  const group = el.dataset.group;
+  document.querySelectorAll(`.elisa-chip[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  elisaTargeting[group] = el.dataset.val;
+  estimerAudience();
+}
+
+// ── Intérêts — toggle multiple ──
+function toggleInterest(el) {
+  el.classList.toggle('interest-on');
+  const val = el.dataset.val;
+  if (el.classList.contains('interest-on')) {
+    if (!elisaTargeting.interets.includes(val)) elisaTargeting.interets.push(val);
+  } else {
+    elisaTargeting.interets = elisaTargeting.interets.filter(v => v !== val);
+  }
+  estimerAudience();
+}
+
+// ── Email tags ──
+function addEmailTag(e) {
+  if (e.key !== 'Enter' && e.key !== ',') return;
+  e.preventDefault();
+  const val = e.target.value.trim().replace(/,$/, '');
+  if (!val || !val.includes('@')) return;
+  if (elisaEmails.includes(val)) { e.target.value = ''; return; }
+  elisaEmails.push(val);
+  const tag = document.createElement('span');
+  tag.className = 'email-tag';
+  tag.innerHTML = `${val} <button onclick="removeEmailTag(this,'${val}')">×</button>`;
+  document.getElementById('emailTagInput').before(tag);
+  e.target.value = '';
+  estimerAudience();
+}
+
+function removeEmailTag(btn, email) {
+  btn.closest('.email-tag').remove();
+  elisaEmails = elisaEmails.filter(e => e !== email);
+  estimerAudience();
+}
+
+// ── Estimation audience (vraie API) ──
+function estimerAudience() {
+  const el = document.getElementById('elisaAudienceEst');
+  if (!el) return;
+  el.textContent = 'Calcul…';
+  clearTimeout(window._audTimer);
+  window._audTimer = setTimeout(async () => {
+    try {
+      const params = new URLSearchParams({
+        device: elisaTargeting.device,
+        genre:  elisaTargeting.genre,
+        age:    elisaTargeting.age,
+      });
+      const res  = await fetch(`${API_URL}/elisa/audience?${params}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      el.textContent = res.ok
+        ? `~${data.audience} contact${data.audience > 1 ? 's' : ''} qualifié${data.audience > 1 ? 's' : ''}`
+        : '— contacts';
+    } catch {
+      // Fallback estimation locale si API indisponible
+      let base = 142;
+      if (elisaTargeting.device !== 'tous') base = Math.round(base * 0.6);
+      if (elisaTargeting.genre  !== 'tous') base = Math.round(base * 0.55);
+      if (elisaTargeting.age    !== 'tous') base = Math.round(base * 0.65);
+      base -= elisaTargeting.interets.length * 8;
+      el.textContent = `~${Math.max(base, 12)} contacts qualifiés`;
+    }
+  }, 500);
+}
+
+// ── Lancer une campagne ──
+async function lancerCampagne(btn) {
+  const nom   = document.getElementById('campNom').value.trim();
+  const errEl = document.getElementById('campError');
+  errEl.style.display = 'none';
+
+  if (!nom) {
+    errEl.textContent   = 'Veuillez nommer votre campagne.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!elisaActif) {
+    errEl.textContent   = 'Activez ELISA d\'abord (bouton en haut).';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled  = true;
+  btn.innerHTML = '⏳ Lancement…';
+
+  try {
+    const res  = await fetch(`${API_URL}/elisa/campagnes`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({
+        nom,
+        emails:    elisaEmails,
+        targeting: elisaTargeting,
+        sequences: getSequencesContent()
+      })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      errEl.textContent   = data.message || 'Erreur lors du lancement.';
+      errEl.style.display = 'block';
+      btn.disabled        = false;
+      btn.innerHTML       = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
+      return;
+    }
+
+    // Ajouter à l'historique local
+    campagnesHistory.unshift({
+      nom,
+      statut:    'programmée',
+      targeting: { ...elisaTargeting },
+      envoyes:   data.destinataires,
+      ouverts:   0,
+      date:      new Date(),
+    });
+
+    // Mettre à jour le compteur limite
+    const limitEl = document.getElementById('elisaStatLimit');
+    if (limitEl) limitEl.textContent = data.reste === null ? '∞' : `${3 - data.reste} / 3`;
+    const bar = document.getElementById('elisaLimitBar');
+    if (bar && data.reste !== null) {
+      bar.style.width = Math.min(((3 - data.reste) / 3) * 100, 100) + '%';
+    }
+
+    renderElisaHistorique();
+    updateElisaSlots();
+    resetElisaForm();
+
+    btn.innerHTML = '✅ Campagne lancée !';
+    setTimeout(() => {
+      btn.disabled  = false;
+      btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
+    }, 2500);
+
+  } catch (err) {
+    console.error('❌ lancerCampagne DÉTAIL :', err);
+    errEl.textContent   = err.message || 'Erreur serveur.';
+    errEl.style.display = 'block';
+    btn.disabled        = false;
+    btn.innerHTML       = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lancer la campagne';
+  }
+}
+
+// ── Reset formulaire après lancement ──
+function resetElisaForm() {
+  document.getElementById('campNom').value = '';
+  document.getElementById('emailTagsBox').querySelectorAll('.email-tag').forEach(t => t.remove());
+  elisaEmails = [];
+  document.querySelectorAll('.elisa-chip.selected').forEach(c => {
+    if (c.dataset.val !== 'tous') c.classList.remove('selected');
+  });
+  document.querySelectorAll('[data-group="device"][data-val="tous"]').forEach(c => c.classList.add('selected'));
+  document.querySelectorAll('[data-group="genre"][data-val="tous"]').forEach(c  => c.classList.add('selected'));
+  document.querySelectorAll('[data-group="age"][data-val="tous"]').forEach(c    => c.classList.add('selected'));
+  document.querySelectorAll('.elisa-chip.interest-on').forEach(c => c.classList.remove('interest-on'));
+  elisaTargeting = { device:'tous', genre:'tous', age:'tous', interets:[] };
+  estimerAudience();
+}
+
+// ── Slots visuels ──
+function updateElisaSlots() {
+  const used = campagnesHistory.length;
+  [
+    { id:'slot1', label: used > 0 ? 'Envoyée' : 'Prête',      timer: used > 0 ? 'Il y a peu'    : 'Maintenant',   green: true  },
+    { id:'slot2', label: used > 1 ? 'Envoyée' : 'J+3',         timer: used > 1 ? 'Il y a 3j'     : 'Dans 3 jours', green: used > 1 },
+    { id:'slot3', label: used > 2 ? 'Envoyée' : 'J+6',         timer: used > 2 ? 'Il y a 6j'     : 'Dans 6 jours', green: used > 2 },
+  ].forEach(s => {
+    const statusEl = document.getElementById(s.id + 'Status');
+    const timerEl  = document.getElementById(s.id + 'Timer');
+    if (statusEl) {
+      statusEl.textContent = s.label;
+      if (s.green) {
+        statusEl.className        = 'badge green';
+        statusEl.style.background = '';
+        statusEl.style.color      = '';
+      } else {
+        statusEl.className        = 'badge';
+        statusEl.style.background = '#fef3c7';
+        statusEl.style.color      = '#92400e';
+      }
+    }
+    if (timerEl) timerEl.textContent = s.timer;
+  });
+}
+
+// ── Historique ──
+function renderElisaHistorique() {
+  const el = document.getElementById('elisaHistorique');
+  if (!el) return;
+
+  if (campagnesHistory.length === 0) {
+    el.innerHTML = `
+      <div style="padding:32px;text-align:center;color:var(--gray-400);font-size:13px;">
+        <div style="font-size:28px;margin-bottom:8px;">📭</div>
+        Aucune campagne encore lancée.<br>Créez votre première campagne ci-dessus.
+      </div>`;
+    return;
+  }
+
+  const deviceLbls = { tous:'Tous appareils', mobile:'Mobile', desktop:'Desktop', tablet:'Tablette' };
+  const genreLbls  = { tous:'Tous', femme:'Femme', homme:'Homme' };
+
+  el.innerHTML = campagnesHistory.map(c => {
+    const tauxOuv  = c.envoyes > 0 ? Math.round((c.ouverts / c.envoyes) * 100) : 0;
+    const dateStr  = new Date(c.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    const deviceLbl = deviceLbls[c.targeting?.device] || 'Tous appareils';
+    const genreLbl  = genreLbls[c.targeting?.genre]   || 'Tous';
+    const ageLbl    = c.targeting?.age === 'tous' ? 'Tous âges' : (c.targeting?.age || 'Tous âges') + ' ans';
+    const isProg    = c.statut === 'programmée';
+
+    return `
+      <div style="display:flex;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid var(--gray-100);">
+        <div style="width:36px;height:36px;border-radius:10px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📨</div>
+        <div style="flex:1;">
+          <div style="font-size:13.5px;font-weight:600;color:var(--black);margin-bottom:3px;">${c.nom}</div>
+          <div style="font-size:11.5px;color:var(--gray-400);">${deviceLbl} · ${genreLbl} · ${ageLbl} · ${dateStr}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:18px;font-weight:700;color:var(--black);">${c.envoyes}</div>
+          <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;">Destinataires</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:18px;font-weight:700;color:#16a34a;">${tauxOuv > 0 ? tauxOuv + '%' : '—'}</div>
+          <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;">Ouverture</div>
+        </div>
+        <span class="${isProg ? 'badge' : 'badge green'}" style="${isProg ? 'background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;' : ''}">
+          ${isProg ? 'Programmée' : 'Envoyée'}
+        </span>
+      </div>`;
+  }).join('');
+}
+
+function showMktTab(tab) {
+  document.getElementById('mktPanelPromo').style.display  = tab === 'promo'  ? 'block' : 'none';
+  document.getElementById('mktPanelPixels').style.display = tab === 'pixels' ? 'block' : 'none';
+  document.getElementById('mktPanelElisa').style.display  = tab === 'elisa'  ? 'block' : 'none';
+  document.getElementById('mktTabPromo').style.background  = tab === 'promo'  ? 'var(--black)' : 'var(--gray-400)';
+  document.getElementById('mktTabPixels').style.background = tab === 'pixels' ? 'var(--black)' : 'var(--gray-400)';
+  document.getElementById('mktTabElisa').style.background  = tab === 'elisa'  ? 'var(--black)' : 'var(--gray-400)';
+  if (tab === 'elisa') loadElisa();
+}
+
+// ── Formatage texte riche ──
+function fmtSeq(id, cmd, val) {
+  document.getElementById(id).focus();
+  document.execCommand(cmd, false, val || null);
+}
+
+function genererApercu(n) {
+  const objet   = document.getElementById('e' + n + 'Objet')   ?.value   || '';
+  const corps   = document.getElementById('e' + n + 'Body')    ?.innerHTML || '';
+  const code    = document.getElementById('e' + n + 'Code')    ?.value   || '';
+  const codeVal = document.getElementById('e' + n + 'CodeVal') ?.value   || '';
+  const ctaTxt  = document.getElementById('e' + n + 'CtaText') ?.value   || 'Découvrir la boutique →';
+  const ctaLink = document.getElementById('e' + n + 'CtaLink') ?.value   || '#';
+
+  const obPrev = document.getElementById('e' + n + 'ObjetPreview');
+  if (obPrev) obPrev.textContent = objet || '—';
+
+  const codeBlock = code ? `
+    <div style="background:#f9fafb;border-radius:10px;padding:18px;margin:20px 0;text-align:center;">
+      <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">Code exclusif</div>
+      <div style="font-size:26px;font-weight:800;letter-spacing:3px;color:#000;font-family:monospace;">${code.toUpperCase()}</div>
+      ${codeVal ? `<div style="font-size:13px;color:#16a34a;margin-top:4px;font-weight:600;">${codeVal}</div>` : ''}
+    </div>` : '';
+
+  const objetFormate = objet.replace(/\{\{prenom\}\}/g,'Prénom').replace(/\{\{boutique_nom\}\}/g,'Votre boutique');
+  const corpsFormate = corps.replace(/\{\{prenom\}\}/g,'<strong>Prénom</strong>').replace(/\{\{boutique_nom\}\}/g,'<strong>Votre boutique</strong>');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:"Helvetica Neue",Arial,sans-serif;background:#f3f4f6;padding:20px;}</style>
+    </head><body>
+    <div style="max-width:520px;margin:0 auto;">
+      <div style="background:#000;padding:22px 28px;border-radius:12px 12px 0 0;">
+        <div style="font-size:10px;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:6px;">EASYFY · ELISA</div>
+        <div style="font-size:18px;font-weight:700;color:white;">${objetFormate}</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:24px 28px;border-radius:0 0 12px 12px;">
+        <div style="font-size:13.5px;line-height:1.75;color:#374151;">${corpsFormate}</div>
+        ${codeBlock}
+        <div style="text-align:center;margin:20px 0 16px;">
+          <a href="${ctaLink}" style="background:#000;color:#fff;text-decoration:none;padding:13px 28px;border-radius:8px;font-size:13px;font-weight:700;display:inline-block;">${ctaTxt}</a>
+        </div>
+        <div style="font-size:11px;color:#9ca3af;text-align:center;padding-top:14px;border-top:1px solid #f3f4f6;">Propulsé par <strong>Easyfy</strong></div>
+      </div>
+    </div>
+    ` + '</' + 'body></' + 'html>';
+
+  const iframe = document.getElementById('e' + n + 'Preview');
+  if (iframe) iframe.srcdoc = html;
+}
+
+// ── Récupérer le contenu des séquences pour l'envoi ──
+function getSequencesContent() {
+  return {
+    1: {
+      objet:    document.getElementById('e1Objet')   ?.value   || '',
+      corps:    document.getElementById('e1Body')    ?.innerHTML || '',
+      code:     document.getElementById('e1Code')    ?.value   || '',
+      code_val: document.getElementById('e1CodeVal') ?.value   || '',
+      cta_text: document.getElementById('e1CtaText') ?.value   || '',
+      cta_link: document.getElementById('e1CtaLink') ?.value   || '',
+    },
+    2: {
+      objet:    document.getElementById('e2Objet')   ?.value   || '',
+      corps:    document.getElementById('e2Body')    ?.innerHTML || '',
+      code:     document.getElementById('e2Code')    ?.value   || '',
+      code_val: document.getElementById('e2CodeVal') ?.value   || '',
+      cta_text: document.getElementById('e2CtaText') ?.value   || '',
+      cta_link: document.getElementById('e2CtaLink') ?.value   || '',
+    },
+    3: {
+      objet:    document.getElementById('e3Objet')   ?.value   || '',
+      corps:    document.getElementById('e3Body')    ?.innerHTML || '',
+      code:     document.getElementById('e3Code')    ?.value   || '',
+      code_val: document.getElementById('e3CodeVal') ?.value   || '',
+      cta_text: document.getElementById('e3CtaText') ?.value   || '',
+      cta_link: document.getElementById('e3CtaLink') ?.value   || '',
+    }
+  };
+}
+
+// ══ COULEUR TEXTE & SURLIGNAGE ══
+let savedRange = null;
+document.addEventListener('DOMContentLoaded', () => {
+  const editorBody = document.getElementById('editorBody');
+  if (editorBody) {
+    editorBody.addEventListener('mouseup', () => {
+      const sel = window.getSelection();
+      if (sel.rangeCount > 0) savedRange = sel.getRangeAt(0).cloneRange();
+    });
+  }
+  const textColorPicker = document.getElementById('textColorPicker');
+  if (textColorPicker) {
+    textColorPicker.addEventListener('change', function () {
+      document.getElementById('colorPreview').style.borderBottomColor = this.value;
+      if (savedRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); }
+      document.execCommand('foreColor', false, this.value);
+    });
+  }
+  const bgColorPicker = document.getElementById('bgColorPicker');
+  if (bgColorPicker) {
+    bgColorPicker.addEventListener('change', function () {
+      document.getElementById('bgPreview').style.background = this.value;
+      if (savedRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); }
+      document.execCommand('hiliteColor', false, this.value);
+    });
+  }
+});
+
+
+// ══ FICHIER DIGITAL ══
+let digitalFileUrl = null;
+
+async function handleDigitalFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const label   = document.getElementById('digitalFileLabel');
+  const preview = document.getElementById('digitalFilePreview');
+  const size    = (file.size / 1024 / 1024).toFixed(1);
+  const ext     = file.name.split('.').pop().toLowerCase();
+
+  label.innerHTML = `⏳ Upload en cours… ${size} Mo`;
+  label.style.color = 'var(--gray-400)';
+
+  const formData = new FormData();
+  formData.append('fichier', file);
+  try {
+    const res  = await fetch(`${API_URL}/produits/upload-digital`, {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: formData
+    });
+    const data = await res.json();
+    if (res.ok) {
+      digitalFileUrl = data.url;
+      label.innerHTML = `✅ <strong>${file.name}</strong> · ${size} Mo · Uploadé`;
+      label.style.color = '#16a34a';
+
+      // ── Aperçu selon le type de fichier ──
+      if (preview) {
+        preview.style.display = 'block';
+        const url = `http://localhost:3001${data.url}`;
+        if (['pdf'].includes(ext)) {
+          preview.innerHTML = `
+            <div style="font-size:12px;color:var(--gray-400);margin-bottom:6px;">📄 Aperçu PDF</div>
+            <iframe src="${url}" style="width:100%;height:340px;border:1px solid var(--gray-200);border-radius:8px;" frameborder="0"></iframe>`;
+        } else if (['mp4','mov','webm','avi'].includes(ext)) {
+          preview.innerHTML = `
+            <div style="font-size:12px;color:var(--gray-400);margin-bottom:6px;">🎬 Aperçu vidéo</div>
+            <video src="${url}" controls style="width:100%;border-radius:8px;max-height:260px;"></video>`;
+        } else if (['mp3','wav','ogg','aac'].includes(ext)) {
+          preview.innerHTML = `
+            <div style="font-size:12px;color:var(--gray-400);margin-bottom:6px;">🎵 Aperçu audio</div>
+            <audio src="${url}" controls style="width:100%;margin-top:4px;"></audio>`;
+        } else if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
+          preview.innerHTML = `
+            <div style="font-size:12px;color:var(--gray-400);margin-bottom:6px;">🖼️ Aperçu image</div>
+            <img src="${url}" style="max-width:100%;border-radius:8px;max-height:260px;object-fit:contain;" />`;
+        } else {
+          preview.innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px;padding:14px;background:#f8fafc;border:1px solid var(--gray-200);border-radius:8px;">
+              <span style="font-size:32px;">📦</span>
+              <div>
+                <div style="font-size:13px;font-weight:600;">${file.name}</div>
+                <div style="font-size:11px;color:var(--gray-400);margin-top:2px;">${size} Mo · ${ext.toUpperCase()}</div>
+              </div>
+            </div>`;
+        }
+      }
+    } else {
+      label.innerHTML = `❌ ${data.message}`;
+      label.style.color = '#dc2626';
+    }
+  } catch (err) {
+    label.innerHTML = `❌ Erreur upload`;
+    label.style.color = '#dc2626';
+  }
+}
+
+// ══ INSÉRER IMAGE/VIDÉO DANS L'ÉDITEUR ══
+async function insererMedia(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const ext     = file.name.split('.').pop().toLowerCase();
+  const isVideo = ['mp4','mov','avi','webm'].includes(ext);
+  const editor  = document.getElementById('editorBody');
+
+  // Aperçu local pendant l'upload
+  const el = document.createElement(isVideo ? 'video' : 'img');
+  el.style.cssText = 'max-width:100%;border-radius:8px;margin:8px 0;opacity:0.5;display:block;';
+  el.src = URL.createObjectURL(file);
+  if (isVideo) el.controls = true;
+  editor.focus();
+  editor.appendChild(el);
+
+  const formData = new FormData();
+  formData.append('media', file);
+  try {
+    const res  = await fetch(`${API_URL}/produits/upload-media`, {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: formData
+    });
+    const data = await res.json();
+    if (res.ok) {
+      el.src = data.url;
+      el.style.opacity = '1';
+      console.log('🖼️ Media inséré :', data.url);
+    } else {
+      el.remove();
+      alert('❌ ' + data.message);
+    }
+  } catch (err) {
+    el.remove();
+    alert('❌ Erreur upload media');
+  }
+  input.value = '';
+}
+
+// ══ DONNÉES DIGITAL ══
+function getDigitalData() {
+  return {
+    fichier_url: digitalFileUrl || null,
+    lien:        document.getElementById('digitalLien')?.value   || '',
+    dl_max:      parseInt(document.getElementById('digitalDlMax')?.value) || null,
+    duree:       document.getElementById('digitalDuree')?.value  || 'illimitee',
+  };
+}
+
+// ══ DONNÉES PHYSIQUE ══
+function getPhysicalData() {
+  const livraisons = [];
+  if (document.getElementById('livrDomicile')?.checked) livraisons.push('domicile');
+  if (document.getElementById('livrRetrait')?.checked)  livraisons.push('retrait');
+  if (document.getElementById('livrRelais')?.checked)   livraisons.push('relais');
+  const variantes = [];
+  document.querySelectorAll('#variantesBox > div').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    if (inputs[0]?.value) variantes.push({ nom: inputs[0].value, options: inputs[1]?.value || '' });
+  });
+  return {
+    stock:      parseInt(document.getElementById('physStock')?.value)  || 0,
+    sku:        document.getElementById('physSku')?.value              || '',
+    poids:      parseFloat(document.getElementById('physPoids')?.value)|| 0,
+    delai:      document.getElementById('physDelai')?.value            || '3-5j',
+    livraisons, variantes,
+    stock_auto: document.getElementById('physStockAuto')?.checked      ?? true,
+  };
+}
+
+// ══ VARIANTES ══
+let variantesCount = 0;
+function ajouterVariante() {
+  variantesCount++;
+  const box = document.getElementById('variantesBox');
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  row.innerHTML = `
+    <input class="inp" type="text" placeholder="Nom (ex : Taille)" style="flex:1;" />
+    <input class="inp" type="text" placeholder="Options (ex : S, M, L, XL)" style="flex:2;" />
+    <button type="button" onclick="this.parentElement.remove()"
+      style="border:none;background:none;cursor:pointer;color:var(--gray-400);font-size:18px;padding:0 4px;">×</button>
+  `;
+  box.appendChild(row);
+}
+
+// ══ AFFICHER CHAMPS PAR TYPE ══
+function afficherChampsType(type) {
+  const digital   = document.getElementById('fieldsDigital');
+  const physical  = document.getElementById('fieldsPhysical');
+  const titre     = document.getElementById('conseilsTypeTitre');
+  const body      = document.getElementById('conseilsTypeBody');
+  if (type === 'digital') {
+    if (digital)  digital.style.display  = 'block';
+    if (physical) physical.style.display = 'none';
+    if (titre) titre.textContent = '📦 Produit digital';
+    if (body)  body.innerHTML = '<div class="info-box">💡 Uploadez votre fichier ou collez un lien Drive/Notion. Le client y accède automatiquement après paiement.</div>';
+  } else {
+    if (digital)  digital.style.display  = 'none';
+    if (physical) physical.style.display = 'block';
+    if (titre) titre.textContent = '🚚 Produit physique';
+    if (body)  body.innerHTML = '<div class="info-box">💡 Gérez votre stock et vos variantes. Le stock se décrémente automatiquement à chaque vente.</div>';
+  }
+}
+
+function insererMediaLocal(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const editor = document.getElementById('editorBody');
+    editor.focus();
+    const ext     = file.name.split('.').pop().toLowerCase();
+    const isVideo = ['mp4','mov','webm'].includes(ext);
+
+    const br1 = document.createElement('br');
+    const br2 = document.createElement('br');
+    const el  = isVideo ? document.createElement('video') : document.createElement('img');
+    el.src    = e.target.result;
+    el.style.cssText = 'max-width:100%;border-radius:8px;margin:8px 0;display:block;';
+    if (isVideo) el.controls = true;
+
+    editor.appendChild(br1);
+    editor.appendChild(el);
+    editor.appendChild(br2);
+
+    // Placer le curseur après l'image pour écrire dessous
+    const range = document.createRange();
+    const sel   = window.getSelection();
+    range.setStartAfter(br2);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+// ══ DÉMARRAGE ══
+loadUserInfo();
+loadUserInfo();
+initFilters();
+navigate('accueil');
+loadDashboardStats();
+connectNotifications();
+console.log('🚀 Dashboard eseafy prêt');
+</script>
+</body>
+</html>
