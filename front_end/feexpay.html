@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test FeexPay</title>
+</head>
+<body>
+
+<h2>Paiement test</h2>
+
+<div id="feexpay-button-container"></div>
+
+<script src="https://api.feexpay.me/feexpay-javascript-sdk/index.js"></script>
+
+<script>
+FeexPayButton.init("render", {
+  id: "69c06cda806935cdcc1735a0",
+  amount: 15000,
+  token: "test_qVpHnZNJGG9Bw5utE6zqRhjwkwOjJf91xY8ouggz0AB4AILc9smSqkwEGazAMhg0",
+  mode: "SANDBOX",
+  custom_id: "TEST-123",
+  description: "Test paiement",
+  callback_url: "http://localhost:3001/api/paiement/webhook",
+  render_to: "feexpay-button-container"
+});
+</script>
+
+</body>
+</html>

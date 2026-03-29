@@ -213,9 +213,9 @@
 
       <div class="prod-subview" id="subProdCreate">
         <div class="main-create">
-          <button class="page-back" onclick="showProdSubview('subProdChoix')">
+          <button class="page-back" onclick="navigate('produits')">
             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-            Changer de type
+            Retour aux produits
           </button>
           <div id="typeBadge" class="type-badge digital">📦 Produit digital</div>
           <div class="steps-wrap">
@@ -1364,7 +1364,8 @@ function navigate(page) {
   document.getElementById('draftBtn').style.display = page === 'nouveau-produit' ? '' : 'none';
   if (page === 'nouveau-produit') {
     document.getElementById('page-produits').classList.add('active');
-    showProdSubview('subProdChoix');
+    startCreation('physical');
+    showProdSubview('subProdCreate');
   } else if (page === 'produits') {
     document.getElementById('page-produits').classList.add('active');
     showProdSubview('subProdList');
