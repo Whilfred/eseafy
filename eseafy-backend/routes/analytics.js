@@ -87,9 +87,12 @@ router.get('/dashboard', auth, async (req, res) => {
       [userId]
     );
 
-    // ── Visites par type (boutique / produit) ──
+    // ── Visites par type ──
     const visitesParType = await pool.query(
-      `SELECT type, COUNT(*) AS total FROM visites WHERE user_id = $1 GROUP BY type`,
+      `SELECT type, COUNT(*) AS total 
+       FROM visites 
+       WHERE user_id = $1 
+       GROUP BY type`,
       [userId]
     );
 
@@ -105,53 +108,58 @@ router.get('/dashboard', auth, async (req, res) => {
       [userId]
     );
 
-    // ── Taux de conversion (commandes / visites produit) ──
+    // ── Taux de conversion ──
     const commandesTotal = await pool.query(
       `SELECT COUNT(*) AS total FROM commandes WHERE user_id = $1`,
       [userId]
     );
+
     const visitesProduits = await pool.query(
-      `SELECT COUNT(*) AS total FROM visites WHERE user_id = $1 AND type = 'produit'`,
+      `SELECT COUNT(*) AS total FROM visites 
+       WHERE user_id = $1 AND type = 'produit'`,
       [userId]
     );
 
-    const nbCommandes     = parseInt(commandesTotal.rows[0].total);
-    const nbVisitesProd   = parseInt(visitesProduits.rows[0].total);
-    const tauxConversion  = nbVisitesProd > 0
+    const nbCommandes   = parseInt(commandesTotal.rows[0].total);
+    const nbVisitesProd = parseInt(visitesProduits.rows[0].total);
+
+    const tauxConversion = nbVisitesProd > 0
       ? ((nbCommandes / nbVisitesProd) * 100).toFixed(1)
       : 0;
 
-    // ── Construire réponse ──
+    // ── Mapping types ──
     const typeMap = {};
-    visitesParType.rows.forEach(r => { typeMap[r.type] = parseInt(r.total); });
+    visitesParType.rows.forEach(r => {
+      typeMap[r.type] = parseInt(r.total);
+    });
 
-    // ── Produits vendus par jour (30 derniers jours) ──
-const graph_ventes = await pool.query(`
-  SELECT
-    DATE(c.created_at) AS jour,
-    COUNT(v.id) AS nb_ventes
-  FROM ventes v
-  JOIN commandes c ON c.id = v.commande_id
-  WHERE v.user_id = $1
-    AND c.created_at >= NOW() - INTERVAL '30 days'
-  GROUP BY DATE(c.created_at)
-  ORDER BY jour;
-`, [req.user.id]);
+    // ── Produits vendus par jour ──
+    const graph_ventes = await pool.query(`
+      SELECT
+        DATE(c.created_at) AS jour,
+        COUNT(*) AS nb_ventes
+      FROM ventes v
+      JOIN commandes c ON c.id = v.commande_id
+      WHERE v.user_id = $1
+        AND c.created_at >= NOW() - INTERVAL '30 days'
+      GROUP BY DATE(c.created_at)
+      ORDER BY jour ASC
+    `, [userId]);
 
-console.log("RESULT DB:", result.rows);
+    console.log("GRAPH VENTES:", graph_ventes.rows);
 
     return res.json({
       kpis: {
-        visites_totales:    parseInt(visitesTotales.rows[0].total),
-        visites_mois:       parseInt(visitesMois.rows[0].total),
-        visiteurs_uniques:  parseInt(visiteursUniques.rows[0].total),
-        visites_boutique:   typeMap.boutique || 0,
-        visites_produits:   typeMap.produit  || 0,
-        taux_conversion:    parseFloat(tauxConversion),
+        visites_totales:   parseInt(visitesTotales.rows[0].total),
+        visites_mois:      parseInt(visitesMois.rows[0].total),
+        visiteurs_uniques: parseInt(visiteursUniques.rows[0].total),
+        visites_boutique:  typeMap.boutique || 0,
+        visites_produits:  typeMap.produit || 0,
+        taux_conversion:   parseFloat(tauxConversion),
       },
       graph_visites: visitesGraph.rows,
       top_produits:  topProduits.rows,
-      graph_ventes: ventesGraph.rows,
+      graph_ventes:  graph_ventes.rows
     });
 
   } catch (err) {
