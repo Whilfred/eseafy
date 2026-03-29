@@ -1,0 +1,333 @@
+# 🚀 ESEAFY Backend
+
+Backend officiel de la plateforme **ESEAFY**.
+
+Ce backend gère :
+
+* Authentification
+* Produits
+* Commandes
+* Paiements
+* Email automation (ELISA)
+* Analytics
+* Affiliation
+* Promotions
+* Upload fichiers
+* Tracking
+
+---
+
+# 🧠 Architecture Backend
+
+```
+eseafy-backend
+│
+├── config/
+│   └── db.js
+│
+├── jobs/
+│   └── elisa.cron.js
+│
+├── middleware/
+│   └── auth.js
+│
+├── models/
+│   └── User.js
+│
+├── routes/
+│   ├── affiliation.js
+│   ├── analytics.js
+│   ├── auth.js
+│   ├── boutique.js
+│   ├── commandes.js
+│   ├── elisa.js
+│   ├── paiement.js
+│   ├── produits.js
+│   ├── promo.js
+│   ├── stats.js
+│   ├── tracker.js
+│   └── upload.js
+│
+├── services/
+│   ├── emailService.js
+│   └── feexpay.js
+│
+├── .env
+├── package.json
+├── server.js
+└── setup.js
+```
+
+---
+
+# ⚙️ Technologies utilisées
+
+* Node.js
+* Express.js
+* PostgreSQL
+* Nodemailer
+* Cron Jobs
+* FeezPay / Feexpay
+* JWT Authentication
+
+---
+
+# 📁 Dossiers détaillés
+
+# config/
+
+Configuration globale du backend
+
+### db.js
+
+Connexion PostgreSQL
+
+---
+
+# jobs/
+
+Tâches automatiques backend
+
+### elisa.cron.js
+
+Système ELISA :
+
+* Vérification automatique campagnes
+* Envoi automatique emails
+* Cron toutes les 6h
+
+---
+
+# middleware/
+
+Middleware Express
+
+### auth.js
+
+* Vérification token JWT
+* Protection routes privées
+
+---
+
+# models/
+
+Modèles base de données
+
+### User.js
+
+Modèle utilisateur
+
+---
+
+# routes/
+
+Routes principales API
+
+## Auth
+
+### auth.js
+
+* Inscription
+* Connexion
+* Gestion utilisateurs
+
+---
+
+## Produits
+
+### produits.js
+
+* Ajouter produit
+* Modifier produit
+* Supprimer produit
+* Liste produits
+
+---
+
+## Commandes
+
+### commandes.js
+
+* Créer commande
+* Liste commandes
+* Statut commandes
+
+---
+
+## Paiement
+
+### paiement.js
+
+* Paiement Feexpay
+* Validation paiement
+* Webhooks paiement
+
+---
+
+## ELISA
+
+### elisa.js
+
+* Campagnes emails
+* Automatisation
+* Gestion ELISA
+
+---
+
+## Analytics
+
+### analytics.js
+
+* Statistiques
+* Tracking utilisateurs
+
+---
+
+## Stats
+
+### stats.js
+
+* Statistiques globales
+
+---
+
+## Tracker
+
+### tracker.js
+
+* Tracking visiteurs
+* Tracking campagnes
+
+---
+
+## Affiliation
+
+### affiliation.js
+
+* Système affiliés
+* Commissions
+
+---
+
+## Promo
+
+### promo.js
+
+* Codes promo
+* Réductions
+
+---
+
+## Boutique
+
+### boutique.js
+
+* Gestion boutique
+
+---
+
+## Upload
+
+### upload.js
+
+* Upload fichiers
+* Upload images
+
+---
+
+# services/
+
+Services backend
+
+## emailService.js
+
+Service email :
+
+* Envoi email
+* Templates email
+* Automatisation ELISA
+
+---
+
+## feexpay.js
+
+Service paiement :
+
+* Intégration Feexpay
+* Vérification paiement
+
+---
+
+# 🔐 Variables d'environnement
+
+Exemple `.env`
+
+```
+PORT=3001
+DATABASE_URL=
+JWT_SECRET=
+GMAIL_USER=
+GMAIL_PASS=
+FEEXPAY_API_KEY=
+```
+
+---
+
+# 🚀 Lancer le projet
+
+Installation
+
+```
+npm install
+```
+
+Lancer serveur
+
+```
+npm run dev
+```
+
+---
+
+# 📡 Serveur
+
+```
+http://localhost:3001
+```
+
+---
+
+# 📦 Scripts
+
+package.json
+
+```
+npm run dev
+npm start
+```
+
+---
+
+# 🧠 Fonctionnalités principales
+
+* Authentification
+* Paiement Feexpay
+* Email automation ELISA
+* Affiliation
+* Produits
+* Commandes
+* Promo
+* Analytics
+* Tracking
+
+---
+
+# 👨‍💻 Projet
+
+ESEAFY Backend
+
+---
+
+# 📄 Licence
+
+MIT
