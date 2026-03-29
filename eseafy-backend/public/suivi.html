@@ -354,8 +354,8 @@
       { label: 'Expédiée',       icon: '🚚' },
       { label: 'Livrée',         icon: '✅' },
     ];
-    const stepIndex = { en_attente:0, paye:1, rembourse:2, annule:0 }[c.statut] ?? 0;
-
+const stepsMap = ['en_attente', 'traitement', 'expedie', 'paye'];
+const stepIndex = stepsMap.indexOf(c.statut);
     document.getElementById('stepsRow').innerHTML = steps.map((step, i) => {
       let cls = '';
       if (i < stepIndex)  cls = 'done';
