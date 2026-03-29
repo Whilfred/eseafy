@@ -1873,10 +1873,15 @@ async function loadVentes(statut = 'tous') {
           <span><span class="badge ${s.cls}">${s.label}</span></span>
           <span>
 <span>
-  <button onclick="updateStatutCommande(${c.id}, '${c.statut}')" 
-    style="font-size:11px;padding:4px 10px;border:1px solid var(--gray-200);border-radius:6px;background:var(--white);cursor:pointer;color:var(--gray-600);">
-    ✏️ Modifier
-  </button>
+  <select onchange="updateStatutCommande(${c.id}, this.value)"
+    style="font-size:11px;padding:4px;border-radius:6px;">
+    
+    <option value="en_attente" ${c.statut === 'en_attente' ? 'selected' : ''}>En attente</option>
+    <option value="paye" ${c.statut === 'paye' ? 'selected' : ''}>Payé</option>
+    <option value="rembourse" ${c.statut === 'rembourse' ? 'selected' : ''}>Remboursé</option>
+    <option value="annule" ${c.statut === 'annule' ? 'selected' : ''}>Annulé</option>
+
+  </select>
 </span>
           </span>
         </div>`;
@@ -1888,18 +1893,40 @@ async function loadVentes(statut = 'tous') {
 }
 
 // ══ CHANGER LE STATUT D'UNE COMMANDE ══
-async function updateStatutCommande(id, statut) {
+async function updateStatutCommande(id, currentStatut) {
+  const nouveauxStatuts = ['paye', 'en_attente', 'rembourse', 'annule'];
+
+  const statut = prompt(
+    `Choisir un nouveau statut :\n${nouveauxStatuts.join(', ')}`,
+    currentStatut
+  );
+
+  if (!statut || !nouveauxStatuts.includes(statut)) {
+    alert('❌ Statut invalide');
+    return;
+  }
+
   console.log('🔄 Changement statut commande', id, '→', statut);
+
   try {
-    const res  = await fetch(`${API_URL}/commandes/${id}/statut`, {
-      method:  'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body:    JSON.stringify({ statut })
+    const res = await fetch(`${API_URL}/commandes/${id}/statut`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ statut })
     });
+
     const data = await res.json();
     console.log('🔄 Résultat :', data);
-    if (res.ok) loadVentes(); // recharger
-    else alert('❌ ' + data.message);
+
+    if (res.ok) {
+      loadVentes(); // refresh
+    } else {
+      alert('❌ ' + data.message);
+    }
+
   } catch (err) {
     console.error('❌', err);
   }
