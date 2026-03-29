@@ -92,17 +92,11 @@
           <div>
             <div class="card">
               <div class="card-head"><div><h2>Revenus — 30 derniers jours</h2></div></div>
-              <div class="card-body">
-                <div class="chart-placeholder" style="height:200px;align-items:flex-end;padding:16px 8px 0;">
-                  <div class="chart-bars" style="width:100%;height:160px;">
-                    <div class="bar" style="height:40%"></div><div class="bar" style="height:55%"></div><div class="bar" style="height:35%"></div>
-                    <div class="bar" style="height:70%"></div><div class="bar" style="height:50%"></div><div class="bar" style="height:80%"></div>
-                    <div class="bar accent" style="height:65%"></div><div class="bar" style="height:45%"></div><div class="bar" style="height:90%"></div>
-                    <div class="bar" style="height:60%"></div><div class="bar" style="height:75%"></div><div class="bar" style="height:55%"></div>
-                    <div class="bar" style="height:85%"></div><div class="bar" style="height:70%"></div><div class="bar accent" style="height:95%"></div>
-                  </div>
-                </div>
-              </div>
+<div class="card-body">
+  <div style="position:relative;height:200px;">
+    <canvas id="dashRevenusChart"></canvas>
+  </div>
+</div>
             </div>
           </div>
           <div>
@@ -1218,6 +1212,7 @@ function loadUserInfo() {
   const pn = document.getElementById('profilNom');    if(pn) pn.value = user.nom   ||'';
   const pe = document.getElementById('profilEmail');  if(pe) pe.value = user.email ||'';
 }
+
 // ══ CHARGER LES STATS DU DASHBOARD ══
 async function loadDashboardStats() {
   console.log('📊 Chargement des stats...');
@@ -1317,19 +1312,81 @@ async function loadDashboardStats() {
       recentList.innerHTML = `<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;">Aucune vente pour l'instant.</div>`;
     }
 
-    // ── Graphe barres (30 jours — payées seulement) ──
-    const chartBars = document.querySelector('#page-accueil .chart-bars');
-    if (chartBars) {
-      const payees = data.graph_revenus.filter(r => r.statut === 'paye');
-      if (payees.length > 0) {
-        const maxVal = Math.max(...payees.map(r => parseFloat(r.total)));
-        chartBars.innerHTML = payees.map(r => {
-          const pct = maxVal > 0 ? Math.max(Math.round((parseFloat(r.total) / maxVal) * 100), 5) : 10;
-          return `<div class="bar accent" style="height:${pct}%" title="${r.jour} : ${Number(r.total).toLocaleString('fr-FR')} XOF"></div>`;
-        }).join('');
+
+const ctx = document.getElementById('dashRevenusChart')?.getContext('2d');
+
+if (ctx) {
+  if (window.dashChart) window.dashChart.destroy();
+
+  const dataPoints = data.graph_revenus || [];
+
+  const labels = dataPoints.map(r => {
+    const d = new Date(r.jour);
+    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+  });
+
+  const revenusData = dataPoints.map(r => parseFloat(r.total));
+
+  window.dashChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Revenus (XOF)',
+          data: revenusData,
+          borderColor: '#1A6BFF',
+          backgroundColor: 'rgba(26,107,255,.08)',
+          borderWidth: 2.5,
+          pointRadius: 4,
+          fill: true,
+          tension: 0.4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            title: (items) => {
+              const i = items[0].dataIndex;
+              const d = dataPoints[i].jour;
+              return new Date(d).toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                day: '2-digit',
+                month: 'long'
+              });
+            },
+            label: (ctx) => {
+              const i = ctx.dataIndex;
+              const d = dataPoints[i];
+
+              return [
+                `Statut : payé`,
+                `Ventes : ${d.nb_ventes}`,
+                `Revenus : ${Number(d.total).toLocaleString('fr-FR')} XOF`
+              ];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true
+        }
       }
     }
-
+  });
+}
   } catch (err) {
     console.error('❌ Erreur stats :', err);
   }
