@@ -1875,8 +1875,10 @@ async function loadVentes(statut = 'tous') {
 <span>
   <select onchange="updateStatutCommande(${c.id}, this.value)"
     style="font-size:11px;padding:4px;border-radius:6px;">
-    
+
     <option value="en_attente" ${c.statut === 'en_attente' ? 'selected' : ''}>En attente</option>
+    <option value="traitement" ${c.statut === 'traitement' ? 'selected' : ''}>En traitement</option>
+    <option value="expedie" ${c.statut === 'expedie' ? 'selected' : ''}>Expédié</option>
     <option value="paye" ${c.statut === 'paye' ? 'selected' : ''}>Payé</option>
     <option value="rembourse" ${c.statut === 'rembourse' ? 'selected' : ''}>Remboursé</option>
     <option value="annule" ${c.statut === 'annule' ? 'selected' : ''}>Annulé</option>
@@ -1894,7 +1896,14 @@ async function loadVentes(statut = 'tous') {
 
 // ══ CHANGER LE STATUT D'UNE COMMANDE ══
 async function updateStatutCommande(id, currentStatut) {
-  const nouveauxStatuts = ['paye', 'en_attente', 'rembourse', 'annule'];
+  const nouveauxStatuts = [
+  'en_attente',
+  'traitement',
+  'expedie',
+  'paye',
+  'rembourse',
+  'annule'
+];
 
   const statut = prompt(
     `Choisir un nouveau statut :\n${nouveauxStatuts.join(', ')}`,
