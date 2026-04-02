@@ -16,7 +16,7 @@ transporter.verify((err, success) => {
 });
 
 // ══ TEMPLATE DE BASE ══
-function baseTemplate(content, titre = 'eseafy') {
+function baseTemplate(content, titre = 'ojafy') {
   return `
 <!DOCTYPE html>
 <html lang="fr">
@@ -30,7 +30,7 @@ function baseTemplate(content, titre = 'eseafy') {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
         <tr><td style="background:linear-gradient(135deg,#1A6BFF,#1455cc);border-radius:16px 16px 0 0;padding:28px 32px;text-align:center;">
-          <div style="font-size:26px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">eseafy<span style="opacity:.6">.</span></div>
+          <div style="font-size:26px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">ojafy<span style="opacity:.6">.</span></div>
           <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px;">La plateforme e-commerce made in Africa 🌍</div>
         </td></tr>
         <tr><td style="background:#ffffff;padding:32px;border-radius:0 0 16px 16px;border:1px solid #e8f0ff;border-top:none;">
@@ -38,7 +38,7 @@ function baseTemplate(content, titre = 'eseafy') {
         </td></tr>
         <tr><td style="padding:20px 0;text-align:center;">
           <div style="font-size:12px;color:#9e9b97;">
-            © 2026 eseafy · La plateforme e-commerce made in Africa<br/>
+            © 2026 Ojafy · La plateforme e-commerce made in Africa<br/>
             <a href="#" style="color:#1A6BFF;text-decoration:none;">Se désabonner</a>
           </div>
         </td></tr>
@@ -95,7 +95,7 @@ async function sendConfirmationCommande({ email, nom_client, reference, produit,
       from:    `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
       to:      email,
       cc:      process.env.EMAIL_FROM, // ← copie admin
-      subject: `✅ Commande #${reference} confirmée — eseafy`,
+      subject: `✅ Commande #${reference} confirmée — Ojafy`,
       html:    baseTemplate(content, `Commande #${reference}`),
     });
     console.log(`📧 Email confirmation → ${email}`);
@@ -190,7 +190,7 @@ async function sendEmailBienvenue({ email, prenom, boutique_slug }) {
   if (!email) return;
 
   const content = `
-    <h1 style="font-size:22px;color:#0a0a0a;margin:0 0 8px;">Bienvenue sur eseafy 🎉</h1>
+    <h1 style="font-size:22px;color:#0a0a0a;margin:0 0 8px;">Bienvenue sur ojafy 🎉</h1>
     <p style="color:#6a6760;font-size:14px;margin:0 0 24px;">Bonjour <strong>${prenom || 'cher vendeur'}</strong>, votre boutique est prête !</p>
     <div style="background:#f0f5ff;border:1px solid #e8f0ff;border-radius:12px;padding:20px;margin-bottom:24px;">
       <p style="font-size:13.5px;color:#6a6760;margin:0 0 12px;">Voici ce que vous pouvez faire dès maintenant :</p>
@@ -206,8 +206,8 @@ async function sendEmailBienvenue({ email, prenom, boutique_slug }) {
       from:    `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
       to:      email,
       cc:      process.env.EMAIL_FROM, // ← copie admin
-      subject: `Bienvenue sur eseafy ! Votre boutique est prête 🚀`,
-      html:    baseTemplate(content, 'Bienvenue sur eseafy'),
+      subject: `Bienvenue sur ojafy ! Votre boutique est prête 🚀`,
+      html:    baseTemplate(content, 'Bienvenue sur ojafy'),
     });
     console.log(`📧 Email bienvenue → ${email}`);
   } catch (err) {
@@ -245,7 +245,7 @@ async function sendNotificationInscription({ email, prenom, nom }) {
     await transporter.sendMail({
       from:    `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
       to:      process.env.EMAIL_FROM, // ← uniquement admin
-      subject: `👤 Nouvel inscrit sur eseafy — ${email}`,
+      subject: `👤 Nouvel inscrit sur ojafy — ${email}`,
       html:    baseTemplate(content, 'Nouvel inscrit'),
     });
     console.log(`📧 Email inscription admin → ${process.env.EMAIL_FROM}`);
@@ -274,7 +274,7 @@ async function sendOTP({ email, prenom, otp }) {
     await transporter.sendMail({
       from:    `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
       to:      email,
-      subject: `🔐 ${otp} — Votre code de connexion eseafy`,
+      subject: `🔐 ${otp} — Votre code de connexion ojafy`,
       html:    baseTemplate(content, 'Code de connexion'),
     });
     console.log(`📧 OTP envoyé → ${email}`);

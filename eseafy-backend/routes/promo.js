@@ -124,7 +124,7 @@ router.post('/verifier', async (req, res) => {
     }
 
     return res.json({
-      message: '✅ Code valide !',
+      message: 'Code valide !',
       promo: {
         code:      promo.code,
         type:      promo.type,

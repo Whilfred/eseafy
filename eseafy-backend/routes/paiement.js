@@ -1,5 +1,5 @@
 /**
- * routes/paiement.js — eseafy
+ * routes/paiement.js — ojafy
  * POST /api/paiement/initier   → lance le paiement FeexPay
  * POST /api/paiement/webhook   → callback FeexPay (paiement confirmé)
  * GET  /api/paiement/statut/:ref → vérifier un paiement manuellement
@@ -203,7 +203,7 @@ router.post('/webhook', async (req, res) => {
 
   const { reference, status, callback_info } = req.body;
 
-  // Référence interne eseafy stockée dans custom_id
+  // Référence interne ojafy stockée dans custom_id
   const esfReference = callback_info?.custom_id || reference;
 
   if (!esfReference) {
@@ -241,7 +241,7 @@ router.post('/webhook', async (req, res) => {
       return res.json({ message: 'Déjà traité.' });
     }
 
-    // ── Statuts FeexPay → statuts eseafy ──
+    // ── Statuts FeexPay → statuts ojafy ──
     const statutMap = {
       'SUCCESSFUL': 'paye',
       'SUCCESS':    'paye',

@@ -1,5 +1,5 @@
 /**
- * services/feexpay.js — eseafy
+ * services/feexpay.js — ojafy
  * Intégration de l'API FeexPay (v1)
  */
 
@@ -43,7 +43,7 @@ async function initierPaiement(data) {
       callback_url: CALLBACK_URL,
       custom_id:   data.customId,
       full_name:   data.nom || `${data.firstName} ${data.lastName}`,
-      email:       data.email || 'client@eseafy.com' // Un email par défaut si vide
+      email:       data.email || 'client@ojafy.com' // Un email par défaut si vide
     };
 
     console.log("🚀 Envoi vers FeexPay :", url, payload);
