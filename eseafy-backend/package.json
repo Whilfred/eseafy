@@ -1,7 +1,7 @@
 {
   "name": "eseafy-backend",
   "version": "1.0.0",
-  "description": "Backend API pour Eseafy",
+  "description": "Backend API pour ojafy",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

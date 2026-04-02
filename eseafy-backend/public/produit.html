@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Produit — eseafy</title>
+<title>Produit — Ojafy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
 <style>
@@ -419,7 +419,7 @@
 <body>
 
 <nav class="nav">
-  <a href="/" class="nav-brand">eseafy<span class="dot">.</span></a>
+  <a href="/" class="nav-brand">Ojafy<span class="dot">.</span></a>
   <div class="nav-boutique" id="navBoutique"></div>
   <button class="btn-share" onclick="sharePage()">📤 Partager</button>
 </nav>
@@ -511,7 +511,7 @@
     <div id="orderFormInside">
       <div class="error-box" id="modalError"></div>
       <div class="field-group"><label>Nom complet <span class="required">*</span></label><input type="text" id="modalClientNom" placeholder="Votre nom et prénom"></div>
-      <div class="field-group"><label>Téléphone (WhatsApp) <span class="required">*</span></label><input type="tel" id="modalClientTel" placeholder="+226 XX XX XX XX"></div>
+      <div class="field-group"><label>Téléphone (WhatsApp) <span class="required">*</span></label><input type="tel" id="modalClientTel" placeholder="+229 XX XX XX XX"></div>
       <div class="field-group"><label>Adresse email</label><input type="email" id="modalClientEmail" placeholder="exemple@domaine.com"></div>
       <div class="promo-area"><div style="font-weight:600;">🎟 Code promotionnel</div>
         <div class="promo-flex"><input type="text" id="modalPromoCode" placeholder="EX: BIENVENUE"><button class="btn-promo" onclick="applyModalPromo()">Appliquer</button></div>
@@ -546,7 +546,7 @@
   <button class="sticky-btn-buy-single" id="stickyBuySingleBtn">Acheter maintenant →</button>
 </div>
 
-<footer class="page-footer">eseafy — La plateforme e-commerce made in Africa 🌍</footer>
+<footer class="page-footer">Ojafy — La plateforme e-commerce made in Africa 🌍</footer>
 
 <script>
   const API_URL = 'http://localhost:3001/api';
@@ -586,8 +586,8 @@
   }
 
   function renderProduit(p) {
-    document.title = `${p.nom} — eseafy`;
-    document.getElementById('navBoutique').innerHTML = `Boutique : <strong>${p.boutique_nom || 'eseafy'}</strong>`;
+    document.title = `${p.nom} — Ojafy`;
+    document.getElementById('navBoutique').innerHTML = `Boutique : <strong>${p.boutique_nom || 'Ojafy'}</strong>`;
     document.getElementById('breadcrumb').innerHTML = `<a href="/">Accueil</a><span class="sep">/</span><a href="${BASE_URL}/boutique/${p.boutique_slug}">${p.boutique_nom || 'Boutique'}</a><span class="sep">/</span><span>${p.nom}</span>`;
     const typeLabel = p.type === 'digital' ? '⚡ Digital' : '📦 Physique';
     const typeClass = p.type === 'digital' ? 'badge-digital' : 'badge-physical';

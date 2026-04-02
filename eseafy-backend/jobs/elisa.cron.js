@@ -21,7 +21,7 @@ function buildEmailHTML(boutique_nom, prenom, sequence_num) {
       body: `
         <div style="max-width:560px;margin:0 auto;font-family:'Helvetica Neue',sans-serif;color:#111;">
           <div style="background:#000;padding:28px 32px;border-radius:12px 12px 0 0;">
-            <div style="font-size:11px;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px;">EASYFY · ELISA</div>
+            <div style="font-size:11px;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px;">OJAFY · ELISA</div>
             <div style="font-size:22px;font-weight:700;color:white;">Une sélection pour vous</div>
           </div>
           <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:28px 32px;border-radius:0 0 12px 12px;">
@@ -40,7 +40,7 @@ function buildEmailHTML(boutique_nom, prenom, sequence_num) {
                 Découvrir la boutique →
               </a>
             </div>
-            <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;">${boutique_nom} · Propulsé par Easyfy</p>
+            <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;">${boutique_nom} · Propulsé par Ojafy</p>
           </div>
         </div>`
     },
@@ -49,7 +49,7 @@ function buildEmailHTML(boutique_nom, prenom, sequence_num) {
       body: `
         <div style="max-width:560px;margin:0 auto;font-family:'Helvetica Neue',sans-serif;color:#111;">
           <div style="background:#000;padding:28px 32px;border-radius:12px 12px 0 0;">
-            <div style="font-size:11px;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px;">RAPPEL · EASYFY</div>
+            <div style="font-size:11px;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px;">RAPPEL · OJAFY</div>
             <div style="font-size:22px;font-weight:700;color:white;">Plus que 24 heures</div>
           </div>
           <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:28px 32px;border-radius:0 0 12px 12px;">
@@ -66,7 +66,7 @@ function buildEmailHTML(boutique_nom, prenom, sequence_num) {
                 En profiter maintenant →
               </a>
             </div>
-            <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;">${boutique_nom} · Propulsé par Easyfy</p>
+            <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;">${boutique_nom} · Propulsé par Ojafy</p>
           </div>
         </div>`
     },
@@ -75,7 +75,7 @@ function buildEmailHTML(boutique_nom, prenom, sequence_num) {
       body: `
         <div style="max-width:560px;margin:0 auto;font-family:'Helvetica Neue',sans-serif;color:#111;">
           <div style="background:#000;padding:28px 32px;border-radius:12px 12px 0 0;">
-            <div style="font-size:11px;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px;">OFFRE FINALE · EASYFY</div>
+            <div style="font-size:11px;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px;">OFFRE FINALE · Ojafy</div>
             <div style="font-size:22px;font-weight:700;color:white;">Notre dernière offre</div>
           </div>
           <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:28px 32px;border-radius:0 0 12px 12px;">
@@ -93,7 +93,7 @@ function buildEmailHTML(boutique_nom, prenom, sequence_num) {
                 Saisir cette offre →
               </a>
             </div>
-            <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;">${boutique_nom} · Propulsé par Easyfy</p>
+            <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;">${boutique_nom} · Propulsé par Ojafy</p>
           </div>
         </div>`
     }
@@ -126,7 +126,7 @@ function buildEmailFromContent(seqContent, boutique_nom, prenom, ctaLink) {
   const body = `
     <div style="max-width:520px;margin:0 auto;font-family:'Helvetica Neue',Arial,sans-serif;">
       <div style="background:#000;padding:22px 28px;border-radius:12px 12px 0 0;">
-        <div style="font-size:10px;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:6px;">EASYFY · ELISA</div>
+        <div style="font-size:10px;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:6px;">Ojafy · ELISA</div>
         <div style="font-size:18px;font-weight:700;color:white;">${objet}</div>
       </div>
       <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:24px 28px;border-radius:0 0 12px 12px;">
@@ -138,7 +138,7 @@ function buildEmailFromContent(seqContent, boutique_nom, prenom, ctaLink) {
           </a>
         </div>
         <div style="font-size:11px;color:#9ca3af;text-align:center;padding-top:14px;border-top:1px solid #f3f4f6;">
-          Propulsé par <strong>Easyfy</strong>
+          Propulsé par <strong>Ojafy</strong>
         </div>
       </div>
     </div>`;

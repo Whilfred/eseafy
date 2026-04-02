@@ -36,9 +36,9 @@
       ctx.fillStyle = '#f60';
       ctx.fillRect(125, 1, 62, 20);
       ctx.fillStyle = '#069';
-      ctx.fillText('eseafy🛒', 2, 15);
+      ctx.fillText('Ojafy🛒', 2, 15);
       ctx.fillStyle = 'rgba(102,204,0,0.7)';
-      ctx.fillText('eseafy🛒', 4, 17);
+      ctx.fillText('Ojafy🛒', 4, 17);
       components.push(canvas.toDataURL().slice(-50));
     } catch(e) { components.push('no-canvas'); }
 
@@ -246,7 +246,7 @@
     // ── Tracker copier-coller ──
     document.addEventListener('copy', () => track('copy', { url: window.location.href }));
 
-    console.log('📊 eseafy Tracker initialisé | Session :', window.ESF_SESSION_ID, '| Fingerprint :', fingerprint);
+    console.log('📊 Ojafy Tracker initialisé | Session :', window.ESF_SESSION_ID, '| Fingerprint :', fingerprint);
   }
 
   // Exposer globalement
