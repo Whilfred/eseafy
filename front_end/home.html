@@ -667,6 +667,16 @@
 </div>
 
 <script>
+  // Stocker le code affilié quand l'utilisateur arrive sur la page produit
+function stockerCodeAffilie() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const refCode = urlParams.get('ref');
+  if (refCode) {
+    localStorage.setItem('ref_affilie', refCode);
+    console.log('🔗 Code affilié stocké depuis la page produit:', refCode);
+  }
+}
+stockerCodeAffilie();
 function toggleElisaInfo() {
   const el = document.getElementById("elisaInfo");
   el.style.display = (el.style.display === "none") ? "block" : "none";
@@ -1253,7 +1263,7 @@ Profitez-en avant qu'il soit trop tard.
 
 <script>
 // ══ CONFIG ══
-const API_URL = 'http://localhost:3001/api';
+const API_URL = 'https://eseafy-backend.fly.dev/api';
 const token   = localStorage.getItem('token');
 const user    = JSON.parse(localStorage.getItem('user') || 'null');
 
@@ -1610,7 +1620,7 @@ async function loadProduits(filtre = 'tous') {
 }
 
 function copyLien(slug) {
-  const lien = `http://localhost:3001/boutique/boutique-${user.id}/${slug}`;
+  const lien = `https://products.ojafy.store/boutique/boutique-${user.id}/${slug}`;
   navigator.clipboard.writeText(lien).then(() => alert('✅ Lien copié !\n' + lien));
   console.log('🔗 Lien :', lien);
 }
@@ -1716,7 +1726,8 @@ async function saveDraft(btn) {
   try {
     const res  = await fetch(`${API_URL}/produits`, {
       method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({ nom, prix, type:productType, categorie:document.getElementById('catSelect').value, statut:'brouillon',
+     credentials: 'include',
+ body: JSON.stringify({ nom, prix, type:productType, categorie:document.getElementById('catSelect').value, statut:'brouillon',
         seo_titre:document.getElementById('seoTitle')?.value||'', seo_desc:document.getElementById('seoDescInp')?.value||'' })
     });
     const data = await res.json();
@@ -1818,7 +1829,8 @@ async function publishProduct(btn) {
         'Content-Type': 'application/json', 
         'Authorization': 'Bearer ' + token 
       },
-      body: JSON.stringify(productData)
+     credentials: 'include',
+ body: JSON.stringify(productData)
     });
     
     console.log('📦 Status création produit:', res.status);
@@ -1982,7 +1994,8 @@ async function updateStatutCommande(id, currentStatut) {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       },
-      body: JSON.stringify({ statut })
+     credentials: 'include',
+ body: JSON.stringify({ statut })
     });
 
     const data = await res.json();
@@ -2388,7 +2401,8 @@ async function creerCodePromo(btn) {
     const res  = await fetch(`${API_URL}/promo`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ code, type, valeur, min_commande: min, max_utilisations: max, expire_le: expire })
+     credentials: 'include',
+ body: JSON.stringify({ code, type, valeur, min_commande: min, max_utilisations: max, expire_le: expire })
     });
     const data = await res.json();
     if (res.ok) {
@@ -2559,7 +2573,7 @@ async function loadAffiliation() {
 
     list.innerHTML = affilies.map(a => {
       const commission = Math.round(parseFloat(a.total_ventes) * parseFloat(a.commission_pct) / 100);
-      const lien       = `http://localhost:3001/boutique/boutique-${a.user_id}?ref=${a.code}`;
+      const lien       = `https://products.ojafy.store/boutique/boutique-${a.user_id}?ref=${a.code}`;
       const statut     = a.actif ? '<span class="badge green">Actif</span>' : '<span class="badge gray">Inactif</span>';
       return `
         <div style="display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid var(--gray-100);">
@@ -2680,7 +2694,8 @@ async function saveSettings(btn) {
     const res  = await fetch(`${API_URL}/boutique/settings`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ nom }) // ← slug retiré
+     credentials: 'include',
+ body: JSON.stringify({ nom }) // ← slug retiré
     });
     const data = await res.json();
     if (res.ok) {
@@ -2708,7 +2723,8 @@ async function saveGeneralSettings(btn) {
   try {
     const res  = await fetch(`${API_URL}/boutique/settings`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ devise, langue, pays })
+     credentials: 'include',
+ body: JSON.stringify({ devise, langue, pays })
     });
     const data = await res.json();
     if (res.ok) {
@@ -3615,6 +3631,167 @@ function fmt(command) {
   document.execCommand(command, false, null);
 }
 
+// ========== MENU HAMBURGER POUR MOBILE ==========
+// Cette fonction crée et gère le menu hamburger UNIQUEMENT sur mobile
+
+function initMobileMenu() {
+  // Vérifier si on est sur mobile (largeur < 768px)
+  if (window.innerWidth > 768) return;
+  
+  // Vérifier si le bouton existe déjà pour éviter les doublons
+  if (document.querySelector('.mobile-menu-toggle')) return;
+  
+  const topbar = document.querySelector('.topbar');
+  if (!topbar) return;
+  
+  // === 1. Créer le bouton hamburger ===
+  const menuBtn = document.createElement('button');
+  menuBtn.className = 'mobile-menu-toggle';
+  menuBtn.setAttribute('aria-label', 'Menu');
+  menuBtn.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  `;
+  menuBtn.onclick = function(e) {
+    e.stopPropagation();
+    toggleMobileMenu();
+  };
+  
+  // Insérer le bouton au début de la topbar
+  const firstChild = topbar.firstChild;
+  topbar.insertBefore(menuBtn, firstChild);
+  
+  // === 2. Créer l'overlay (fond sombre) ===
+  let overlay = document.querySelector('.sidebar-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
+    overlay.onclick = closeMobileMenu;
+    document.body.appendChild(overlay);
+  }
+  
+  // === 3. Ajouter un bouton de fermeture dans la sidebar ===
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar && !sidebar.querySelector('.sidebar-close')) {
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'sidebar-close';
+    closeBtn.innerHTML = '✕';
+    closeBtn.setAttribute('aria-label', 'Fermer');
+    closeBtn.onclick = function(e) {
+      e.stopPropagation();
+      closeMobileMenu();
+    };
+    sidebar.insertBefore(closeBtn, sidebar.firstChild);
+  }
+}
+
+// Ouvrir/Fermer le menu
+function toggleMobileMenu() {
+  // Ne fonctionne que sur mobile
+  if (window.innerWidth > 768) return;
+  
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  
+  if (sidebar) {
+    sidebar.classList.toggle('open');
+  }
+  if (overlay) {
+    overlay.classList.toggle('active');
+  }
+  
+  // Empêcher le scroll du body quand le menu est ouvert
+  if (sidebar && sidebar.classList.contains('open')) {
+    document.body.classList.add('menu-open');
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.classList.remove('menu-open');
+    document.body.style.overflow = '';
+  }
+}
+
+// Fermer le menu
+function closeMobileMenu() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  
+  if (sidebar) {
+    sidebar.classList.remove('open');
+  }
+  if (overlay) {
+    overlay.classList.remove('active');
+  }
+  document.body.classList.remove('menu-open');
+  document.body.style.overflow = '';
+}
+
+// Fermer le menu automatiquement quand on clique sur un lien de navigation
+function autoCloseMenuOnNav() {
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
+    item.addEventListener('click', function() {
+      if (window.innerWidth <= 768) {
+        closeMobileMenu();
+      }
+    });
+  });
+}
+
+// Réinitialiser le menu quand la fenêtre est redimensionnée
+function handleResize() {
+  if (window.innerWidth > 768) {
+    // Sur PC, s'assurer que le menu est fermé et que la sidebar est visible normalement
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    if (sidebar) {
+      sidebar.classList.remove('open');
+      // Restaurer les styles PC
+      sidebar.style.transform = '';
+    }
+    if (overlay) {
+      overlay.classList.remove('active');
+    }
+    document.body.classList.remove('menu-open');
+    document.body.style.overflow = '';
+  } else {
+    // Sur mobile, réinitialiser le menu si nécessaire
+    // Mais ne pas le faire si le bouton existe déjà
+    if (!document.querySelector('.mobile-menu-toggle')) {
+      initMobileMenu();
+    }
+  }
+}
+
+// Exposer les fonctions globalement
+window.toggleMobileMenu = toggleMobileMenu;
+window.closeMobileMenu = closeMobileMenu;
+
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🚀 Initialisation du menu mobile...');
+  initMobileMenu();
+  autoCloseMenuOnNav();
+});
+
+// Réinitialiser au redimensionnement
+window.addEventListener('resize', function() {
+  setTimeout(handleResize, 100);
+});
+
+// Pour les navigateurs qui chargent le contenu dynamiquement
+// Observer les changements dans le DOM pour réattacher les événements si nécessaire
+const observer = new MutationObserver(function() {
+  if (window.innerWidth <= 768 && !document.querySelector('.mobile-menu-toggle')) {
+    initMobileMenu();
+  }
+  autoCloseMenuOnNav();
+});
+observer.observe(document.body, { childList: true, subtree: false });
+
 // ══ DÉMARRAGE ══
 loadUserInfo();
 loadUserInfo();
@@ -3623,6 +3800,7 @@ navigate('accueil');
 loadDashboardStats();
 connectNotifications();
 console.log('🚀 Dashboard ojafy prêt');
+
 </script>
 </body>
 </html>

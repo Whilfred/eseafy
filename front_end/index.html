@@ -409,14 +409,6 @@
       transform: translateY(0);
     }
 
-    @media (max-width: 900px) {
-      .nav-links { display: none; }
-      .hero-title { font-size: 2.5rem; }
-      .bento-grid { grid-template-columns: 1fr; }
-      .hero-card { width: 100%; }
-      nav { padding: 1rem; }
-    }
-
     .step-card {
       background: white;
       border-radius: 2rem;
@@ -483,6 +475,358 @@
       font-weight: 700;
       margin-bottom: 1rem;
       color: var(--text-dark);
+    }
+
+    /* ========== RESPONSIVE COMPLET ========== */
+
+    /* Tablettes (768px - 1024px) */
+    @media (max-width: 1024px) {
+      .hero-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .hero-left {
+        text-align: center;
+      }
+      
+      .hero-sub {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .hero-stats {
+        justify-content: center;
+      }
+      
+      .hero-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      
+      .bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .pricing-grid {
+        gap: 1.5rem;
+      }
+      
+      .plan-card {
+        width: 280px;
+      }
+    }
+
+    /* Mobiles (max 767px) */
+    @media (max-width: 767px) {
+      /* Navigation */
+      nav {
+        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .nav-cta {
+        display: flex;
+        gap: 0.5rem;
+      }
+      
+      .btn-ghost, .btn-primary {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+      }
+      
+      .nav-logo {
+        font-size: 1.3rem;
+      }
+      
+      .nav-logo-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1.2rem;
+      }
+      
+      /* Hero section */
+      .hero {
+        padding: 1.5rem 1rem 2rem;
+      }
+      
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .hero-badge {
+        font-size: 0.7rem;
+      }
+      
+      .hero-sub {
+        font-size: 0.95rem;
+      }
+      
+      .hero-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .btn-hero {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+      }
+      
+      .btn-outline-hero {
+        margin-left: 0;
+        width: fit-content;
+      }
+      
+      .hero-stats {
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .stat-val {
+        font-size: 1.5rem;
+      }
+      
+      /* Hero Card (boutique exemple) */
+      .hero-card {
+        width: 100%;
+        max-width: 380px;
+        margin: 0 auto;
+      }
+      
+      .card-body {
+        padding: 1rem;
+      }
+      
+      .product-card-mini {
+        gap: 10px;
+        padding: 10px;
+      }
+      
+      .product-card-mini .product-img img {
+        width: 55px;
+        height: 55px;
+        border-radius: 14px;
+      }
+      
+      /* Marquee */
+      .marquee-section div {
+        font-size: 0.8rem;
+        gap: 1rem;
+      }
+      
+      /* How section */
+      #how {
+        padding: 3rem 1rem;
+      }
+      
+      #how h2 {
+        font-size: 2rem;
+      }
+      
+      .step-card {
+        width: 100% !important;
+        max-width: 280px;
+      }
+      
+      /* Bento grid */
+      .bento-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem;
+      }
+      
+      .bento-card {
+        padding: 1.2rem;
+      }
+      
+      .bento-card h3 {
+        font-size: 1.2rem;
+        margin-top: 0.5rem;
+      }
+      
+      /* Pricing section */
+      #pricing {
+        padding: 3rem 1rem;
+      }
+      
+      #pricing h2 {
+        font-size: 2rem;
+      }
+      
+      .pricing-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      
+      .plan-card {
+        width: 100%;
+        max-width: 320px;
+      }
+      
+      .plan-card.featured {
+        transform: scale(1);
+      }
+      
+      .plan-amount {
+        font-size: 2rem;
+      }
+      
+      /* Testimonials */
+      #testimonials {
+        padding: 3rem 1rem;
+      }
+      
+      #testimonials h2 {
+        font-size: 1.8rem;
+      }
+      
+      .testimonial-card {
+        width: 100%;
+        max-width: 320px;
+      }
+      
+      /* CTA section */
+      .cta-section {
+        margin: 2rem 1rem;
+      }
+      
+      .cta-content {
+        padding: 2rem 1rem;
+      }
+      
+      .cta-content h2 {
+        font-size: 1.8rem;
+      }
+      
+      .cta-content p {
+        font-size: 0.9rem;
+        padding: 0 0.5rem;
+      }
+      
+      /* Footer */
+      footer {
+        padding: 2rem 1rem 1rem;
+      }
+      
+      footer > div:first-child {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+      }
+      
+      footer .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+      }
+      
+      footer .footer-links li {
+        margin-bottom: 0;
+      }
+      
+      .footer-col-title {
+        margin-bottom: 0.5rem;
+      }
+      
+      /* Position absolute fixe sur hero-card */
+      .hero-content > div:last-child {
+        position: static;
+      }
+      
+      .hero-content > div:last-child > div:last-child {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        margin-top: 1rem;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+    }
+
+    /* Petits mobiles (max 480px) */
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 1.8rem;
+      }
+      
+      .stat-val {
+        font-size: 1.3rem;
+      }
+      
+      .hero-stat div:last-child {
+        font-size: 0.7rem;
+      }
+      
+      #how h2 {
+        font-size: 1.6rem;
+      }
+      
+      #pricing h2 {
+        font-size: 1.8rem;
+      }
+      
+      .plan-amount {
+        font-size: 1.8rem;
+      }
+      
+      .plan-features {
+        font-size: 0.85rem;
+      }
+      
+      .btn-hero {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .btn-outline-hero {
+        width: 100%;
+        text-align: center;
+      }
+      
+      .hero-card .card-header {
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+      
+      .products-grid {
+        gap: 10px;
+      }
+      
+      .product-card-mini {
+        flex-wrap: wrap;
+        text-align: center;
+        justify-content: center;
+      }
+      
+      .product-card-mini > div:last-child {
+        text-align: center;
+      }
+      
+      .hero-card .card-body > div:last-child {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+      }
+    }
+
+    /* Fix pour la marquee animation sur mobile */
+    @media (max-width: 767px) {
+      @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+      }
     }
   </style>
 </head>

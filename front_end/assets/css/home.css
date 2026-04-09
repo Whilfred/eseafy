@@ -203,15 +203,15 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;   /* ← était center, causait le débordement vertical */
+  justify-content: flex-start;
   padding: 48px 40px;
   min-height: calc(100vh - var(--topbar-h));
-  overflow-x: hidden;            /* ← empêche le scroll horizontal */
+  overflow-x: hidden;
 }
 
 .select-wrap {
   width: 100%;
-  max-width: 900px;              /* ← était 740px, trop étroit pour 2 cartes */
+  max-width: 900px;
 }
 
 .page-back { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--gray-600); border: none; background: none; cursor: pointer; padding: 0; margin-bottom: 36px; transition: color .12s; }
@@ -223,9 +223,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 /* ── CORRECTION : grille des cartes de sélection ── */
 .cards-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;  /* toujours 2 colonnes égales */
+  grid-template-columns: 1fr 1fr;
   gap: 18px;
-  width: 100%;                      /* ← prend toute la largeur du parent */
+  width: 100%;
 }
 
 .type-pick {
@@ -241,8 +241,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
   display: flex;
   flex-direction: column;
   gap: 20px;
-  min-width: 0;                     /* ← corrige le débordement dans CSS Grid */
-  width: 100%;                      /* ← force la carte à remplir sa cellule */
+  min-width: 0;
+  width: 100%;
 }
 
 .type-pick::after { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .2s; border-radius: 14px; }
@@ -255,7 +255,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 .pick-icon { width: 58px; height: 58px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; transition: transform .2s; position: relative; z-index: 1; }
 .digital .pick-icon { background: var(--accent-light); }
 .physical .pick-icon { background: var(--gray-100); }
-.pick-body { flex: 1; position: relative; z-index: 1; min-width: 0; }  /* ← min-width: 0 aussi sur le body */
+.pick-body { flex: 1; position: relative; z-index: 1; min-width: 0; }
 .pick-title { font-family: 'DM Serif Display', serif; font-size: 23px; letter-spacing: -.3px; margin-bottom: 8px; }
 .pick-desc { font-size: 13.5px; color: var(--gray-600); line-height: 1.65; margin-bottom: 18px; }
 .pick-tags { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -358,19 +358,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 .notif-sub { font-size: 12.5px; color: var(--gray-600); }
 .notif-time { font-size: 11.5px; color: var(--gray-400); white-space: nowrap; }
 
-/* ── RESPONSIVE : sur petits écrans, passer en colonne ── */
-@media (max-width: 720px) {
-  .cards-row {
-    grid-template-columns: 1fr;
-  }
-  .select-wrap {
-    max-width: 100%;
-  }
-  .main-center {
-    padding: 32px 20px;
-  }
-}
-
 /* ── ELISA chips ── */
 .elisa-chip {
   display: inline-flex;
@@ -424,3 +411,303 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
   line-height: 1;
 }
 .email-tag button:hover { color: white; }
+/* ========== MOBILE FIX COMPLET ========== */
+
+.mobile-menu-toggle,
+.sidebar-overlay,
+.sidebar-close {
+  display: none;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  body.menu-open {
+    overflow: hidden;
+  }
+
+  /* Layout */
+  .app-layout {
+    display: block; /* 🔥 important */
+    width: 100%;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .page-view {
+    width: 100%;
+  }
+
+  /* Containers full width */
+  .dash-wrap,
+  .produits-wrap,
+  .clients-wrap,
+  .ventes-wrap,
+  .revenus-wrap,
+  .analytics-wrap,
+  .marketing-wrap,
+  .affil-wrap,
+  .notif-wrap,
+  .settings-wrap,
+  .main-create,
+  .main-center {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  /* ===== TOPBAR ===== */
+  .topbar {
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .brand {
+    font-size: 16px;
+  }
+
+  .topbar-crumb {
+    font-size: 11px;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .topbar-sep {
+    display: none;
+  }
+
+  .topbar-right {
+    gap: 6px;
+  }
+
+  .btn-sm {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+
+  /* ===== HAMBURGER ===== */
+  .mobile-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    z-index: 500;
+  }
+
+  .mobile-menu-toggle svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* ===== OVERLAY ===== */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 400;
+  }
+
+  .sidebar-overlay.active {
+    display: block;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    position: fixed;
+    top: var(--topbar-h); /* 🔥 FIX PRINCIPAL */
+    left: 0;
+    width: 280px;
+    height: calc(100vh - var(--topbar-h));
+    background: var(--white);
+    z-index: 500;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 20px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    padding: 20px 0;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Close button */
+  .sidebar-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--gray-100);
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 10;
+  }
+
+  /* Sidebar content */
+  .sidebar-shop {
+    padding: 12px 20px 20px;
+    margin-top: 20px;
+    gap: 14px;
+  }
+
+  .shop-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .shop-name {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .shop-plan {
+    font-size: 12px;
+  }
+
+  .nav-section {
+    padding: 16px 20px 8px;
+    font-size: 11px;
+  }
+
+  .nav-item {
+    padding: 14px 20px;
+    font-size: 15px;
+    gap: 14px;
+  }
+
+  .sidebar-footer {
+    padding: 20px;
+  }
+
+  /* ===== KPI ===== */
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .kpi {
+    padding: 12px;
+  }
+
+  .kpi-val {
+    font-size: 20px;
+  }
+
+  /* ===== GRID ===== */
+  .dash-grid,
+  .analytics-grid,
+  .mkt-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* ===== TABLES ===== */
+  .products-table,
+  .ventes-table,
+  .clients-table {
+    overflow-x: auto;
+  }
+
+  .pt-head, .pt-row,
+  .vt-head, .vt-row,
+  .ct-head, .ct-row {
+    min-width: 560px;
+  }
+
+  /* ===== FORMS ===== */
+  .create-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .price-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .actions-bar button {
+    width: 100%;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    width: 100%;
+  }
+
+  .card-body {
+    padding: 14px;
+  }
+
+  /* ===== SELECT TYPE ===== */
+  .cards-row {
+    grid-template-columns: 1fr;
+  }
+
+  .type-pick {
+    padding: 20px;
+  }
+
+  .pick-title {
+    font-size: 18px;
+  }
+
+  .pick-desc {
+    font-size: 12px;
+  }
+
+  /* ===== IMAGES ===== */
+  .img-grid-p {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ===== SMALL DEVICES ===== */
+@media (max-width: 480px) {
+
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
+
+  .img-grid-p {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .topbar-crumb {
+    max-width: 80px;
+    font-size: 9px;
+  }
+
+  .brand {
+    font-size: 14px;
+  }
+}
