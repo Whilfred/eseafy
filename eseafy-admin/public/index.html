@@ -4,188 +4,387 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ojafy Admin</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --blue:       #1A6BFF;
-      --blue-dark:  #1455cc;
-      --blue-light: #e8f0ff;
-      --black:      #0a0a0a;
-      --white:      #ffffff;
-      --gray-50:    #f8f9fa;
-      --gray-100:   #f1f3f5;
-      --gray-200:   #e9ecef;
-      --gray-400:   #9e9b97;
-      --gray-600:   #6a6760;
-      --sidebar-w:  240px;
-      --hot:        #ef4444;
-      --warm:       #f97316;
-      --cold:       #3b82f6;
-      --inactive:   #9ca3af;
+      --bg-page: #f5f7fb;
+      --bg-card: #ffffff;
+      --bg-sidebar: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --border-light: #f1f5f9;
+      --blue: #3b82f6;
+      --blue-dark: #2563eb;
+      --blue-light: #eff6ff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
     }
-    body { font-family: 'DM Sans', sans-serif; background: var(--gray-100); color: var(--black); min-height: 100vh; }
 
-    /* ══ LOGIN ══ */
-    .login-wrap {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      min-height: 100vh;
     }
-    .login-box {
-      background: var(--white); border-radius: 20px; padding: 40px;
-      width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,.2);
-    }
-    .login-logo { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--blue); margin-bottom: 6px; }
-    .login-sub  { font-size: 13px; color: var(--gray-400); margin-bottom: 28px; }
-    .login-inp  { width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-200); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; margin-bottom: 12px; transition: border-color .15s; }
-    .login-inp:focus { border-color: var(--blue); }
-    .login-btn  { width: 100%; padding: 14px; background: var(--blue); color: var(--white); border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s; }
-    .login-btn:hover { background: var(--blue-dark); }
-    .login-err  { color: #c0392b; font-size: 13px; margin-top: 8px; display: none; }
 
-    /* ══ LAYOUT ══ */
-    .app { display: none; }
+    .app { display: flex; }
+    
     .sidebar {
-      position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w);
-      background: var(--black); display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0; width: 280px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
       z-index: 100;
+      box-shadow: var(--shadow-sm);
     }
-    .sidebar-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--white); padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .sidebar-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px; font-weight: 700;
+      color: var(--text-primary);
+      padding: 28px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
     .sidebar-logo span { color: var(--blue); }
-    .sidebar-badge { font-size: 10px; background: var(--blue); color: var(--white); padding: 2px 8px; border-radius: 20px; margin-left: 8px; vertical-align: middle; }
-    .nav-section { padding: 16px 12px 8px; font-size: 10px; color: rgba(255,255,255,.3); text-transform: uppercase; letter-spacing: .1em; }
-    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin: 2px 8px; color: rgba(255,255,255,.6); font-size: 13.5px; font-weight: 500; cursor: pointer; transition: all .15s; }
-    .nav-item:hover { background: rgba(255,255,255,.08); color: var(--white); }
-    .nav-item.active { background: var(--blue); color: var(--white); }
-    .nav-item .ni-icon { font-size: 16px; width: 20px; text-align: center; }
-    .sidebar-footer { margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,.1); }
-    .logout-btn { width: 100%; padding: 10px; background: rgba(255,255,255,.08); color: rgba(255,255,255,.6); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: all .15s; }
-    .logout-btn:hover { background: rgba(255,0,0,.2); color: #ff6b6b; }
+    .sidebar-badge {
+      font-size: 10px; font-weight: 600;
+      background: var(--blue-light);
+      color: var(--blue);
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: auto;
+    }
+    .nav-section {
+      padding: 24px 24px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 20px;
+      margin: 4px 16px;
+      border-radius: 12px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .nav-item:hover {
+      background: var(--gray-50);
+      color: var(--text-primary);
+    }
+    .nav-item.active {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+    .nav-item.active .ni-icon { color: var(--blue); }
+    .nav-item .ni-icon { font-size: 20px; width: 28px; text-align: center; color: var(--text-muted); transition: color 0.2s; }
+    .nav-item:hover .ni-icon { color: var(--blue); }
+    .sidebar-footer { margin-top: auto; padding: 20px 24px; border-top: 1px solid var(--border); }
 
-    /* ══ MAIN ══ */
-    .main { margin-left: var(--sidebar-w); min-height: 100vh; }
-    .topbar { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 0 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-    .topbar-title { font-family: 'DM Serif Display', serif; font-size: 20px; }
-    .topbar-right { font-size: 13px; color: var(--gray-400); }
-    .content { padding: 28px 32px; }
+    .main {
+      margin-left: 280px;
+      min-height: 100vh;
+      width: calc(100% - 280px);
+      background: var(--bg-page);
+    }
+    .topbar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+    .topbar-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: var(--text-primary);
+    }
+    .topbar-right {
+      font-size: 13px;
+      color: var(--text-muted);
+      background: var(--gray-50);
+      padding: 6px 14px;
+      border-radius: 30px;
+    }
+    .content { padding: 32px; }
 
-    /* ══ PAGES ══ */
     .page { display: none; }
     .page.active { display: block; }
 
-    /* ══ KPI GRID ══ */
-    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .kpi-card { background: var(--white); border-radius: 14px; padding: 20px; border: 1px solid var(--gray-200); }
-    .kpi-label { font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
-    .kpi-val   { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--black); margin-bottom: 4px; }
-    .kpi-sub   { font-size: 12px; color: var(--gray-400); }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--blue-light);
+    }
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .kpi-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .kpi-sub { font-size: 12px; color: var(--text-secondary); }
 
-    /* ══ CARDS ══ */
-    .card { background: var(--white); border-radius: 14px; border: 1px solid var(--gray-200); margin-bottom: 20px; overflow: hidden; }
-    .card-head { padding: 16px 20px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
-    .card-head h2 { font-family: 'DM Serif Display', serif; font-size: 16px; }
-    .card-body { padding: 20px; }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      margin-bottom: 28px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-head {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-light);
+      background: var(--gray-50);
+    }
+    .card-head h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .card-body { padding: 24px; }
 
-    /* ══ TABLE ══ */
-    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .data-table th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--gray-200); background: var(--gray-50); }
-    .data-table td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); color: var(--black); }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .data-table th {
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+      background: var(--gray-50);
+    }
+    .data-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-secondary);
+    }
     .data-table tr:last-child td { border-bottom: none; }
-    .data-table tr:hover td { background: var(--blue-light); }
+    .data-table tr:hover td { background: var(--gray-50); color: var(--text-primary); }
 
-    /* ══ BADGES ══ */
-    .badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
-    .badge-hot      { background: #fef2f2; color: var(--hot); border: 1px solid #fecaca; }
-    .badge-warm     { background: #fff7ed; color: var(--warm); border: 1px solid #fed7aa; }
-    .badge-cold     { background: var(--blue-light); color: var(--blue); border: 1px solid #bfdbfe; }
-    .badge-inactive { background: var(--gray-100); color: var(--gray-400); }
-    .badge-starter  { background: var(--gray-100); color: var(--gray-600); }
-    .badge-pro      { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 30px;
+    }
+    .badge-hot { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+    .badge-warm { background: #fffbeb; color: var(--warning); border: 1px solid #fde68a; }
+    .badge-cold { background: var(--blue-light); color: var(--blue); border: 1px solid #bfdbfe; }
+    .badge-starter { background: var(--gray-100); color: var(--text-secondary); border: 1px solid var(--border); }
+    .badge-pro { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
 
-    /* ══ SCORE BAR ══ */
-    .score-bar { display: flex; align-items: center; gap: 8px; }
-    .score-track { flex: 1; height: 6px; background: var(--gray-200); border-radius: 10px; overflow: hidden; }
-    .score-fill  { height: 100%; border-radius: 10px; transition: width .3s; }
-    .score-num   { font-size: 12px; font-weight: 600; width: 32px; text-align: right; }
+    .score-bar { display: flex; align-items: center; gap: 12px; }
+    .score-track {
+      flex: 1;
+      height: 6px;
+      background: var(--gray-100);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .score-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+    .score-num {
+      font-size: 12px;
+      font-weight: 600;
+      width: 36px;
+      text-align: right;
+      color: var(--text-secondary);
+    }
 
-    /* ══ GRID 2 ══ */
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 
-    /* Segment card */
-    .seg-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 20px; text-align: center; }
-    .seg-icon  { font-size: 36px; margin-bottom: 8px; }
-    .seg-label { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-    .seg-nb    { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--blue); }
-    .seg-sub   { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+    .seg-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .seg-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--blue-light);
+    }
+    .seg-icon { font-size: 44px; margin-bottom: 12px; }
+    .seg-label { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
+    .seg-nb {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--blue);
+    }
+    .seg-sub { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
 
-    /* Spinner */
-    .spinner { width: 32px; height: 32px; border: 3px solid var(--blue-light); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; margin: 40px auto; }
+    .pays-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      margin-bottom: 12px;
+    }
+    .pays-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--blue-light);
+    }
+    .pays-nom { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .pays-flag { font-size: 24px; }
+    .pays-stats { text-align: right; }
+    .pays-score { font-size: 18px; font-weight: 700; color: var(--blue); }
+    .pays-visiteurs { font-size: 11px; color: var(--text-muted); }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 40px auto;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg {
+      background: #fef2f2;
+      color: var(--danger);
+      padding: 14px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      text-align: center;
+      border: 1px solid #fecaca;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: var(--blue-dark); text-decoration: underline; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--gray-100); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--blue); }
   </style>
 </head>
 <body>
 
-<!-- ══ LOGIN ══ -->
-<div class="login-wrap" id="loginWrap">
-  <div class="login-box">
-    <div class="login-logo">eseafy<span style="color:var(--blue)">.</span></div>
-    <div class="login-sub">Administration de la plateforme</div>
-    <input class="login-inp" type="email"    id="loginEmail" placeholder="Email admin" />
-    <input class="login-inp" type="password" id="loginPassword" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')login()" />
-    <button class="login-btn" onclick="login()">Se connecter</button>
-    <div class="login-err" id="loginErr"></div>
-  </div>
-</div>
-
-<!-- ══ APP ══ -->
-<div class="app" id="appWrap">
+<div class="app">
   <!-- Sidebar -->
   <div class="sidebar">
-    <div class="sidebar-logo">eseafy<span>.</span> <span class="sidebar-badge">ADMIN</span></div>
+    <div class="sidebar-logo">ojafy<span>.</span><span class="sidebar-badge">ADMIN</span></div>
     <div class="nav-section">Plateforme</div>
     <div class="nav-item active" id="nav-dashboard" onclick="navigate('dashboard')"><span class="ni-icon">📊</span> Dashboard</div>
-    <div class="nav-item" id="nav-vendeurs"   onclick="navigate('vendeurs')">  <span class="ni-icon">👤</span> Vendeurs</div>
-    <div class="nav-item" id="nav-produits"   onclick="navigate('produits')">  <span class="ni-icon">📦</span> Produits</div>
+    <div class="nav-item" id="nav-vendeurs" onclick="navigate('vendeurs')"><span class="ni-icon">👥</span> Vendeurs</div>
+    <div class="nav-item" id="nav-produits" onclick="navigate('produits')"><span class="ni-icon">📦</span> Produits</div>
     <div class="nav-section">Intelligence IA</div>
-    <div class="nav-item" id="nav-scoring"    onclick="navigate('scoring')">   <span class="ni-icon">🎯</span> Scoring</div>
-    <div class="nav-item" id="nav-segments"   onclick="navigate('segments')">  <span class="ni-icon">🧩</span> Segments</div>
-    <div class="nav-item" id="nav-events"     onclick="navigate('events')">    <span class="ni-icon">⚡</span> Events</div>
-    <div class="sidebar-footer">
-      <button class="logout-btn" onclick="logout()">← Se déconnecter</button>
-    </div>
+    <div class="nav-item" id="nav-scoring" onclick="navigate('scoring')"><span class="ni-icon">🎯</span> Scoring</div>
+    <div class="nav-item" id="nav-segments" onclick="navigate('segments')"><span class="ni-icon">🧩</span> Segments</div>
+    <div class="nav-item" id="nav-geographie" onclick="navigate('geographie')"><span class="ni-icon">🌍</span> Géographie</div>
+    <div class="nav-item" id="nav-events" onclick="navigate('events')"><span class="ni-icon">⚡</span> Events</div>
+    <div class="sidebar-footer"></div>
   </div>
 
   <!-- Main -->
   <div class="main">
     <div class="topbar">
       <div class="topbar-title" id="topbarTitle">Dashboard</div>
-      <div class="topbar-right">eseafy Admin · <span id="topbarDate"></span></div>
+      <div class="topbar-right" id="topbarDate"></div>
     </div>
     <div class="content">
 
-      <!-- ── Dashboard ── -->
+      <!-- Dashboard -->
       <div class="page active" id="page-dashboard">
         <div class="kpi-grid" id="kpiGrid"><div class="spinner"></div></div>
         <div class="grid2">
           <div class="card">
-            <div class="card-head"><h2>Revenus plateforme — 30 jours</h2></div>
-            <div class="card-body"><div style="height:200px;"><canvas id="revenusChart"></canvas></div></div>
+            <div class="card-head"><h2>📈 Revenus — 30 derniers jours</h2></div>
+            <div class="card-body"><div style="height:300px;"><canvas id="revenusChart"></canvas></div></div>
           </div>
           <div class="card">
-            <div class="card-head"><h2>Nouvelles inscriptions — 30 jours</h2></div>
-            <div class="card-body"><div style="height:200px;"><canvas id="inscriptionsChart"></canvas></div></div>
+            <div class="card-head"><h2>👥 Nouvelles inscriptions — 30 jours</h2></div>
+            <div class="card-body"><div style="height:300px;"><canvas id="inscriptionsChart"></canvas></div></div>
           </div>
         </div>
       </div>
 
-      <!-- ── Vendeurs ── -->
+      <!-- Vendeurs -->
       <div class="page" id="page-vendeurs">
         <div class="card">
-          <div class="card-head"><h2>Tous les vendeurs</h2><span id="vendeursCount" style="font-size:13px;color:var(--gray-400);"></span></div>
+          <div class="card-head"><h2>👤 Tous les vendeurs</h2><span id="vendeursCount" style="font-size:13px;color:var(--text-muted); margin-left:12px;"></span></div>
           <div style="overflow-x:auto;">
-            <table class="data-table" id="vendeursTable">
+            <table class="data-table">
               <thead><tr><th>Vendeur</th><th>Boutique</th><th>Plan</th><th>Produits</th><th>Commandes</th><th>Revenus</th><th>Inscrit le</th></tr></thead>
               <tbody id="vendeursTbody"><tr><td colspan="7" style="text-align:center;padding:40px;"><div class="spinner"></div></td></tr></tbody>
             </table>
@@ -193,10 +392,10 @@
         </div>
       </div>
 
-      <!-- ── Produits ── -->
+      <!-- Produits -->
       <div class="page" id="page-produits">
         <div class="card">
-          <div class="card-head"><h2>Top produits plateforme</h2></div>
+          <div class="card-head"><h2>🏆 Top produits plateforme</h2></div>
           <div style="overflow-x:auto;">
             <table class="data-table">
               <thead><tr><th>#</th><th>Produit</th><th>Boutique</th><th>Type</th><th>Prix</th><th>Ventes</th><th>Revenus</th><th>Vues</th></tr></thead>
@@ -206,43 +405,84 @@
         </div>
       </div>
 
-      <!-- ── Scoring ── -->
+      <!-- Scoring -->
       <div class="page" id="page-scoring">
         <div class="card">
-          <div class="card-head"><h2>🎯 Scoring visiteurs — Top 100</h2><span style="font-size:12px;color:var(--gray-400);">Score 0-100 probabilité d'achat</span></div>
+          <div class="card-head"><h2>🎯 Scoring visiteurs — Top 100</h2><span style="font-size:12px;color:var(--text-muted);">Score 0-100 = probabilité d'achat</span></div>
           <div style="overflow-x:auto;">
             <table class="data-table">
-              <thead><tr><th>Session</th><th>Score</th><th>Boutique</th><th>Visites</th><th>Durée moy.</th><th>Device</th><th>Source</th><th>Dernière vue</th></tr></thead>
+              <thead><tr><th>Session</th><th>Score</th><th>Boutique</th><th>Visites</th><th>Durée</th><th>Device</th><th>Source</th><th>Dernière vue</th></tr></thead>
               <tbody id="scoringTbody"><tr><td colspan="8" style="text-align:center;padding:40px;"><div class="spinner"></div></td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- ── Segments ── -->
+      <!-- Segments -->
       <div class="page" id="page-segments">
-        <div class="grid3" id="segmentsGrid" style="margin-bottom:20px;"></div>
+        <div class="grid3" id="segmentsGrid" style="margin-bottom:28px;"><div class="spinner"></div></div>
         <div class="card">
           <div class="card-head"><h2>🧩 Répartition des segments</h2></div>
-          <div class="card-body"><div style="height:220px;max-width:400px;margin:0 auto;"><canvas id="segChart"></canvas></div></div>
+          <div class="card-body">
+            <div style="height:280px; max-width:450px; margin:0 auto;">
+              <canvas id="segChart"></canvas>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- ── Events ── -->
-      <div class="page" id="page-events">
-        <div class="grid2" style="margin-bottom:20px;">
+      <!-- Géographie -->
+      <div class="page" id="page-geographie">
+        <div class="grid2" style="margin-bottom:24px;">
           <div class="card">
-            <div class="card-head"><h2>Events par type</h2></div>
-            <div class="card-body" id="eventsByType"></div>
+            <div class="card-head"><h2>🌍 Top pays par visiteurs</h2></div>
+            <div class="card-body" id="topPaysList"><div class="spinner"></div></div>
           </div>
           <div class="card">
-            <div class="card-head"><h2>Devices</h2></div>
-            <div class="card-body"><div style="height:200px;"><canvas id="devicesChart"></canvas></div></div>
+            <div class="card-head"><h2>💰 Top pays par revenus</h2></div>
+            <div class="card-body" id="topPaysRevenus"><div class="spinner"></div></div>
+          </div>
+        </div>
+        <div class="grid2" style="margin-bottom:24px;">
+          <div class="card">
+            <div class="card-head"><h2>🎯 Pays avec meilleur score</h2></div>
+            <div class="card-body" id="topPaysScore"><div class="spinner"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2>🆕 Nouveaux visiteurs (30j)</h2></div>
+            <div class="card-body" id="nouveauxVisiteurs"><div class="spinner"></div></div>
           </div>
         </div>
         <div class="card">
-          <div class="card-head"><h2>Events — 30 derniers jours</h2></div>
-          <div class="card-body"><div style="height:200px;"><canvas id="eventsChart"></canvas></div></div>
+          <div class="card-head"><h2>📊 Répartition Hot/Warm/Cold par pays</h2></div>
+          <div class="card-body">
+            <div style="overflow-x:auto;">
+              <table class="data-table">
+                <thead>
+                  <tr><th>Pays</th><th>🔥 Hot</th><th>🌡 Warm</th><th>❄️ Cold</th><th>💤 Inactif</th></tr>
+                </thead>
+                <tbody id="geoTbody"><tr><td colspan="5" style="text-align:center;padding:40px;"><div class="spinner"></div></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Events -->
+      <div class="page" id="page-events">
+        <div class="grid2" style="margin-bottom:28px;">
+          <div class="card">
+            <div class="card-head"><h2>⚡ Events par type</h2></div>
+            <div class="card-body" id="eventsByType"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2>📱 Devices</h2></div>
+            <div class="card-body"><div style="height:260px;"><canvas id="devicesChart"></canvas></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>📊 Events — 30 derniers jours</h2></div>
+          <div class="card-body"><div style="height:280px;"><canvas id="eventsChart"></canvas></div></div>
         </div>
       </div>
 
@@ -251,259 +491,286 @@
 </div>
 
 <script>
-  const API = 'http://localhost:3002/api/admin';
-  let adminToken = localStorage.getItem('esf_admin_token');
+  // Configuration
+  const API_ADMIN = 'http://localhost:3001/api/admin';
+  const API_ELISA = 'http://localhost:3001/api/elisa';
   let charts = {};
 
-  // ══ PAGE TITLES — déclaré en premier pour éviter le TDZ ══
   const pageTitles = {
     dashboard: 'Dashboard',
-    vendeurs:  'Vendeurs',
-    produits:  'Top Produits',
-    scoring:   'Scoring IA',
-    segments:  'Segmentation',
-    events:    'Events & Analytics'
+    vendeurs: 'Vendeurs',
+    produits: 'Top Produits',
+    scoring: 'Scoring IA',
+    segments: 'Segmentation',
+    geographie: 'Géographie',
+    events: 'Events & Analytics'
   };
 
-  // ══ DATE ══
   document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
 
-  // ══ LOGIN ══
-  if (adminToken) showApp();
-
-  async function login() {
-    const email    = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-    const errEl    = document.getElementById('loginErr');
-    errEl.style.display = 'none';
-
-    try {
-      const res  = await fetch(`${API}/login`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        adminToken = data.token;
-        localStorage.setItem('esf_admin_token', adminToken);
-        showApp();
-      } else {
-        errEl.textContent   = '❌ ' + data.message;
-        errEl.style.display = 'block';
-      }
-    } catch (err) {
-      errEl.textContent   = 'Erreur serveur.';
-      errEl.style.display = 'block';
-    }
-  }
-
-  function showApp() {
-    document.getElementById('loginWrap').style.display = 'none';
-    document.getElementById('appWrap').style.display   = 'flex';
-    navigate('dashboard');
-  }
-
-  function logout() {
-    localStorage.removeItem('esf_admin_token');
-    adminToken = null;
-    document.getElementById('loginWrap').style.display = 'flex';
-    document.getElementById('appWrap').style.display   = 'none';
-  }
-
-  function headers() {
-    return { 'Authorization': 'Bearer ' + adminToken, 'Content-Type': 'application/json' };
-  }
-
-  // ══ NAVIGATION ══
   function navigate(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
-    document.getElementById('nav-' + page)?.classList.add('active');
+    const targetPage = document.getElementById('page-' + page);
+    if (targetPage) targetPage.classList.add('active');
+    const targetNav = document.getElementById('nav-' + page);
+    if (targetNav) targetNav.classList.add('active');
     document.getElementById('topbarTitle').textContent = pageTitles[page] || page;
 
-    const loaders = { dashboard: loadDashboard, vendeurs: loadVendeurs, produits: loadProduits, scoring: loadScoring, segments: loadSegments, events: loadEvents };
+    const loaders = { 
+      dashboard: loadDashboard, 
+      vendeurs: loadVendeurs, 
+      produits: loadProduits, 
+      scoring: loadScoring, 
+      segments: loadSegments,
+      geographie: loadGeographie,
+      events: loadEvents 
+    };
     if (loaders[page]) loaders[page]();
   }
 
-  // ══ DASHBOARD ══
   async function loadDashboard() {
-    const res  = await fetch(`${API}/stats`, { headers: headers() });
-    const data = await res.json();
-    const k    = data.kpis;
+    try {
+      const res = await fetch(`${API_ADMIN}/stats`);
+      if (!res.ok) throw new Error('Erreur chargement stats');
+      const data = await res.json();
+      const k = data.kpis;
 
-    document.getElementById('kpiGrid').innerHTML = [
-      { label: 'Vendeurs',   val: k.users,                  sub: 'inscrits' },
-      { label: 'Boutiques',  val: k.boutiques,               sub: 'actives' },
-      { label: 'Produits',   val: k.produits,                sub: 'en catalogue' },
-      { label: 'Commandes',  val: k.commandes,               sub: 'au total' },
-      { label: 'Revenus',    val: Number(k.revenus).toLocaleString('fr-FR') + ' XOF', sub: 'générés (payés)' },
-      { label: 'Visiteurs',  val: k.visiteurs,               sub: 'sessions uniques' },
-      { label: 'Events',     val: k.events,                  sub: 'comportementaux' },
-    ].map(k => `
-      <div class="kpi-card">
-        <div class="kpi-label">${k.label}</div>
-        <div class="kpi-val">${k.val}</div>
-        <div class="kpi-sub">${k.sub}</div>
-      </div>`).join('');
+      document.getElementById('kpiGrid').innerHTML = [
+        { label: 'Vendeurs', val: k.users, sub: 'inscrits' },
+        { label: 'Boutiques', val: k.boutiques, sub: 'actives' },
+        { label: 'Produits', val: k.produits, sub: 'en catalogue' },
+        { label: 'Commandes', val: k.commandes, sub: 'au total' },
+        { label: 'Revenus', val: Number(k.revenus).toLocaleString('fr-FR') + ' FCFA', sub: 'générés' },
+        { label: 'Visiteurs', val: k.visiteurs, sub: 'sessions uniques' },
+        { label: 'Events', val: k.events, sub: 'comportementaux' },
+      ].map(k => `<div class="kpi-card"><div class="kpi-label">${k.label}</div><div class="kpi-val">${k.val}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
 
-    renderChart('revenusChart', data.revenus_graph, 'jour', 'total', '#1A6BFF', 'Revenus XOF');
-    renderChart('inscriptionsChart', data.inscriptions, 'jour', 'nb', '#22c55e', 'Inscriptions');
+      renderChart('revenusChart', data.revenus_graph || [], 'jour', 'total', '#3b82f6', 'Revenus (FCFA)');
+      renderChart('inscriptionsChart', data.inscriptions || [], 'jour', 'nb', '#10b981', 'Inscriptions');
+    } catch (err) {
+      console.error(err);
+      document.getElementById('kpiGrid').innerHTML = '<div class="error-msg">❌ Erreur de chargement. Vérifiez que le serveur tourne sur http://localhost:3001</div>';
+    }
   }
 
-  // ══ VENDEURS ══
   async function loadVendeurs() {
-    const res  = await fetch(`${API}/vendeurs`, { headers: headers() });
-    const data = await res.json();
-    document.getElementById('vendeursCount').textContent = `${data.vendeurs.length} vendeurs`;
-    document.getElementById('vendeursTbody').innerHTML = data.vendeurs.map(v => `
-      <tr>
-        <td><div style="font-weight:500;">${v.prenom || ''} ${v.nom || ''}</div><div style="font-size:11px;color:var(--gray-400);">${v.email}</div></td>
-        <td><a href="http://localhost:3001/boutique/${v.boutique_slug}" target="_blank" style="color:var(--blue);text-decoration:none;">${v.boutique_nom || '—'}</a></td>
-        <td><span class="badge badge-${v.plan || 'starter'}">${v.plan || 'starter'}</span></td>
-        <td>${v.nb_produits}</td>
-        <td>${v.nb_commandes}</td>
-        <td style="font-weight:600;">${Number(v.revenus).toLocaleString('fr-FR')} XOF</td>
-        <td style="color:var(--gray-400);">${new Date(v.created_at).toLocaleDateString('fr-FR')}</td>
-      </tr>`).join('');
-  }
-
-  // ══ PRODUITS ══
-  async function loadProduits() {
-    const res  = await fetch(`${API}/top-produits`, { headers: headers() });
-    const data = await res.json();
-    document.getElementById('produitsTbody').innerHTML = data.produits.map((p, i) => `
-      <tr>
-        <td style="color:var(--gray-400);font-weight:600;">#${i+1}</td>
-        <td><div style="font-weight:500;">${p.nom}</div></td>
-        <td style="color:var(--gray-400);">${p.boutique_nom || '—'}</td>
-        <td><span class="badge ${p.type==='digital'?'badge-cold':'badge-starter'}">${p.type}</span></td>
-        <td>${Number(p.prix).toLocaleString('fr-FR')} XOF</td>
-        <td>${p.nb_ventes}</td>
-        <td style="font-weight:600;">${Number(p.revenus).toLocaleString('fr-FR')} XOF</td>
-        <td>${p.nb_vues}</td>
-      </tr>`).join('');
-  }
-
-  // ══ SCORING ══
-  async function loadScoring() {
-    const res  = await fetch(`${API}/scoring`, { headers: headers() });
-    const data = await res.json();
-    document.getElementById('scoringTbody').innerHTML = data.profiles.map(p => {
-      const score = parseFloat(p.purchase_score);
-      const color = score >= 80 ? '#ef4444' : score >= 50 ? '#f97316' : score >= 20 ? '#3b82f6' : '#9ca3af';
-      const date  = new Date(p.last_seen);
-      const diff  = Math.floor((new Date() - date) / 60000);
-      const quand = diff < 60 ? `${diff}min` : diff < 1440 ? `${Math.floor(diff/60)}h` : `${Math.floor(diff/1440)}j`;
-      return `
+    try {
+      const res = await fetch(`${API_ADMIN}/vendeurs`);
+      const data = await res.json();
+      document.getElementById('vendeursCount').textContent = `${data.vendeurs.length} vendeurs`;
+      document.getElementById('vendeursTbody').innerHTML = data.vendeurs.map(v => `
         <tr>
-          <td style="font-family:monospace;font-size:11px;color:var(--gray-400);">${p.session_id.slice(0,20)}…</td>
-          <td>
-            <div class="score-bar">
-              <div class="score-track"><div class="score-fill" style="width:${score}%;background:${color};"></div></div>
-              <div class="score-num" style="color:${color};">${score}</div>
-            </div>
-          </td>
-          <td>${p.boutique_nom || '—'}</td>
-          <td>${p.visit_count}</td>
-          <td>${p.avg_session_duration}s</td>
-          <td>${p.device_type || '—'} / ${p.browser || '—'}</td>
-          <td>${p.utm_source || p.referrer || 'direct'}</td>
-          <td style="color:var(--gray-400);">il y a ${quand}</td>
-        </tr>`;
-    }).join('');
+          <td><div style="font-weight:500;">${v.prenom || ''} ${v.nom || ''}</div><div style="font-size:11px;color:var(--text-muted);">${v.email}</div></td>
+          <td><a href="https://products.ojafy.store/boutique/${v.boutique_slug}" target="_blank">${v.boutique_nom || '—'}</a></td>
+          <td><span class="badge badge-${v.plan || 'starter'}">${v.plan || 'starter'}</span></td>
+          <td>${v.nb_produits}</td>
+          <td>${v.nb_commandes}</td>
+          <td style="font-weight:600;">${Number(v.revenus).toLocaleString('fr-FR')} FCFA</td>
+          <td style="color:var(--text-muted);">${new Date(v.created_at).toLocaleDateString('fr-FR')}</td>
+        </tr>`).join('');
+    } catch (err) { console.error(err); }
   }
 
-  // ══ SEGMENTS ══
+  async function loadProduits() {
+    try {
+      const res = await fetch(`${API_ADMIN}/top-produits`);
+      const data = await res.json();
+      document.getElementById('produitsTbody').innerHTML = data.produits.map((p, i) => `
+        <tr>
+          <td style="color:var(--text-muted);">#${i+1}</td>
+          <td><div style="font-weight:500;">${p.nom}</div></td>
+          <td style="color:var(--text-muted);">${p.boutique_nom || '—'}</td>
+          <td><span class="badge ${p.type==='digital'?'badge-cold':'badge-starter'}">${p.type}</span></td>
+          <td>${Number(p.prix).toLocaleString('fr-FR')} FCFA</td>
+          <td>${p.nb_ventes}</td>
+          <td style="font-weight:600;">${Number(p.revenus).toLocaleString('fr-FR')} FCFA</td>
+          <td>${p.nb_vues}</td>
+        </tr>`).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  async function loadScoring() {
+    try {
+      const res = await fetch(`${API_ADMIN}/scoring`);
+      const data = await res.json();
+      document.getElementById('scoringTbody').innerHTML = data.profiles.map(p => {
+        const score = parseFloat(p.purchase_score) || 0;
+        const color = score >= 80 ? '#ef4444' : score >= 50 ? '#f59e0b' : score >= 20 ? '#3b82f6' : '#94a3b8';
+        const date = new Date(p.last_seen);
+        const diff = Math.floor((new Date() - date) / 60000);
+        const quand = diff < 60 ? `${diff}min` : diff < 1440 ? `${Math.floor(diff/60)}h` : `${Math.floor(diff/1440)}j`;
+        return `
+          <tr>
+            <td style="font-family:monospace;font-size:11px;">${(p.session_id || '').slice(0,20)}…</td>
+            <td><div class="score-bar"><div class="score-track"><div class="score-fill" style="width:${score}%;background:${color};"></div></div><div class="score-num" style="color:${color};">${score}</div></div></td>
+            <td>${p.boutique_nom || '—'}</td>
+            <td>${p.visit_count || 0}</td>
+            <td>${p.avg_session_duration || 0}s</td>
+            <td>${p.device_type || '—'}</td>
+            <td>${p.utm_source || p.referrer || 'direct'}</td>
+            <td style="color:var(--text-muted);">il y a ${quand}</td>
+          </tr>`;
+      }).join('');
+    } catch (err) { console.error(err); }
+  }
+
   async function loadSegments() {
-    const res  = await fetch(`${API}/segments`, { headers: headers() });
-    const data = await res.json();
+    try {
+      const res = await fetch(`${API_ADMIN}/segments`);
+      if (!res.ok) throw new Error('Erreur chargement segments');
+      const data = await res.json();
+      
+      const icons = { 'Hot 🔥':'🔥', 'Warm 🌡':'🌡', 'Cold ❄️':'❄️', 'Inactif 💤':'💤' };
+      const segmentsGrid = document.getElementById('segmentsGrid');
+      if (segmentsGrid) {
+        segmentsGrid.innerHTML = data.segments.map(s => `
+          <div class="seg-card">
+            <div class="seg-icon">${icons[s.segment] || '👤'}</div>
+            <div class="seg-label">${s.segment}</div>
+            <div class="seg-nb">${s.nb}</div>
+            <div class="seg-sub">Score: ${s.score_moyen} · ${s.visites_moy} visites · ${s.duree_moy}s</div>
+          </div>
+        `).join('');
+      }
 
-    const icons = { 'Hot 🔥':'🔥', 'Warm 🌡':'🌡', 'Cold ❄️':'❄️', 'Inactif 💤':'💤' };
-    document.getElementById('segmentsGrid').innerHTML = data.segments.map(s => `
-      <div class="seg-card">
-        <div class="seg-icon">${icons[s.segment] || '👤'}</div>
-        <div class="seg-label">${s.segment}</div>
-        <div class="seg-nb">${s.nb}</div>
-        <div class="seg-sub">Score moy. : ${s.score_moyen} · ${s.visites_moy} visites · ${s.duree_moy}s</div>
-      </div>`).join('');
-
-    if (charts.segChart) charts.segChart.destroy();
-    const ctx = document.getElementById('segChart').getContext('2d');
-    charts.segChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: data.segments.map(s => s.segment),
-        datasets: [{ data: data.segments.map(s => s.nb), backgroundColor: ['#ef4444','#f97316','#3b82f6','#9ca3af'], borderWidth: 0 }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-    });
+      if (charts.segChart) charts.segChart.destroy();
+      const ctx = document.getElementById('segChart');
+      if (ctx) {
+        charts.segChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: { 
+            labels: data.segments.map(s => s.segment), 
+            datasets: [{ 
+              data: data.segments.map(s => s.nb), 
+              backgroundColor: ['#ef4444','#f59e0b','#3b82f6','#94a3b8'], 
+              borderWidth: 0 
+            }] 
+          },
+          options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { 
+              legend: { position: 'bottom', labels: { color: '#475569' } } 
+            } 
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Erreur segments:', err);
+      const segmentsGrid = document.getElementById('segmentsGrid');
+      if (segmentsGrid) segmentsGrid.innerHTML = '<div class="error-msg">❌ Erreur chargement des segments</div>';
+    }
   }
 
-  // ══ EVENTS ══
-  async function loadEvents() {
-    const res  = await fetch(`${API}/events`, { headers: headers() });
-    const data = await res.json();
+  async function loadGeographie() {
+    try {
+      const res = await fetch(`${API_ELISA}/geographie`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      console.log('📊 Données géographiques:', data);
 
-    const eventLabels = {
-      visibility_change: { label: "👁️ Changement d'onglet",   desc: "Le visiteur a quitté ou est revenu sur l'onglet" },
-      time_on_page:      { label: "⏱️ Temps sur la page",       desc: "Durée enregistrée avant de quitter la page" },
-      click:             { label: "🖱️ Clic",                    desc: "Clic sur un bouton, lien ou élément interactif" },
-      page_view:         { label: "📄 Vue de page",             desc: "Ouverture d'une page boutique ou produit" },
-      scroll_depth:      { label: "📜 Profondeur de scroll",    desc: "Seuils de scroll atteints : 25%, 50%, 75%, 100%" },
-      tab_switch:        { label: "🔀 Switch d'onglet",         desc: "Navigation entre les onglets du navigateur" },
-      purchase:          { label: "✅ Achat",                   desc: "Commande finalisée avec succès" },
-      checkout_attempt:  { label: "🛒 Tentative de commande",   desc: "Le visiteur a initié le processus de paiement" },
-      promo_attempt:     { label: "🎟️ Essai de code promo",     desc: "Un code promo a été saisi (valide ou non)" },
-      rage_click:        { label: "😤 Clic de frustration",     desc: "3+ clics rapides au même endroit — bouton bloqué ?" },
-      promo_applied:     { label: "✨ Code promo appliqué",     desc: "Un code promo valide a été utilisé avec succès" },
-      copy:              { label: "📋 Copie de texte",          desc: "Le visiteur a copié du contenu sur la page" },
-      product_hover:     { label: "🔍 Survol produit",          desc: "Souris maintenue +500ms sur une fiche produit" },
+      const topPaysList = document.getElementById('topPaysList');
+      if (topPaysList) {
+        topPaysList.innerHTML = data.top_pays?.length ? data.top_pays.map(p => `
+          <div class="pays-card">
+            <div class="pays-nom"><span class="pays-flag">${getFlag(p.country)}</span> ${p.country}</div>
+            <div class="pays-stats"><div class="pays-score">${p.visiteurs}</div><div class="pays-visiteurs">visiteurs · score ${p.score_moyen}</div></div>
+          </div>
+        `).join('') : '<div class="error-msg">Aucune donnée géographique</div>';
+      }
+
+      const topPaysRevenus = document.getElementById('topPaysRevenus');
+      if (topPaysRevenus) {
+        topPaysRevenus.innerHTML = data.top_revenus?.length ? data.top_revenus.map(p => `
+          <div class="pays-card">
+            <div class="pays-nom"><span class="pays-flag">${getFlag(p.country)}</span> ${p.country}</div>
+            <div class="pays-stats"><div class="pays-score">${Number(p.revenus).toLocaleString('fr-FR')} FCFA</div><div class="pays-visiteurs">${p.commandes} commandes</div></div>
+          </div>
+        `).join('') : '<div class="error-msg">Aucune donnée</div>';
+      }
+
+      const topPaysScore = document.getElementById('topPaysScore');
+      if (topPaysScore) {
+        topPaysScore.innerHTML = data.repartition?.length ? data.repartition.map(p => `
+          <div class="pays-card">
+            <div class="pays-nom"><span class="pays-flag">${getFlag(p.country)}</span> ${p.country}</div>
+            <div class="pays-stats"><div class="pays-score">🔥 ${p.hot} · 🌡 ${p.warm} · ❄️ ${p.cold}</div><div class="pays-visiteurs">Hot/Warm/Cold</div></div>
+          </div>
+        `).join('') : '<div class="error-msg">Aucune donnée</div>';
+      }
+
+      const nouveauxVisiteurs = document.getElementById('nouveauxVisiteurs');
+      if (nouveauxVisiteurs) {
+        nouveauxVisiteurs.innerHTML = data.nouveaux_visiteurs?.length ? data.nouveaux_visiteurs.map(p => `
+          <div class="pays-card">
+            <div class="pays-nom"><span class="pays-flag">${getFlag(p.country)}</span> ${p.country}</div>
+            <div class="pays-stats"><div class="pays-score">+${p.nouveaux_visiteurs}</div><div class="pays-visiteurs">nouveaux (30j)</div></div>
+          </div>
+        `).join('') : '<div class="error-msg">Aucune donnée</div>';
+      }
+
+      const geoTbody = document.getElementById('geoTbody');
+      if (geoTbody) {
+        geoTbody.innerHTML = data.repartition?.length ? data.repartition.map(p => `
+          <tr>
+            <td><span class="pays-flag">${getFlag(p.country)}</span> ${p.country}</td>
+            <td><span class="badge badge-hot">${p.hot || 0}</span></td>
+            <td><span class="badge badge-warm">${p.warm || 0}</span></td>
+            <td><span class="badge badge-cold">${p.cold || 0}</span></td>
+            <td>${p.inactive || 0}</td>
+          </tr>
+        `).join('') : '<tr><td colspan="5" class="error-msg">Aucune donnée géographique</tr>';
+      }
+      
+    } catch (err) {
+      console.error('Erreur chargement géographie:', err);
+      const topPaysList = document.getElementById('topPaysList');
+      if (topPaysList) topPaysList.innerHTML = '<div class="error-msg">❌ Erreur chargement: ' + err.message + '</div>';
+    }
+  }
+
+  function getFlag(country) {
+    const flags = {
+      'France': '🇫🇷', 'Bénin': '🇧🇯', "Côte d'Ivoire": '🇨🇮', 'Sénégal': '🇸🇳',
+      'Mali': '🇲🇱', 'Niger': '🇳🇪', 'Togo': '🇹🇬', 'Burkina Faso': '🇧🇫',
+      'Cameroun': '🇨🇲', 'Nigeria': '🇳🇬', 'Ghana': '🇬🇭', 'Maroc': '🇲🇦',
+      'Algérie': '🇩🇿', 'Tunisie': '🇹🇳', 'RDC': '🇨🇩'
     };
-
-    document.getElementById('eventsByType').innerHTML = data.by_type.map(e => {
-      const info = eventLabels[e.event_type] || { label: e.event_type, desc: '' };
-      const pct  = Math.round(e.nb / data.by_type[0].nb * 100);
-      return `
-      <div style="margin-bottom:14px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:3px;">
-          <div style="flex:1;font-size:13px;font-weight:500;">${info.label}</div>
-          <div style="font-size:13px;font-weight:600;width:40px;text-align:right;">${e.nb}</div>
-        </div>
-        <div style="flex:1;height:6px;background:var(--gray-200);border-radius:10px;overflow:hidden;margin-bottom:3px;">
-          <div style="height:100%;width:${pct}%;background:var(--blue);border-radius:10px;"></div>
-        </div>
-        <div style="font-size:11px;color:var(--gray-400);">${info.desc}</div>
-      </div>`;
-    }).join('');
-
-    renderChart('eventsChart', data.by_day, 'jour', 'nb', '#8b5cf6', 'Events');
-
-    if (charts.devicesChart) charts.devicesChart.destroy();
-    const ctx = document.getElementById('devicesChart').getContext('2d');
-    charts.devicesChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: data.devices.map(d => d.device_type || 'unknown'),
-        datasets: [{ data: data.devices.map(d => d.nb), backgroundColor: ['#1A6BFF','#22c55e','#f97316'], borderWidth: 0 }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-    });
+    return flags[country] || '🌍';
   }
 
-  // ══ HELPER CHART ══
+  async function loadEvents() {
+    try {
+      const res = await fetch(`${API_ADMIN}/events`);
+      const data = await res.json();
+      const eventLabels = { visibility_change: '👁️ Changement onglet', time_on_page: '⏱️ Temps sur page', click: '🖱️ Clic', page_view: '📄 Vue de page', scroll_depth: '📜 Scroll', purchase: '✅ Achat' };
+      const maxNb = data.by_type[0]?.nb || 1;
+      document.getElementById('eventsByType').innerHTML = data.by_type.map(e => {
+        const label = eventLabels[e.event_type] || e.event_type;
+        const pct = Math.min(100, Math.round(e.nb / maxNb * 100));
+        return `<div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px; font-weight:500;">${label}</span><span style="font-weight:600; color:var(--blue);">${e.nb}</span></div><div style="height:6px;background:var(--gray-100);border-radius:10px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:var(--blue);border-radius:10px;"></div></div></div>`;
+      }).join('');
+      renderChart('eventsChart', data.by_day || [], 'jour', 'nb', '#8b5cf6', 'Events');
+      if (charts.devicesChart) charts.devicesChart.destroy();
+      const ctx = document.getElementById('devicesChart').getContext('2d');
+      charts.devicesChart = new Chart(ctx, { type: 'doughnut', data: { labels: (data.devices || []).map(d => d.device_type || 'unknown'), datasets: [{ data: (data.devices || []).map(d => d.nb), backgroundColor: ['#3b82f6','#10b981','#f59e0b'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#475569' } } } } });
+    } catch (err) { console.error(err); }
+  }
+
   function renderChart(id, data, labelKey, valKey, color, label) {
+    if (!data?.length) return;
     if (charts[id]) charts[id].destroy();
-    const ctx = document.getElementById(id).getContext('2d');
+    const ctx = document.getElementById(id);
+    if (!ctx) return;
     charts[id] = new Chart(ctx, {
       type: 'line',
-      data: {
-        labels: data.map(r => new Date(r[labelKey]).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' })),
-        datasets: [{ label, data: data.map(r => parseFloat(r[valKey])), borderColor: color, backgroundColor: color + '15', borderWidth: 2, fill: true, tension: 0.4, pointRadius: 3 }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 10 } } }, y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.04)' }, ticks: { font: { size: 10 } } } } }
+      data: { labels: data.map(r => new Date(r[labelKey]).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' })), datasets: [{ label, data: data.map(r => parseFloat(r[valKey])), borderColor: color, backgroundColor: color + '15', borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: color, pointBorderColor: 'white', pointBorderWidth: 2 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false, color: '#e2e8f0' }, ticks: { color: '#94a3b8' } }, y: { beginAtZero: true, grid: { color: '#e2e8f0' }, ticks: { color: '#94a3b8' } } } }
     });
   }
+
+  navigate('dashboard');
 </script>
 </body>
 </html>

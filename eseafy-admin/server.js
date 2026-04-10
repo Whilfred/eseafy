@@ -1,9 +1,14 @@
+
+
+
+
+
+
+
 require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
-const jwt     = require('jsonwebtoken');
-const bcrypt  = require('bcryptjs');
 const { Pool } = require('pg');
 
 const app = express();
@@ -15,39 +20,60 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port:     process.env.DB_PORT || 5432,
+  ssl:      { rejectUnauthorized: false }
 });
 pool.connect().then(() => console.log('✅ Admin DB connectée')).catch(console.error);
 
+// ══ MIDDLEWARE ══
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ══ MIDDLEWARE AUTH ADMIN ══
-function authAdmin(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ message: 'Token manquant.' });
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded.is_admin) return res.status(403).json({ message: 'Accès refusé.' });
-    req.admin = decoded;
-    next();
-  } catch (err) {
-    return res.status(401).json({ message: 'Token invalide.' });
-  }
-}
+// ══ ROUTES ELISA ══
+const elisaRoutes = require('./routes/elisa');
+app.use('/api/elisa', elisaRoutes);
 
-// ══ LOGIN ADMIN ══
-app.post('/api/admin/login', (req, res) => {
-  const { email, password } = req.body;
-  if (email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD) {
-    return res.status(401).json({ message: 'Identifiants incorrects.' });
+// ═══════════════════════════════════════════════════════════════════════════
+//  ROUTE GÉOGRAPHIE DIRECTE
+// ═══════════════════════════════════════════════════════════════════════════
+app.get('/api/elisa/geographie', async (req, res) => {
+  console.log('🌍 Appel géographie reçu');
+  try {
+    const boutiqueRes = await pool.query('SELECT id FROM boutiques LIMIT 1');
+    if (boutiqueRes.rows.length === 0) {
+      console.log('⚠️ Aucune boutique trouvée');
+      return res.json({ top_pays: [], message: 'Aucune boutique trouvée' });
+    }
+    const boutique_id = boutiqueRes.rows[0].id;
+    console.log(`🏪 Boutique ID: ${boutique_id}`);
+
+    const topPays = await pool.query(`
+      SELECT 
+        v.country,
+        COUNT(DISTINCT v.session_id) as visiteurs,
+        ROUND(AVG(COALESCE(cp.purchase_score, 0)), 1) as score_moyen
+      FROM visitors v
+      LEFT JOIN customer_profiles cp ON cp.session_id = v.session_id
+      WHERE v.boutique_id = $1 AND v.country IS NOT NULL AND v.country != ''
+      GROUP BY v.country
+      ORDER BY visiteurs DESC
+      LIMIT 10
+    `, [boutique_id]);
+
+    console.log(`📊 ${topPays.rows.length} pays trouvés`);
+    res.json({ top_pays: topPays.rows });
+  } catch (err) {
+    console.error('❌ Erreur geographie:', err);
+    res.status(500).json({ error: err.message });
   }
-  const token = jwt.sign({ email, is_admin: true }, process.env.JWT_SECRET, { expiresIn: '24h' });
-  return res.json({ token, message: 'Connecté.' });
 });
 
-// ══ STATS GLOBALES ══
-app.get('/api/admin/stats', authAdmin, async (req, res) => {
+// ═══════════════════════════════════════════════════════════════════════════
+//  ROUTES ADMIN
+// ═══════════════════════════════════════════════════════════════════════════
+
+// STATS GLOBALES
+app.get('/api/admin/stats', async (req, res) => {
   try {
     const [users, boutiques, produits, commandes, revenus, visiteurs, events] = await Promise.all([
       pool.query('SELECT COUNT(*) AS total FROM users'),
@@ -59,14 +85,12 @@ app.get('/api/admin/stats', authAdmin, async (req, res) => {
       pool.query('SELECT COUNT(*) AS total FROM events'),
     ]);
 
-    // Revenus par jour (30 derniers jours)
     const revenusGraph = await pool.query(`
       SELECT DATE(created_at) AS jour, SUM(total) AS total, COUNT(*) AS nb
       FROM commandes WHERE statut='paye' AND created_at >= NOW() - INTERVAL '30 days'
       GROUP BY DATE(created_at) ORDER BY jour ASC
     `);
 
-    // Inscriptions par jour (30 derniers jours)
     const inscriptions = await pool.query(`
       SELECT DATE(created_at) AS jour, COUNT(*) AS nb
       FROM users WHERE created_at >= NOW() - INTERVAL '30 days'
@@ -87,13 +111,13 @@ app.get('/api/admin/stats', authAdmin, async (req, res) => {
       inscriptions:   inscriptions.rows,
     });
   } catch (err) {
-    console.error(err.message);
-    return res.status(500).json({ message: 'Erreur serveur.' });
+    console.error('Erreur stats:', err.message);
+    return res.status(500).json({ message: 'Erreur serveur: ' + err.message });
   }
 });
 
-// ══ LISTE DES VENDEURS ══
-app.get('/api/admin/vendeurs', authAdmin, async (req, res) => {
+// LISTE DES VENDEURS
+app.get('/api/admin/vendeurs', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT
@@ -111,12 +135,13 @@ app.get('/api/admin/vendeurs', authAdmin, async (req, res) => {
     `);
     return res.json({ vendeurs: result.rows });
   } catch (err) {
+    console.error('Erreur vendeurs:', err.message);
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
 });
 
-// ══ SCORING IA — TOP VISITEURS ══
-app.get('/api/admin/scoring', authAdmin, async (req, res) => {
+// SCORING IA
+app.get('/api/admin/scoring', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT
@@ -142,12 +167,13 @@ app.get('/api/admin/scoring', authAdmin, async (req, res) => {
     `);
     return res.json({ profiles: result.rows });
   } catch (err) {
+    console.error('Erreur scoring:', err.message);
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
 });
 
-// ══ SEGMENTATION CLIENTS ══
-app.get('/api/admin/segments', authAdmin, async (req, res) => {
+// SEGMENTATION CLIENTS
+app.get('/api/admin/segments', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT
@@ -167,12 +193,13 @@ app.get('/api/admin/segments', authAdmin, async (req, res) => {
     `);
     return res.json({ segments: result.rows });
   } catch (err) {
+    console.error('Erreur segments:', err.message);
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
 });
 
-// ══ EVENTS PAR TYPE ══
-app.get('/api/admin/events', authAdmin, async (req, res) => {
+// EVENTS PAR TYPE
+app.get('/api/admin/events', async (req, res) => {
   try {
     const byType = await pool.query(`
       SELECT event_type, COUNT(*) AS nb
@@ -190,30 +217,19 @@ app.get('/api/admin/events', authAdmin, async (req, res) => {
       WHERE device_type IS NOT NULL GROUP BY device_type
     `);
 
-    const browsers = await pool.query(`
-      SELECT browser, COUNT(*) AS nb FROM visitors
-      WHERE browser IS NOT NULL GROUP BY browser ORDER BY nb DESC
-    `);
-
-    const sources = await pool.query(`
-      SELECT COALESCE(utm_source, 'direct') AS source, COUNT(*) AS nb
-      FROM visitors GROUP BY source ORDER BY nb DESC LIMIT 10
-    `);
-
     return res.json({
       by_type: byType.rows,
       by_day:  byDay.rows,
       devices: devices.rows,
-      browsers: browsers.rows,
-      sources:  sources.rows,
     });
   } catch (err) {
+    console.error('Erreur events:', err.message);
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
 });
 
-// ══ PRODUITS TOP PLATEFORME ══
-app.get('/api/admin/top-produits', authAdmin, async (req, res) => {
+// TOP PRODUITS
+app.get('/api/admin/top-produits', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT
@@ -232,14 +248,16 @@ app.get('/api/admin/top-produits', authAdmin, async (req, res) => {
     `);
     return res.json({ produits: result.rows });
   } catch (err) {
+    console.error('Erreur top-produits:', err.message);
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
 });
 
-// ══ PAGE ADMIN ══
+// ══ PAGE ADMIN (toujours en dernier) ══
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const PORT = process.env.PORT || 3002;
+// ══ DÉMARRAGE ══
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Admin eseafy sur http://localhost:${PORT}`));

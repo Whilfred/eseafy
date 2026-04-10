@@ -100,7 +100,7 @@
     align-items: start;
   }
 
-  /* CAROUSEL - IMAGES CORRECTEMENT REDIMENSIONNÉES */
+  /* CAROUSEL */
   .product-images { position: sticky; top: 88px; }
   .carousel-wrap {
     position: relative;
@@ -173,7 +173,7 @@
   .thumb img { width: 100%; height: 100%; object-fit: cover; }
 
   /* RIGHT COLUMN */
-  .product-right { display: flex; flex-direction: column; min-width: 0; /* permet le flex shrinking */ }
+  .product-right { display: flex; flex-direction: column; min-width: 0; }
   .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
   .badge { font-size: 10px; font-weight: 600; padding: 4px 12px; border-radius: 40px; letter-spacing: .03em; background: #f1f5f9; color: var(--text-secondary); }
   .badge-digital { background: var(--blue-light-bg); color: var(--blue-primary); }
@@ -241,7 +241,7 @@
     100% { transform: translateX(-50%); }
   }
 
-  /* BOUTON UNIQUE ACHETER - RESPONSIVE SANS DÉPASSEMENT */
+  /* BOUTON UNIQUE ACHETER */
   .cta-desktop { margin-top: 24px; width: 100%; }
   .btn-acheter-single {
     width: 100%;
@@ -386,7 +386,6 @@
 
   .page-footer { background: white; border-top: 1px solid var(--border-light); text-align: center; padding: 20px; font-size: 11px; color: var(--text-muted); }
 
-  /* RESPONSIVE */
   @media (max-width: 900px) {
     .product-layout { grid-template-columns: 1fr; gap: 32px; }
     .product-images { position: static; }
@@ -461,7 +460,6 @@
         <div class="features-grid" id="featuresList"></div>
         <div class="tags" id="productTags"></div>
         
-        <!-- GARANTIES HORIZONTAL AUTOMATIQUE -->
         <div class="trust-strip">
           <div class="section-label">GARANTIES & LIVRAISON</div>
           <div class="trust-scroll-wrapper">
@@ -478,7 +476,6 @@
           </div>
         </div>
 
-        <!-- BOUTON UNIQUE ACHETER -->
         <div class="cta-desktop">
           <button class="btn-acheter-single" id="singleBuyBtnDesktop">
             <span class="btn-text">Acheter maintenant</span>
@@ -556,6 +553,26 @@
   let prixFinal = 0;
   let carouselIndex = 0, carouselTotal = 0;
 
+  // ══════════════════════════════════════
+  // AFFILIATION - STOCKER LE CODE
+  // ══════════════════════════════════════
+  let affilieCode = null;
+
+  function getAffilieCodeFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('ref');
+  }
+
+  function stockerCodeAffilie() {
+    const refCode = getAffilieCodeFromURL();
+    if (refCode) {
+      affilieCode = refCode;
+      localStorage.setItem('ref_affilie', refCode);
+      console.log('🔗 Code affilié stocké:', refCode);
+    }
+  }
+  stockerCodeAffilie();
+
   function carouselGoto(i) {
     carouselIndex = Math.max(0, Math.min(i, carouselTotal - 1));
     const track = document.getElementById('carouselTrack');
@@ -615,7 +632,6 @@
     document.getElementById('modalRecapSubtotal').innerHTML = `${prixFormatted} FCFA`;
     document.getElementById('modalRecapTotal').innerHTML = `${prixFormatted}`;
     
-    // Carrousel avec images correctement dimensionnées
     const track = document.getElementById('carouselTrack'), dotsDiv = document.getElementById('carouselDots'), thumbsDiv = document.getElementById('thumbsRow');
     track.innerHTML = ''; dotsDiv.innerHTML = ''; thumbsDiv.innerHTML = '';
     const imgs = (p.images && p.images.length) ? p.images : [null];
@@ -696,10 +712,27 @@
     errBox.style.display = 'none';
     const btn = document.getElementById('modalConfirmBtn');
     btn.disabled = true; btn.innerHTML = '<span style="display:inline-block; width:16px; height:16px; border:2px solid white; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:8px;"></span>Traitement...';
+    
+    const refAffilie = affilieCode || localStorage.getItem('ref_affilie') || null;
+    console.log('🔗 Code affilié pour cette commande:', refAffilie);
+    
     try {
-      const r = await fetch(`${API_URL}/commandes`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ produit_id: produitData.id, nom_client: nom, telephone: tel, email_client: email || null, quantite: 1, code_promo: promoAppliquee?.code || null, prix_final: prixFinal }) });
+      const r = await fetch(`${API_URL}/commandes`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ produit_id: produitData.id, nom_client: nom, telephone: tel, email_client: email || null, quantite: 1, code_promo: promoAppliquee?.code || null, prix_final: prixFinal, ref_affilie: refAffilie }) });
       const d = await r.json();
       if (r.ok) {
+        if (refAffilie && d.id) {
+          try {
+            const convRes = await fetch(`${API_URL}/affiliation/conversion`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ref_affilie: refAffilie, commande_id: d.id, montant: prixFinal })
+            });
+            const convData = await convRes.json();
+            if (convData.success) console.log('✅ Conversion affiliée enregistrée !');
+          } catch (convErr) { console.error('Erreur conversion affiliée:', convErr); }
+        }
+        localStorage.removeItem('ref_affilie');
+        affilieCode = null;
         document.getElementById('orderFormInside').style.display = 'none';
         document.getElementById('orderSuccessInside').style.display = 'block';
         document.getElementById('successRefCode').innerText = d.reference;
@@ -714,6 +747,76 @@
   document.getElementById('singleBuyBtnDesktop')?.addEventListener('click', openOrderModal);
   document.getElementById('stickyBuySingleBtn')?.addEventListener('click', openOrderModal);
   loadProduit();
+</script>
+
+<script>
+  (function() {
+    let sessionId = localStorage.getItem('ojafy_session_id');
+    if (!sessionId) {
+      sessionId = 'esf_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem('ojafy_session_id', sessionId);
+      console.log('🆕 Session créée:', sessionId);
+    }
+
+    async function detecterPays() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const response = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
+        const data = await response.json();
+        console.log('📍 Pays détecté:', data.country_name, '-', data.city);
+        return { 
+          country: data.country_name || data.country || 'Inconnu', 
+          city: data.city || 'Inconnu' 
+        };
+      } catch (err) {
+        console.warn('Erreur ipapi:', err);
+        return { country: 'Burkina Faso', city: 'Ouagadougou' };
+      }
+    }
+
+    async function envoyerTracking() {
+      const geo = await detecterPays();
+      console.log('📤 Envoi:', geo);
+      
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      const slugBoutique = pathParts[1] || null;
+      
+      if (!slugBoutique) {
+        console.warn('⚠️ Aucun slug boutique');
+        return;
+      }
+      
+      try {
+        // 🔥 ICI - Utilise le backend principal (fly.io)
+        const response = await fetch('https://eseafy-backend.fly.dev/api/tracker/visitor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: sessionId,
+            boutique_slug: slugBoutique,
+            country: geo.country,
+            city: geo.city,
+            device_type: /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+          })
+        });
+        
+        if (response.ok) {
+          console.log('✅ Tracking envoyé avec succès vers le backend!');
+        } else {
+          const error = await response.json();
+          console.warn('⚠️ Erreur serveur:', error);
+        }
+      } catch (err) {
+        console.warn('❌ Erreur réseau:', err);
+      }
+    }
+    
+    envoyerTracking();
+  })();
 </script>
 </body>
 </html>
