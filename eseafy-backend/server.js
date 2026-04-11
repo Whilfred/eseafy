@@ -10,7 +10,10 @@ setTimeout(envoyerCampagnesElisa, 3000);
 
 const app = express();
 
-app.use(cors({ origin: ['http://localhost:3001', 'http://127.0.0.1:5500', 'null'], credentials: true }));
+app.use(cors({ 
+  origin: ['http://localhost:3001', 'http://127.0.0.1:5500', 'null', 'https://ojafy.store', 'https://www.ojafy.store'], 
+  credentials: true 
+}));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
