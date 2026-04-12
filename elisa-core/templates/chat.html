@@ -1,558 +1,694 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELISA Core - Analyse Multi-Agents</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELISA — Multi-Agent System</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: #0a0a0a;
-            height: 100vh;
-            overflow: hidden;
-        }
+    :root {
+      --bg: #0b0f19;
+      --surface: #131929;
+      --surface2: #1a2235;
+      --border: rgba(255,255,255,0.07);
+      --text: #e8eaf0;
+      --muted: #6b7a99;
+      --radius: 12px;
 
-        .app {
-            display: flex;
-            height: 100vh;
-        }
+      --c-central:  #818cf8;
+      --c-data:     #34d399;
+      --c-prospect: #22d3ee;
+      --c-scoring:  #fbbf24;
+      --c-product:  #f472b6;
+      --c-marketing:#f87171;
+      --c-optim:    #a78bfa;
+    }
 
-        .sidebar {
-            width: 320px;
-            background: #0f0f0f;
-            border-right: 1px solid #1f1f1f;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
+    body {
+      font-family: 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-        .logo {
-            font-size: 22px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #1f1f1f;
-        }
+    /* ── TOP BAR ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .logo {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      color: var(--text);
+    }
+    .badge {
+      font-size: 10px;
+      background: #10b981;
+      color: #052e16;
+      padding: 2px 7px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .progress-wrap {
+      flex: 1;
+      height: 3px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-left: 10px;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #818cf8, #34d399);
+      transition: width .4s ease;
+    }
+    .status-badge {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
 
-        .input-section {
-            margin-bottom: 20px;
-        }
+    /* ── MAIN LAYOUT ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
 
-        .input-label {
-            color: #888;
-            font-size: 12px;
-            margin-bottom: 8px;
-            display: block;
-        }
+    /* ── LEFT: AGENT CARDS ── */
+    .agents-panel {
+      width: 200px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px 10px;
+      overflow-y: auto;
+    }
+    .agent-card {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      padding: 9px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color .2s, background .2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .agent-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--accent);
+      border-radius: 3px 0 0 3px;
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .agent-card.active {
+      background: rgba(255,255,255,0.04);
+      border-color: var(--accent);
+    }
+    .agent-card.active::before { opacity: 1; }
+    .agent-card.done {
+      border-color: rgba(52,211,153,.25);
+    }
+    .agent-card.done::before {
+      background: #34d399;
+      opacity: .6;
+    }
 
-        .sujet-input {
-            width: 100%;
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 12px;
-            padding: 12px;
-            color: white;
-            font-size: 13px;
-            resize: vertical;
-            font-family: inherit;
-        }
+    .agent-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.05);
+    }
+    .agent-info { flex: 1; min-width: 0; }
+    .agent-info-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .agent-info-role {
+      font-size: 10px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .agent-status {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background .3s;
+    }
+    .agent-card.active .agent-status {
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+      animation: pulse 1.2s infinite;
+    }
+    .agent-card.done .agent-status { background: #34d399; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
 
-        .sujet-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+    /* ── CENTER: CHAT ── */
+    .chat-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
 
-        .btn-start {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 15px 0 10px;
-            font-size: 14px;
-        }
+    .msg-row {
+      display: flex;
+      flex-direction: column;
+      animation: fadeUp .25s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-        .btn-start:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
-        }
+    .msg-meta {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 4px;
+      padding-left: 2px;
+    }
+    .msg-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .msg-name { font-size: 11px; font-weight: 600; color: var(--text); }
+    .msg-role { font-size: 10px; color: var(--muted); }
+    .msg-time { font-size: 10px; color: var(--muted); margin-left: auto; }
 
-        .btn-clear {
-            width: 100%;
-            background: #1a1a1a;
-            color: white;
-            border: 1px solid #2a2a2a;
-            padding: 12px;
-            border-radius: 12px;
-            cursor: pointer;
-        }
+    .msg-bubble {
+      border-radius: 0 10px 10px 10px;
+      padding: 10px 13px;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      margin-left: 30px;
+      position: relative;
+      word-break: break-word;
+    }
+    .msg-bubble.is-central {
+      background: rgba(129,140,248,0.07);
+      border-color: rgba(129,140,248,0.25);
+    }
+    .msg-bubble.is-user {
+      background: rgba(255,255,255,0.04);
+      margin-left: 0;
+      border-radius: 10px;
+      color: var(--muted);
+      font-style: italic;
+    }
 
-        .progress-bar {
-            background: #1a1a1a;
-            border-radius: 10px;
-            height: 6px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
+    /* accent strip */
+    .msg-bubble::before {
+      content: '';
+      position: absolute;
+      left: -1px; top: 8px; bottom: 8px;
+      width: 2px;
+      border-radius: 2px;
+      background: var(--accent, transparent);
+    }
+    .msg-bubble.is-user::before { display: none; }
 
-        .progress-fill {
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            height: 100%;
-            width: 0%;
-            transition: width 0.5s ease;
-        }
+    /* thinking indicator */
+    .thinking {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-left: 30px;
+      padding: 6px 0;
+    }
+    .thinking span {
+      display: inline-block;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: bounce .9s infinite;
+    }
+    .thinking span:nth-child(2) { animation-delay: .15s; }
+    .thinking span:nth-child(3) { animation-delay: .30s; }
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-4px); }
+    }
 
-        .stats {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #1f1f1f;
-        }
+    /* tables inside bubbles */
+    .msg-bubble table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      font-size: 12px;
+    }
+    .msg-bubble th, .msg-bubble td {
+      border: 1px solid var(--border);
+      padding: 5px 8px;
+      text-align: left;
+    }
+    .msg-bubble th { color: var(--muted); font-weight: 500; }
 
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 13px;
-        }
+    /* separator between agent groups */
+    .day-sep {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 10px;
+      margin: 8px 0 4px;
+    }
+    .day-sep::before, .day-sep::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
 
-        .stat-label {
-            color: #888;
-        }
+    /* ── INPUT ── */
+    .input-wrap {
+      padding: 12px 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .input-wrap input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s;
+    }
+    .input-wrap input::placeholder { color: var(--muted); }
+    .input-wrap input:focus { border-color: rgba(129,140,248,.5); }
+    .input-wrap button {
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .2s, transform .15s;
+    }
+    .input-wrap button:hover { background: #4338ca; transform: translateY(-1px); }
+    .input-wrap button:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; transform: none; }
 
-        .stat-value {
-            color: #f59e0b;
-            font-weight: 600;
-        }
-
-        .chat-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #0a0a0a;
-        }
-
-        .chat-header {
-            background: #0f0f0f;
-            padding: 15px 25px;
-            border-bottom: 1px solid #1f1f1f;
-        }
-
-        .chat-header h2 {
-            color: white;
-            font-size: 18px;
-        }
-
-        .chat-header p {
-            color: #888;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        .messages-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .message {
-            margin-bottom: 20px;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message-content {
-            display: flex;
-            gap: 12px;
-        }
-
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            background: #1a1a1a;
-            flex-shrink: 0;
-        }
-
-        .message-bubble {
-            flex: 1;
-            background: #1a1a1a;
-            border-radius: 16px;
-            padding: 12px 16px;
-        }
-
-        .message-text {
-            color: #e0e0e0;
-            font-size: 14px;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-
-        .message-text .cursor {
-            display: inline-block;
-            width: 2px;
-            height: 16px;
-            background: #667eea;
-            margin-left: 2px;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-
-        .message-meta {
-            font-size: 10px;
-            color: #666;
-            margin-top: 6px;
-        }
-
-        .tag {
-            color: #a78bfa;
-            font-weight: 600;
-            background: rgba(139, 92, 246, 0.15);
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
-        .typing-indicator {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .typing-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: #1a1a1a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .typing-bubble {
-            background: #1a1a1a;
-            border-radius: 16px;
-            padding: 14px 20px;
-        }
-
-        .typing-dots {
-            display: flex;
-            gap: 5px;
-        }
-
-        .typing-dots span {
-            width: 7px;
-            height: 7px;
-            background: #666;
-            border-radius: 50%;
-            animation: typingAnim 1.4s infinite;
-        }
-
-        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typingAnim {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
-            30% { transform: translateY(-6px); opacity: 1; }
-        }
-
-        .messages-container::-webkit-scrollbar {
-            width: 6px;
-        }
-        .messages-container::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-        .messages-container::-webkit-scrollbar-thumb {
-            background: #444;
-            border-radius: 3px;
-        }
-
-        .user-message {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .user-bubble {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 10px 16px;
-            border-radius: 18px;
-            max-width: 70%;
-            font-size: 14px;
-        }
-    </style>
+    /* ── EMPTY STATE ── */
+    .empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 40px;
+      text-align: center;
+    }
+    .empty-icon { font-size: 32px; }
+  </style>
 </head>
 <body>
-    <div class="app">
-        <div class="sidebar">
-            <div class="logo">
-                🤖 ELISA CORE<br>
-                <span style="font-size: 10px; color: #666;">Multi-Agent Analysis</span>
-            </div>
 
-            <div class="input-section">
-                <label class="input-label">📝 ENTREZ VOTRE SUJET À ANALYSER</label>
-                <textarea id="sujetInput" class="sujet-input" rows="4" placeholder="Exemple: &quot;Nous voulons lancer une campagne marketing pour vendre des formations IA à des entreprises B2B. Objectif: 50 leads qualifiés en 30 jours. Budget: 10k€.&quot;"></textarea>
-            </div>
+<div class="topbar">
+  <span class="logo">ELISA</span>
+  <span class="badge">BETA</span>
+  <div class="progress-wrap">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <span class="status-badge" id="statusBadge">En attente</span>
+</div>
 
-            <button class="btn-start" id="startBtn">🚀 LANCER L'ANALYSE</button>
-            <button class="btn-clear" id="clearBtn">🗑️ EFFACER</button>
+<div class="main">
 
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
+  <!-- AGENT CARDS -->
+  <div class="agents-panel" id="agentsPanel">
+    <!-- populated by JS -->
+  </div>
 
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-label">Round</span>
-                    <span class="stat-value" id="currentRound">0/3</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Messages</span>
-                    <span class="stat-value" id="msgCount">0</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="chat-area">
-            <div class="chat-header">
-                <h2>💬 CONVERSATION MULTI-AGENTS</h2>
-                <p>5 agents IA analysent votre sujet en temps réel</p>
-            </div>
-            <div class="messages-container" id="messagesContainer">
-                <div style="text-align: center; color: #666; padding: 50px;">
-                    🤖 Entrez votre sujet et cliquez sur "Lancer l'analyse"<br>
-                    <span style="font-size: 12px;">Les agents discuteront de votre sujet spécifique</span>
-                </div>
-            </div>
-        </div>
+  <!-- CHAT -->
+  <div class="chat-wrap">
+    <div class="chat-area" id="chatArea">
+      <div class="empty" id="emptyState">
+        <div class="empty-icon">💬</div>
+        <div>Entrez un sujet pour lancer l'analyse</div>
+      </div>
     </div>
+    <div class="input-wrap">
+      <input type="text" id="sujetInput" placeholder="Ex: Augmenter les ventes sur les clients premium...">
+      <button id="startBtn">Démarrer</button>
+    </div>
+  </div>
 
-    <script>
-        let sessionId = null;
-        let isRunning = false;
+</div>
 
-        function addUserMessage(sujet) {
-            const container = document.getElementById('messagesContainer');
-            if (container.children.length === 1 && container.children[0].textContent.includes('Entrez')) {
-                container.innerHTML = '';
-            }
-            
-            const div = document.createElement('div');
-            div.className = 'user-message';
-            div.innerHTML = `<div class="user-bubble">👤 ${sujet}</div>`;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
+<script>
+const AGENTS = [
+  { key: 'central',      name: 'Central',       role: 'Orchestrateur',    icon: '🧠', color: '#818cf8' },
+  { key: 'data',         name: 'Data Agent',    role: 'Analyste données', icon: '📊', color: '#34d399' },
+  { key: 'prospect',     name: 'Prospect',      role: 'Qualification',    icon: '🔎', color: '#22d3ee' },
+  { key: 'scoring',      name: 'Scoring',       role: 'Propension achat', icon: '🎯', color: '#fbbf24' },
+  { key: 'product',      name: 'Product',       role: 'Offres',           icon: '🛒', color: '#f472b6' },
+  { key: 'marketing',    name: 'Marketing',     role: 'Campagnes email',  icon: '📧', color: '#f87171' },
+  { key: 'optimization', name: 'Optim',         role: 'ROI & Simul.',     icon: '⚡', color: '#a78bfa' },
+];
 
-        async function typeText(element, text, speed = 15) {
-            return new Promise((resolve) => {
-                let i = 0;
-                element.innerHTML = '';
-                
-                function type() {
-                    if (i < text.length) {
-                        if (text[i] === '<') {
-                            let tag = '';
-                            while (text[i] !== '>' && i < text.length) {
-                                tag += text[i];
-                                i++;
-                            }
-                            tag += text[i];
-                            i++;
-                            element.innerHTML += tag;
-                            type();
-                        } else {
-                            element.innerHTML += text[i];
-                            i++;
-                            const cursor = element.querySelector('.cursor');
-                            if (cursor) cursor.remove();
-                            element.insertAdjacentHTML('beforeend', '<span class="cursor"></span>');
-                            setTimeout(type, speed);
-                        }
-                        const container = document.getElementById('messagesContainer');
-                        container.scrollTop = container.scrollHeight;
-                    } else {
-                        const cursor = element.querySelector('.cursor');
-                        if (cursor) cursor.remove();
-                        resolve();
-                    }
-                }
-                type();
-            });
-        }
+// Phase labels shown as separators
+const PHASE_LABELS = {
+  init:             '— Lancement —',
+  after_data:       '— Analyse données —',
+  after_prospect:   '— Qualification leads —',
+  after_scoring:    '— Scoring propension —',
+  after_product:    '— Offre produit —',
+  after_marketing:  '— Campagne email —',
+  conclusion:       '— Synthèse finale —',
+};
 
-        async function addAgentMessage(agentKey, message, color, icon) {
-            const container = document.getElementById('messagesContainer');
-            const agentName = {
-                central: '🧠 ELISA Central',
-                data: '📊 Data Agent',
-                scoring: '🎯 Scoring Agent',
-                marketing: '📧 Marketing Agent',
-                optimization: '⚡ Optimization Agent'
-            }[agentKey];
-            
-            const formatted = message.replace(/@(\w+)/g, '<span class="tag">@$1</span>');
-            const time = new Date().toLocaleTimeString();
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message';
-            messageDiv.innerHTML = `
-                <div class="message-content">
-                    <div class="message-avatar" style="background: ${color}20;">${icon}</div>
-                    <div class="message-bubble">
-                        <div class="message-text" id="text-${Date.now()}"></div>
-                        <div class="message-meta">${time} · ${agentName}</div>
-                    </div>
-                </div>
-            `;
-            container.appendChild(messageDiv);
-            container.scrollTop = container.scrollHeight;
-            
-            const textElement = messageDiv.querySelector('.message-text');
-            await typeText(textElement, formatted, 12);
-        }
+let sessionId = null;
+let isRunning = false;
+let doneAgents = new Set();
 
-        function showTyping(agentKey, color, icon) {
-            const container = document.getElementById('messagesContainer');
-            const typingDiv = document.createElement('div');
-            typingDiv.id = 'typingIndicator';
-            typingDiv.className = 'typing-indicator';
-            typingDiv.innerHTML = `
-                <div class="typing-avatar" style="background: ${color}20;">${icon}</div>
-                <div class="typing-bubble">
-                    <div class="typing-dots"><span></span><span></span><span></span></div>
-                </div>
-            `;
-            container.appendChild(typingDiv);
-            container.scrollTop = container.scrollHeight;
-        }
+// ── Build agent panel ──────────────────────────────────────────────────────
+const panel = document.getElementById('agentsPanel');
+AGENTS.forEach(a => {
+  const card = document.createElement('div');
+  card.className = 'agent-card';
+  card.id = `card-${a.key}`;
+  card.style.setProperty('--accent', a.color);
+  card.innerHTML = `
+    <div class="agent-dot" style="color:${a.color}">${a.icon}</div>
+    <div class="agent-info">
+      <div class="agent-info-name">${a.name}</div>
+      <div class="agent-info-role">${a.role}</div>
+    </div>
+    <div class="agent-status"></div>
+  `;
+  panel.appendChild(card);
+});
 
-        function hideTyping() {
-            const typing = document.getElementById('typingIndicator');
-            if (typing) typing.remove();
-        }
+// ── Helpers ────────────────────────────────────────────────────────────────
+function setActive(key) {
+  AGENTS.forEach(a => {
+    const c = document.getElementById(`card-${a.key}`);
+    if (!c) return;
+    c.classList.remove('active');
+    if (doneAgents.has(a.key) && a.key !== key) c.classList.add('done');
+  });
+  const cur = document.getElementById(`card-${key}`);
+  if (cur) { cur.classList.add('active'); cur.classList.remove('done'); }
+}
 
-        async function startAnalysis() {
-            if (isRunning) return;
-            
-            const sujet = document.getElementById('sujetInput').value.trim();
-            if (!sujet) {
-                alert('Veuillez entrer un sujet à analyser');
-                return;
-            }
-            
-            document.getElementById('messagesContainer').innerHTML = '';
-            addUserMessage(sujet);
-            
-            document.getElementById('startBtn').disabled = true;
-            isRunning = true;
-            
-            const startRes = await fetch('/api/start', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sujet: sujet })
-            });
-            
-            const startData = await startRes.json();
-            sessionId = startData.session_id;
-            
-            await runAnalysis();
-        }
+function setDone(key) {
+  doneAgents.add(key);
+  const c = document.getElementById(`card-${key}`);
+  if (c) { c.classList.remove('active'); c.classList.add('done'); }
+}
 
-        async function runAnalysis() {
-            let finished = false;
-            let msgCount = 0;
-            
-            while (!finished && isRunning) {
-                showTyping('central', '#6366f1', '🧠');
-                await new Promise(r => setTimeout(r, 500));
-                
-                const response = await fetch('/api/next', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ session_id: sessionId })
-                });
-                
-                const data = await response.json();
-                hideTyping();
-                
-                if (data.finished) {
-                    finished = true;
-                    break;
-                }
-                
-                if (data.message) {
-                    await addAgentMessage(
-                        data.message.agent_key,
-                        data.message.message,
-                        data.message.color,
-                        data.message.icon
-                    );
-                    msgCount++;
-                    document.getElementById('msgCount').textContent = msgCount;
-                    document.getElementById('currentRound').textContent = `${data.round}/3`;
-                    document.getElementById('progressFill').style.width = `${data.progress * 100}%`;
-                    
-                    await new Promise(r => setTimeout(r, 1500));
-                }
-            }
-            
-            document.getElementById('startBtn').disabled = false;
-            isRunning = false;
-            
-            const container = document.getElementById('messagesContainer');
-            const summary = document.createElement('div');
-            summary.className = 'message';
-            summary.innerHTML = `
-                <div class="message-content">
-                    <div class="message-avatar" style="background: #10b98120;">✅</div>
-                    <div class="message-bubble">
-                        <div class="message-text">Analyse terminée ! Les 5 agents ont collaboré sur votre sujet.</div>
-                        <div class="message-meta">Système · Nouvelle analyse possible</div>
-                    </div>
-                </div>
-            `;
-            container.appendChild(summary);
-            container.scrollTop = container.scrollHeight;
-        }
+function resetCards() {
+  doneAgents.clear();
+  AGENTS.forEach(a => {
+    const c = document.getElementById(`card-${a.key}`);
+    if (c) { c.className = 'agent-card'; c.style.setProperty('--accent', a.color); }
+  });
+}
 
-        function clearConversation() {
-            if (isRunning) return;
-            document.getElementById('messagesContainer').innerHTML = '<div style="text-align: center; color: #666; padding: 50px;">🤖 Entrez votre sujet et cliquez sur "Lancer l\'analyse"</div>';
-            sessionId = null;
-            document.getElementById('msgCount').textContent = '0';
-            document.getElementById('currentRound').textContent = '0/3';
-            document.getElementById('progressFill').style.width = '0%';
-            document.getElementById('startBtn').disabled = false;
-        }
+let thinkingEl = null;
+function showThinking(agentKey) {
+  removeThinking();
+  const agent = AGENTS.find(a => a.key === agentKey) || {};
+  const wrap = document.createElement('div');
+  wrap.className = 'thinking';
+  wrap.id = 'thinkingEl';
+  wrap.innerHTML = `<span></span><span></span><span></span> <span style="font-size:11px">${agent.icon || ''} ${agent.name || 'Agent'} réfléchit...</span>`;
+  document.getElementById('chatArea').appendChild(wrap);
+  scrollDown();
+  thinkingEl = wrap;
+}
+function removeThinking() {
+  const el = document.getElementById('thinkingEl');
+  if (el) el.remove();
+  thinkingEl = null;
+}
 
-        document.getElementById('startBtn').onclick = startAnalysis;
-        document.getElementById('clearBtn').onclick = clearConversation;
-    </script>
+function scrollDown() {
+  const area = document.getElementById('chatArea');
+  area.scrollTop = area.scrollHeight;
+}
+
+function fmtTime(iso) {
+  return new Date(iso || Date.now()).toLocaleTimeString('fr', { hour: '2-digit', minute: '2-digit' });
+}
+
+let lastPhase = null;
+
+function addSeparator(phase) {
+  const label = PHASE_LABELS[phase];
+  if (!label || phase === lastPhase) return;
+  lastPhase = phase;
+  const sep = document.createElement('div');
+  sep.className = 'day-sep';
+  sep.textContent = label;
+  document.getElementById('chatArea').appendChild(sep);
+}
+
+async function typeText(el, text, speed = 10) {
+  el.textContent = '';
+  for (let i = 0; i < text.length; i++) {
+    el.textContent += text[i];
+    if (i % 4 === 0) {
+      scrollDown();
+      await new Promise(r => setTimeout(r, speed));
+    }
+  }
+  scrollDown();
+}
+
+function addMessage(msg) {
+  const area = document.getElementById('chatArea');
+
+  // separator before central messages (except init)
+  if (msg.is_central && msg.phase) addSeparator(msg.phase);
+
+  const agent = AGENTS.find(a => a.key === msg.agent_key) || {};
+  const color = msg.color || agent.color || '#888';
+
+  const row = document.createElement('div');
+  row.className = 'msg-row';
+
+  const meta = document.createElement('div');
+  meta.className = 'msg-meta';
+  meta.innerHTML = `
+    <div class="msg-icon" style="background:${color}22; color:${color}">${msg.icon}</div>
+    <span class="msg-name" style="color:${color}">${msg.agent_name}</span>
+    <span class="msg-role">${msg.role || ''}</span>
+    <span class="msg-time">${fmtTime(msg.timestamp)}</span>
+  `;
+
+  const bubble = document.createElement('div');
+  bubble.className = `msg-bubble${msg.is_central ? ' is-central' : ''}`;
+  bubble.style.setProperty('--accent', color);
+
+  const textEl = document.createElement('span');
+  bubble.appendChild(textEl);
+
+  row.appendChild(meta);
+  row.appendChild(bubble);
+  area.appendChild(row);
+  scrollDown();
+
+  return textEl;
+}
+
+// ── Main flow ──────────────────────────────────────────────────────────────
+async function processNext() {
+  if (!isRunning || !sessionId) return;
+
+  let data;
+  try {
+    const res = await fetch('/api/next', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId })
+    });
+    data = await res.json();
+  } catch (e) {
+    document.getElementById('statusBadge').textContent = 'Erreur réseau';
+    isRunning = false;
+    document.getElementById('startBtn').disabled = false;
+    removeThinking();
+    return;
+  }
+
+  if (data.finished) {
+    removeThinking();
+    AGENTS.forEach(a => setDone(a.key));
+    document.getElementById('statusBadge').textContent = '✓ Analyse terminée';
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('startBtn').disabled = false;
+    isRunning = false;
+    return;
+  }
+
+  if (data.message) {
+    const msg = data.message;
+    removeThinking();
+    setActive(msg.agent_key);
+
+    const textEl = addMessage(msg);
+    await typeText(textEl, msg.message, 8);
+
+    setDone(msg.agent_key);
+
+    if (data.progress !== undefined) {
+      document.getElementById('progressFill').style.width = Math.round(data.progress * 100) + '%';
+    }
+
+    // peek at next agent to show thinking
+    const nextState = data.state;
+    if (nextState && nextState !== 'done') {
+      const nextAgentKey = guessNextAgent(nextState);
+      if (nextAgentKey) {
+        setActive(nextAgentKey);
+        showThinking(nextAgentKey);
+      }
+    }
+
+    document.getElementById('statusBadge').textContent = `Étape ${Math.round((data.progress || 0) * 100)}%`;
+    setTimeout(processNext, 600);
+  }
+}
+
+// Map state names to agent keys for "thinking" preview
+function guessNextAgent(state) {
+  if (state.includes('data'))      return 'data';
+  if (state.includes('prospect'))  return 'prospect';
+  if (state.includes('scoring'))   return 'scoring';
+  if (state.includes('product'))   return 'product';
+  if (state.includes('marketing')) return 'marketing';
+  if (state.includes('optim'))     return 'optimization';
+  if (state.includes('central') || state === 'init' || state === 'done') return 'central';
+  return null;
+}
+
+async function startConversation() {
+  const sujet = document.getElementById('sujetInput').value.trim();
+  if (!sujet) return;
+
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('emptyState')?.remove();
+  document.getElementById('chatArea').innerHTML = '';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('statusBadge').textContent = 'Démarrage...';
+  isRunning = true;
+  lastPhase = null;
+  resetCards();
+
+  // show user message
+  const userRow = document.createElement('div');
+  userRow.className = 'msg-row';
+  userRow.innerHTML = `
+    <div class="msg-meta">
+      <div class="msg-icon" style="background:rgba(255,255,255,0.06);color:#94a3b8">👤</div>
+      <span class="msg-name" style="color:#94a3b8">Vous</span>
+      <span class="msg-time">${fmtTime()}</span>
+    </div>
+    <div class="msg-bubble is-user">${sujet}</div>
+  `;
+  document.getElementById('chatArea').appendChild(userRow);
+
+  // show central thinking immediately
+  setActive('central');
+  showThinking('central');
+
+  try {
+    const res = await fetch('/api/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sujet })
+    });
+    const data = await res.json();
+    if (data.error) {
+      document.getElementById('statusBadge').textContent = 'Erreur: ' + data.error;
+      document.getElementById('startBtn').disabled = false;
+      isRunning = false;
+      removeThinking();
+      return;
+    }
+    sessionId = data.session_id;
+  } catch (e) {
+    document.getElementById('statusBadge').textContent = 'Erreur serveur';
+    document.getElementById('startBtn').disabled = false;
+    isRunning = false;
+    removeThinking();
+    return;
+  }
+
+  await processNext();
+}
+
+document.getElementById('startBtn').onclick = startConversation;
+document.getElementById('sujetInput').onkeydown = e => { if (e.key === 'Enter') startConversation(); };
+</script>
 </body>
 </html>
