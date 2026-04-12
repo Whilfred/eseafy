@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELISA Core - Analyse Multi-Agents</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: #0f0f0f;
+            border-right: 1px solid #1f1f1f;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #1f1f1f;
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .sujet-input {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 12px;
+            color: white;
+            font-size: 13px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .sujet-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-start {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 15px 0 10px;
+            font-size: 14px;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-clear {
+            width: 100%;
+            background: #1a1a1a;
+            color: white;
+            border: 1px solid #2a2a2a;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            background: #1a1a1a;
+            border-radius: 10px;
+            height: 6px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .stats {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #1f1f1f;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .stat-label {
+            color: #888;
+        }
+
+        .stat-value {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0a0a0a;
+        }
+
+        .chat-header {
+            background: #0f0f0f;
+            padding: 15px 25px;
+            border-bottom: 1px solid #1f1f1f;
+        }
+
+        .chat-header h2 {
+            color: white;
+            font-size: 18px;
+        }
+
+        .chat-header p {
+            color: #888;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-content {
+            display: flex;
+            gap: 12px;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: #1a1a1a;
+            flex-shrink: 0;
+        }
+
+        .message-bubble {
+            flex: 1;
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 12px 16px;
+        }
+
+        .message-text {
+            color: #e0e0e0;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .message-text .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 16px;
+            background: #667eea;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .message-meta {
+            font-size: 10px;
+            color: #666;
+            margin-top: 6px;
+        }
+
+        .tag {
+            color: #a78bfa;
+            font-weight: 600;
+            background: rgba(139, 92, 246, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .typing-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .typing-bubble {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 14px 20px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .typing-dots span {
+            width: 7px;
+            height: 7px;
+            background: #666;
+            border-radius: 50%;
+            animation: typingAnim 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingAnim {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .messages-container::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        .messages-container::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 3px;
+        }
+
+        .user-message {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .user-bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 18px;
+            max-width: 70%;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="sidebar">
+            <div class="logo">
+                🤖 ELISA CORE<br>
+                <span style="font-size: 10px; color: #666;">Multi-Agent Analysis</span>
+            </div>
+
+            <div class="input-section">
+                <label class="input-label">📝 ENTREZ VOTRE SUJET À ANALYSER</label>
+                <textarea id="sujetInput" class="sujet-input" rows="4" placeholder="Exemple: &quot;Nous voulons lancer une campagne marketing pour vendre des formations IA à des entreprises B2B. Objectif: 50 leads qualifiés en 30 jours. Budget: 10k€.&quot;"></textarea>
+            </div>
+
+            <button class="btn-start" id="startBtn">🚀 LANCER L'ANALYSE</button>
+            <button class="btn-clear" id="clearBtn">🗑️ EFFACER</button>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">Round</span>
+                    <span class="stat-value" id="currentRound">0/3</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Messages</span>
+                    <span class="stat-value" id="msgCount">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-area">
+            <div class="chat-header">
+                <h2>💬 CONVERSATION MULTI-AGENTS</h2>
+                <p>5 agents IA analysent votre sujet en temps réel</p>
+            </div>
+            <div class="messages-container" id="messagesContainer">
+                <div style="text-align: center; color: #666; padding: 50px;">
+                    🤖 Entrez votre sujet et cliquez sur "Lancer l'analyse"<br>
+                    <span style="font-size: 12px;">Les agents discuteront de votre sujet spécifique</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sessionId = null;
+        let isRunning = false;
+
+        function addUserMessage(sujet) {
+            const container = document.getElementById('messagesContainer');
+            if (container.children.length === 1 && container.children[0].textContent.includes('Entrez')) {
+                container.innerHTML = '';
+            }
+            
+            const div = document.createElement('div');
+            div.className = 'user-message';
+            div.innerHTML = `<div class="user-bubble">👤 ${sujet}</div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function typeText(element, text, speed = 15) {
+            return new Promise((resolve) => {
+                let i = 0;
+                element.innerHTML = '';
+                
+                function type() {
+                    if (i < text.length) {
+                        if (text[i] === '<') {
+                            let tag = '';
+                            while (text[i] !== '>' && i < text.length) {
+                                tag += text[i];
+                                i++;
+                            }
+                            tag += text[i];
+                            i++;
+                            element.innerHTML += tag;
+                            type();
+                        } else {
+                            element.innerHTML += text[i];
+                            i++;
+                            const cursor = element.querySelector('.cursor');
+                            if (cursor) cursor.remove();
+                            element.insertAdjacentHTML('beforeend', '<span class="cursor"></span>');
+                            setTimeout(type, speed);
+                        }
+                        const container = document.getElementById('messagesContainer');
+                        container.scrollTop = container.scrollHeight;
+                    } else {
+                        const cursor = element.querySelector('.cursor');
+                        if (cursor) cursor.remove();
+                        resolve();
+                    }
+                }
+                type();
+            });
+        }
+
+        async function addAgentMessage(agentKey, message, color, icon) {
+            const container = document.getElementById('messagesContainer');
+            const agentName = {
+                central: '🧠 ELISA Central',
+                data: '📊 Data Agent',
+                scoring: '🎯 Scoring Agent',
+                marketing: '📧 Marketing Agent',
+                optimization: '⚡ Optimization Agent'
+            }[agentKey];
+            
+            const formatted = message.replace(/@(\w+)/g, '<span class="tag">@$1</span>');
+            const time = new Date().toLocaleTimeString();
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-avatar" style="background: ${color}20;">${icon}</div>
+                    <div class="message-bubble">
+                        <div class="message-text" id="text-${Date.now()}"></div>
+                        <div class="message-meta">${time} · ${agentName}</div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+            
+            const textElement = messageDiv.querySelector('.message-text');
+            await typeText(textElement, formatted, 12);
+        }
+
+        function showTyping(agentKey, color, icon) {
+            const container = document.getElementById('messagesContainer');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typingIndicator';
+            typingDiv.className = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-avatar" style="background: ${color}20;">${icon}</div>
+                <div class="typing-bubble">
+                    <div class="typing-dots"><span></span><span></span><span></span></div>
+                </div>
+            `;
+            container.appendChild(typingDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+
+        async function startAnalysis() {
+            if (isRunning) return;
+            
+            const sujet = document.getElementById('sujetInput').value.trim();
+            if (!sujet) {
+                alert('Veuillez entrer un sujet à analyser');
+                return;
+            }
+            
+            document.getElementById('messagesContainer').innerHTML = '';
+            addUserMessage(sujet);
+            
+            document.getElementById('startBtn').disabled = true;
+            isRunning = true;
+            
+            const startRes = await fetch('/api/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sujet: sujet })
+            });
+            
+            const startData = await startRes.json();
+            sessionId = startData.session_id;
+            
+            await runAnalysis();
+        }
+
+        async function runAnalysis() {
+            let finished = false;
+            let msgCount = 0;
+            
+            while (!finished && isRunning) {
+                showTyping('central', '#6366f1', '🧠');
+                await new Promise(r => setTimeout(r, 500));
+                
+                const response = await fetch('/api/next', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId })
+                });
+                
+                const data = await response.json();
+                hideTyping();
+                
+                if (data.finished) {
+                    finished = true;
+                    break;
+                }
+                
+                if (data.message) {
+                    await addAgentMessage(
+                        data.message.agent_key,
+                        data.message.message,
+                        data.message.color,
+                        data.message.icon
+                    );
+                    msgCount++;
+                    document.getElementById('msgCount').textContent = msgCount;
+                    document.getElementById('currentRound').textContent = `${data.round}/3`;
+                    document.getElementById('progressFill').style.width = `${data.progress * 100}%`;
+                    
+                    await new Promise(r => setTimeout(r, 1500));
+                }
+            }
+            
+            document.getElementById('startBtn').disabled = false;
+            isRunning = false;
+            
+            const container = document.getElementById('messagesContainer');
+            const summary = document.createElement('div');
+            summary.className = 'message';
+            summary.innerHTML = `
+                <div class="message-content">
+                    <div class="message-avatar" style="background: #10b98120;">✅</div>
+                    <div class="message-bubble">
+                        <div class="message-text">Analyse terminée ! Les 5 agents ont collaboré sur votre sujet.</div>
+                        <div class="message-meta">Système · Nouvelle analyse possible</div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(summary);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearConversation() {
+            if (isRunning) return;
+            document.getElementById('messagesContainer').innerHTML = '<div style="text-align: center; color: #666; padding: 50px;">🤖 Entrez votre sujet et cliquez sur "Lancer l\'analyse"</div>';
+            sessionId = null;
+            document.getElementById('msgCount').textContent = '0';
+            document.getElementById('currentRound').textContent = '0/3';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('startBtn').disabled = false;
+        }
+
+        document.getElementById('startBtn').onclick = startAnalysis;
+        document.getElementById('clearBtn').onclick = clearConversation;
+    </script>
+</body>
+</html>
