@@ -1,36 +1,57 @@
-import autogen
+from .base import BaseAgent, STYLE
+from utils.helpers import safe_dumps, decimal_to_float
 
-PRODUCT_SYSTEM_MESSAGE = """
-Tu es Product Agent, spécialiste des offres, bundles et prix dynamiques.
+class ProductAgent(BaseAgent):
+    def run(self, sujet, question, messages, data, extra=""):
+        produits = data.get('top_produits', [])
+        panier_moyen = data.get('commandes', {}).get('panier_moyen', 0)
+        
+        # Convertir Decimal en float
+        panier_moyen = decimal_to_float(panier_moyen)
+        
+        produits_txt = ""
+        for p in produits[:3]:
+            nom = p.get('nom_produit', 'Produit')
+            nb_ventes = p.get('nb_ventes', 0)
+            prix = decimal_to_float(p.get('prix_moyen', 0))
+            produits_txt += f"   - {nom}: {nb_ventes} ventes, {prix}€\n"
+        
+        # Préparer les données pour le prompt (avec conversion Decimal)
+        if produits:
+            prix_actuel = decimal_to_float(produits[0].get('prix_moyen', panier_moyen))
+            prix_baisse = round(prix_actuel * 0.85, 2)
+            prix_hausse = round(prix_actuel * 1.20, 2)
+            prix_pack = round(panier_moyen * 1.5, 2) if panier_moyen else 0
+            prix_pack_normal = round(panier_moyen * 2, 2) if panier_moyen else 0
+        else:
+            prix_actuel = panier_moyen
+            prix_baisse = round(panier_moyen * 0.85, 2) if panier_moyen else 0
+            prix_hausse = round(panier_moyen * 1.20, 2) if panier_moyen else 0
+            prix_pack = round(panier_moyen * 1.5, 2) if panier_moyen else 0
+            prix_pack_normal = round(panier_moyen * 2, 2) if panier_moyen else 0
+        
+        return self._call_llm(f"""Tu es Product Agent. Tu PROPOSES DES OFFRES et MODIFIES LES PRIX.
 
-**Ta personnalité :**
-- Tu es créatif et commercial
-- Tu aimes les bundles et les offres "irrésistibles"
-- Tu es parfois trop généreux sur les réductions
-- Optimization Agent te recadre souvent
+Sujet: {sujet}
+Question: {question}
 
-**Ton rôle :**
-- Créer des offres personnalisées par segment
-- Proposer des bundles de produits
-- Ajuster les prix selon la demande
-- Créer des codes promo
+TOP PRODUITS (anonymisés, pas de noms clients):
+{produits_txt}
+Panier moyen global: {panier_moyen}€
 
-**Ton style de parole :**
-- "Et si on faisait un bundle... ?"
-- "Je propose une réduction de X% sur..."
-- "Celui-là, je lui mets un code personnel."
-- "Optimization Agent, simule-moi ça."
+{STYLE}
 
-**Ton tic de langage :**
-Tu dis souvent "Petite idée..." ou "Et si on tentait..."
-"""
+TON OFFRE (actionnable):
+1. PRODUIT: {produits[0].get('nom_produit', 'Top produit') if produits else 'Produit phare'}
+   Prix actuel: {prix_actuel}€
+   
+2. 💰 ACTION PRIX PROPOSÉE:
+   Option A: Baisser à {prix_baisse}€ (-15%) pour booster volume
+   Option B: Monter à {prix_hausse}€ (+20%) sur segment premium
+   Option C: Pack 2 produits à {prix_pack}€ (au lieu de {prix_pack_normal}€)
 
-def create_product_agent(llm_config):
-    return autogen.AssistantAgent(
-        name="Product_Agent",
-        system_message=PRODUCT_SYSTEM_MESSAGE,
-        llm_config=llm_config,
-        human_input_mode="NEVER"
-    )
+3. POURQUOI: Le segment A a un panier moyen élevé, peut supporter +20%
 
-product_agent = None
+4. QUESTION: On teste quelle option ? Ou on combine avec une remise ?
+
+PROCHAIN: Marketing Agent pour la campagne.""", 450)

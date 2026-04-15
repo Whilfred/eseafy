@@ -1,36 +1,56 @@
-import autogen
+from .base import BaseAgent, STYLE
+from utils.helpers import decimal_to_float
 
-OPTIMIZATION_SYSTEM_MESSAGE = """
-Tu es Optimization Agent, expert en simulation et optimisation.
+class OptimizationAgent(BaseAgent):
+    def run(self, sujet, question, messages, data, extra=""):
+        commandes = data.get('commandes', {})
+        profiles = data.get('profiles', {})
+        segments = data.get('segments', {})
+        
+        # Convertir les Decimal en float
+        nb_prospects = segments.get('A', {}).get('nb_clients', 1000)
+        panier_moyen = decimal_to_float(commandes.get('panier_moyen', 50))
+        tx_conversion = decimal_to_float(data.get('events', {}).get('taux_conversion_pct', 5))
+        nb_segment_b = segments.get('B', {}).get('nb_clients', 0)
+        
+        tx_conv_estimee = min(15, tx_conversion + 5)
+        conversions = int(nb_prospects * tx_conv_estimee / 100)
+        ca_genere = int(conversions * panier_moyen)
+        revenu_net = ca_genere - 500
+        
+        return self._call_llm(f"""Tu es Optimization Agent. Tu SIMULES LE ROI et DONNES UN VERDICT.
 
-**Ta personnalité :**
-- Tu es prudent, presque pessimiste
-- Tu vois toujours les risques avant les opportunités
-- Tu contestes souvent Product Agent sur ses réductions
-- Tu es indispensable pour éviter les échecs
+Sujet: {sujet}
+Question: {question}
 
-**Ton rôle :**
-- Simuler les campagnes avant lancement
-- Calculer les taux de conversion attendus
-- Identifier les risques
-- Proposer des améliorations
+DONNÉES POUR SIMU:
+- Prospects ciblés: {nb_prospects} (segment A)
+- Panier moyen: {panier_moyen}€
+- Taux conversion actuel: {tx_conversion}%
+- Coût campagne (estimation): 500€
 
-**Ton style de parole :**
-- "Simulation lancée..."
-- "Résultat : X% de conversion attendue."
-- "Risque identifié : ..."
-- "Je déconseille cette offre car..."
+{STYLE}
 
-**Ton tic de langage :**
-Tu commences souvent par "Statistiquement..." mais contrairement à Data Agent, toi tu projettes vers l'avenir.
-"""
+📊 TABLEAU ROI SIMULÉ:
 
-def create_optimization_agent(llm_config):
-    return autogen.AssistantAgent(
-        name="Optimization_Agent",
-        system_message=OPTIMIZATION_SYSTEM_MESSAGE,
-        llm_config=llm_config,
-        human_input_mode="NEVER"
-    )
+| Métrique | Valeur | Calcul |
+|----------|--------|--------|
+| Prospects ciblés | {nb_prospects} | - |
+| Taux conv. estimé | {tx_conv_estimee}% | +{5}pts vs actuel |
+| Conversions | {conversions} | - |
+| CA généré | {ca_genere}€ | conv × panier |
+| Coût campagne | 500€ | emails + promo |
+| Revenu net | {revenu_net}€ | - |
 
-optimization_agent = None
+⚠️ RISQUE: Le segment A ne représente que {nb_prospects} clients → scaling limité
+
+💡 QUESTION: Et si on inclut aussi le segment B (+{nb_segment_b} prospects) ?
+
+🎯 VERDICT: 
+✅ GO si revenu net > 2000€
+❌ STOP si < 500€
+🔁 À TESTER si entre 500 et 2000€
+
+→ Pour cette simu: **{"GO" if revenu_net > 2000 else "À TESTER" if revenu_net > 500 else "STOP"}** (gain estimé {revenu_net}€)
+
+PROCHAINE QUESTION À EXPLORER: Quel impact sur la marge si on baisse les prix de 15% ?""", 500)

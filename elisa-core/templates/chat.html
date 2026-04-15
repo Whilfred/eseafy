@@ -3,692 +3,795 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ELISA — Multi-Agent System</title>
+  <title>ELISA — Multi-Agent Intelligence</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #0b0f19;
-      --surface: #131929;
-      --surface2: #1a2235;
-      --border: rgba(255,255,255,0.07);
-      --text: #e8eaf0;
-      --muted: #6b7a99;
-      --radius: 12px;
-
-      --c-central:  #818cf8;
-      --c-data:     #34d399;
-      --c-prospect: #22d3ee;
-      --c-scoring:  #fbbf24;
-      --c-product:  #f472b6;
-      --c-marketing:#f87171;
-      --c-optim:    #a78bfa;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-      font-family: 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+      background: #f5f5f0;
       height: 100vh;
-      display: flex;
-      flex-direction: column;
       overflow: hidden;
     }
 
-    /* ── TOP BAR ── */
-    .topbar {
+    /* Main container */
+    .app {
       display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 12px 20px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
+      height: 100vh;
+      background: #ffffff;
     }
-    .logo {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: .5px;
-      color: var(--text);
-    }
-    .badge {
-      font-size: 10px;
-      background: #10b981;
-      color: #052e16;
-      padding: 2px 7px;
-      border-radius: 20px;
-      font-weight: 600;
-    }
-    .progress-wrap {
+
+    /* LEFT PANEL - Chat Area */
+    .chat-panel {
       flex: 1;
-      height: 3px;
-      background: var(--border);
-      border-radius: 99px;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      border-right: 1px solid #e8e8e8;
       overflow: hidden;
-      margin-left: 10px;
+    }
+
+    /* Header */
+    .chat-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #e8e8e8;
+      background: #ffffff;
+    }
+    .chat-header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      letter-spacing: -0.3px;
+    }
+    .chat-header p {
+      font-size: 13px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    /* Progress bar */
+    .progress-container {
+      padding: 0 24px 12px 24px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .progress-bar {
+      height: 2px;
+      background: #e8e8e8;
+      border-radius: 2px;
+      overflow: hidden;
     }
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #818cf8, #34d399);
-      transition: width .4s ease;
+      background: #1a1a1a;
+      transition: width 0.3s ease;
+      border-radius: 2px;
     }
-    .status-badge {
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
       font-size: 11px;
-      color: var(--muted);
-      white-space: nowrap;
+      color: #aaa;
     }
 
-    /* ── MAIN LAYOUT ── */
-    .main {
-      display: flex;
+    /* Messages area */
+    .messages-area {
       flex: 1;
-      overflow: hidden;
-    }
-
-    /* ── LEFT: AGENT CARDS ── */
-    .agents-panel {
-      width: 200px;
-      flex-shrink: 0;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 12px 10px;
       overflow-y: auto;
-    }
-    .agent-card {
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      padding: 9px 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: border-color .2s, background .2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .agent-card::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      background: var(--accent);
-      border-radius: 3px 0 0 3px;
-      opacity: 0;
-      transition: opacity .2s;
-    }
-    .agent-card.active {
-      background: rgba(255,255,255,0.04);
-      border-color: var(--accent);
-    }
-    .agent-card.active::before { opacity: 1; }
-    .agent-card.done {
-      border-color: rgba(52,211,153,.25);
-    }
-    .agent-card.done::before {
-      background: #34d399;
-      opacity: .6;
+      padding: 20px 24px;
+      scroll-behavior: smooth;
     }
 
-    .agent-dot {
-      width: 28px;
-      height: 28px;
+    /* Message styles */
+    .message {
+      margin-bottom: 20px;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-user {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .message-user .message-bubble {
+      background: #f0f0f0;
+      color: #1a1a1a;
+      border-radius: 16px 16px 4px 16px;
+      max-width: 70%;
+      padding: 10px 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .message-agent {
+      display: flex;
+      gap: 12px;
+    }
+    .message-avatar {
+      width: 32px;
+      height: 32px;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 16px;
       flex-shrink: 0;
-      background: rgba(255,255,255,0.05);
     }
-    .agent-info { flex: 1; min-width: 0; }
-    .agent-info-name {
-      font-size: 12px;
+    .message-content {
+      flex: 1;
+    }
+    .message-header {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .message-name {
       font-weight: 600;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .agent-info-role {
-      font-size: 10px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .agent-status {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--muted);
-      flex-shrink: 0;
-      transition: background .3s;
-    }
-    .agent-card.active .agent-status {
-      background: var(--accent);
-      box-shadow: 0 0 6px var(--accent);
-      animation: pulse 1.2s infinite;
-    }
-    .agent-card.done .agent-status { background: #34d399; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    /* ── CENTER: CHAT ── */
-    .chat-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .chat-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-    }
-
-    .msg-row {
-      display: flex;
-      flex-direction: column;
-      animation: fadeUp .25s ease;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .msg-meta {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin-bottom: 4px;
-      padding-left: 2px;
-    }
-    .msg-icon {
-      width: 22px;
-      height: 22px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      flex-shrink: 0;
-    }
-    .msg-name { font-size: 11px; font-weight: 600; color: var(--text); }
-    .msg-role { font-size: 10px; color: var(--muted); }
-    .msg-time { font-size: 10px; color: var(--muted); margin-left: auto; }
-
-    .msg-bubble {
-      border-radius: 0 10px 10px 10px;
-      padding: 10px 13px;
       font-size: 13px;
+      color: #1a1a1a;
+    }
+    .message-role {
+      font-size: 11px;
+      color: #999;
+    }
+    .message-time {
+      font-size: 10px;
+      color: #ccc;
+      margin-left: auto;
+    }
+    .message-bubble {
+      background: #fafafa;
+      border: 1px solid #eeeeee;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
       line-height: 1.6;
+      color: #333;
       white-space: pre-wrap;
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      margin-left: 30px;
-      position: relative;
       word-break: break-word;
     }
-    .msg-bubble.is-central {
-      background: rgba(129,140,248,0.07);
-      border-color: rgba(129,140,248,0.25);
-    }
-    .msg-bubble.is-user {
-      background: rgba(255,255,255,0.04);
-      margin-left: 0;
-      border-radius: 10px;
-      color: var(--muted);
-      font-style: italic;
+    .message-bubble.central {
+      background: #f8f8f8;
+      border-left: 3px solid #1a1a1a;
     }
 
-    /* accent strip */
-    .msg-bubble::before {
-      content: '';
-      position: absolute;
-      left: -1px; top: 8px; bottom: 8px;
-      width: 2px;
-      border-radius: 2px;
-      background: var(--accent, transparent);
-    }
-    .msg-bubble.is-user::before { display: none; }
-
-    /* thinking indicator */
+    /* Thinking indicator */
     .thinking {
       display: flex;
       align-items: center;
-      gap: 5px;
-      color: var(--muted);
-      font-size: 12px;
-      margin-left: 30px;
-      padding: 6px 0;
+      gap: 8px;
+      padding: 12px 0 12px 44px;
+      animation: pulse 1s ease infinite;
     }
-    .thinking span {
-      display: inline-block;
-      width: 5px; height: 5px;
+    .thinking-dots {
+      display: flex;
+      gap: 4px;
+    }
+    .thinking-dots span {
+      width: 6px;
+      height: 6px;
+      background: #ccc;
       border-radius: 50%;
-      background: var(--muted);
-      animation: bounce .9s infinite;
+      animation: bounce 1.4s ease infinite;
     }
-    .thinking span:nth-child(2) { animation-delay: .15s; }
-    .thinking span:nth-child(3) { animation-delay: .30s; }
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+    .thinking-text {
+      font-size: 12px;
+      color: #aaa;
+    }
     @keyframes bounce {
       0%, 60%, 100% { transform: translateY(0); }
       30% { transform: translateY(-4px); }
     }
-
-    /* tables inside bubbles */
-    .msg-bubble table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 8px 0;
-      font-size: 12px;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
     }
-    .msg-bubble th, .msg-bubble td {
-      border: 1px solid var(--border);
-      padding: 5px 8px;
-      text-align: left;
-    }
-    .msg-bubble th { color: var(--muted); font-weight: 500; }
 
-    /* separator between agent groups */
-    .day-sep {
+    /* Separator */
+    .separator {
       display: flex;
       align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 10px;
-      margin: 8px 0 4px;
+      gap: 12px;
+      margin: 16px 0 20px 0;
     }
-    .day-sep::before, .day-sep::after {
-      content: '';
+    .separator-line {
       flex: 1;
       height: 1px;
-      background: var(--border);
+      background: #e8e8e8;
+    }
+    .separator-text {
+      font-size: 11px;
+      color: #bbb;
+      letter-spacing: 0.5px;
     }
 
-    /* ── INPUT ── */
-    .input-wrap {
-      padding: 12px 18px;
-      border-top: 1px solid var(--border);
+    /* Input area */
+    .input-area {
+      padding: 16px 24px 20px 24px;
+      border-top: 1px solid #e8e8e8;
+      background: #ffffff;
+    }
+    .input-wrapper {
       display: flex;
-      gap: 8px;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    .input-wrapper input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #ffffff;
+      transition: all 0.2s;
+      resize: vertical;
+    }
+    .input-wrapper input:focus {
+      outline: none;
+      border-color: #1a1a1a;
+    }
+    .input-wrapper input::placeholder {
+      color: #ccc;
+    }
+    .input-wrapper button {
+      padding: 12px 24px;
+      background: #1a1a1a;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .input-wrapper button:hover:not(:disabled) {
+      background: #333;
+      transform: translateY(-1px);
+    }
+    .input-wrapper button:disabled {
+      background: #e0e0e0;
+      cursor: not-allowed;
+    }
+
+    /* RIGHT PANEL - Agents */
+    .agents-panel {
+      width: 280px;
+      background: #fafaf8;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .agents-header {
+      padding: 20px 20px 12px 20px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .agents-header h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      letter-spacing: -0.2px;
+    }
+    .agents-header p {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 4px;
+    }
+    .agents-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Agent Card */
+    .agent-card {
+      background: #ffffff;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .agent-card.new {
+      animation: cardAppear 0.5s ease;
+    }
+    @keyframes cardAppear {
+      0% {
+        opacity: 0;
+        transform: translateX(20px) scale(0.95);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+    .agent-card:hover {
+      border-color: #d0d0d0;
+      transform: translateX(2px);
+    }
+    .agent-card.active {
+      border-color: #1a1a1a;
+      background: #fefefe;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .agent-card.done {
+      opacity: 0.7;
+      background: #f9f9f9;
+    }
+    .agent-card-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .agent-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
       flex-shrink: 0;
     }
-    .input-wrap input {
+    .agent-info {
       flex: 1;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 13px;
-      color: var(--text);
-      outline: none;
-      transition: border-color .2s;
     }
-    .input-wrap input::placeholder { color: var(--muted); }
-    .input-wrap input:focus { border-color: rgba(129,140,248,.5); }
-    .input-wrap button {
-      background: #4f46e5;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 18px;
-      font-size: 13px;
+    .agent-name {
+      font-size: 14px;
       font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background .2s, transform .15s;
+      color: #1a1a1a;
+      margin-bottom: 2px;
     }
-    .input-wrap button:hover { background: #4338ca; transform: translateY(-1px); }
-    .input-wrap button:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; transform: none; }
+    .agent-role {
+      font-size: 11px;
+      color: #999;
+    }
+    .agent-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ddd;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+    .agent-card.active .agent-status {
+      background: #1a1a1a;
+      box-shadow: 0 0 0 2px rgba(26,26,26,0.1);
+      animation: statusPulse 1.5s ease infinite;
+    }
+    .agent-card.done .agent-status {
+      background: #aaa;
+    }
+    @keyframes statusPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
 
-    /* ── EMPTY STATE ── */
-    .empty {
-      flex: 1;
+    /* New agent badge */
+    .new-badge {
+      position: absolute;
+      top: -8px;
+      right: 12px;
+      background: #1a1a1a;
+      color: white;
+      font-size: 9px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 20px;
+      animation: badgeGlow 0.5s ease;
+    }
+    @keyframes badgeGlow {
+      0% {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Empty state */
+    .empty-state {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      color: var(--muted);
-      font-size: 13px;
-      padding: 40px;
+      height: 100%;
+      color: #ccc;
       text-align: center;
+      padding: 40px;
     }
-    .empty-icon { font-size: 32px; }
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    .empty-state-text {
+      font-size: 13px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f0f0f0;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
-
-<div class="topbar">
-  <span class="logo">ELISA</span>
-  <span class="badge">BETA</span>
-  <div class="progress-wrap">
-    <div class="progress-fill" id="progressFill"></div>
-  </div>
-  <span class="status-badge" id="statusBadge">En attente</span>
-</div>
-
-<div class="main">
-
-  <!-- AGENT CARDS -->
-  <div class="agents-panel" id="agentsPanel">
-    <!-- populated by JS -->
-  </div>
-
-  <!-- CHAT -->
-  <div class="chat-wrap">
-    <div class="chat-area" id="chatArea">
-      <div class="empty" id="emptyState">
-        <div class="empty-icon">💬</div>
-        <div>Entrez un sujet pour lancer l'analyse</div>
+<div class="app">
+  <!-- LEFT: Chat Area -->
+  <div class="chat-panel">
+    <div class="chat-header">
+      <h1>ELISA</h1>
+      <p>Multi-agent intelligence · Analyse e-commerce</p>
+    </div>
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-stats">
+        <span id="progressText">0%</span>
+        <span id="statusText">Prêt</span>
       </div>
     </div>
-    <div class="input-wrap">
-      <input type="text" id="sujetInput" placeholder="Ex: Augmenter les ventes sur les clients premium...">
-      <button id="startBtn">Démarrer</button>
+    <div class="messages-area" id="messagesArea">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">💬</div>
+        <div class="empty-state-text">Entrez un sujet pour démarrer l'analyse</div>
+      </div>
+    </div>
+    <div class="input-area">
+      <div class="input-wrapper">
+        <input type="text" id="sujetInput" placeholder="Ex: Comment augmenter le panier moyen des clients premium ?" />
+        <button id="startBtn">Démarrer</button>
+      </div>
     </div>
   </div>
 
+  <!-- RIGHT: Agents Panel -->
+  <div class="agents-panel">
+    <div class="agents-header">
+      <h2>🤖 Agents actifs</h2>
+      <p>Suivi en temps réel</p>
+    </div>
+    <div class="agents-list" id="agentsList"></div>
+  </div>
 </div>
 
 <script>
-const AGENTS = [
-  { key: 'central',      name: 'Central',       role: 'Orchestrateur',    icon: '🧠', color: '#818cf8' },
-  { key: 'data',         name: 'Data Agent',    role: 'Analyste données', icon: '📊', color: '#34d399' },
-  { key: 'prospect',     name: 'Prospect',      role: 'Qualification',    icon: '🔎', color: '#22d3ee' },
-  { key: 'scoring',      name: 'Scoring',       role: 'Propension achat', icon: '🎯', color: '#fbbf24' },
-  { key: 'product',      name: 'Product',       role: 'Offres',           icon: '🛒', color: '#f472b6' },
-  { key: 'marketing',    name: 'Marketing',     role: 'Campagnes email',  icon: '📧', color: '#f87171' },
-  { key: 'optimization', name: 'Optim',         role: 'ROI & Simul.',     icon: '⚡', color: '#a78bfa' },
+// Agent definitions
+const AGENT_DEFS = [
+  { key: 'central', name: 'Central', role: 'Orchestrateur', icon: '🧠', color: '#1a1a1a' },
+  { key: 'data', name: 'Data Agent', role: 'Analyste données', icon: '📊', color: '#555' },
+  { key: 'prospect', name: 'Prospect Agent', role: 'Qualification leads', icon: '🔎', color: '#555' },
+  { key: 'scoring', name: 'Scoring Agent', role: 'Propension achat', icon: '🎯', color: '#555' },
+  { key: 'product', name: 'Product Agent', role: 'Offres produit', icon: '🛒', color: '#555' },
+  { key: 'marketing', name: 'Marketing Agent', role: 'Campagnes email', icon: '📧', color: '#555' },
+  { key: 'optimization', name: 'Optim Agent', role: 'ROI & Simulations', icon: '⚡', color: '#555' }
 ];
-
-// Phase labels shown as separators
-const PHASE_LABELS = {
-  init:             '— Lancement —',
-  after_data:       '— Analyse données —',
-  after_prospect:   '— Qualification leads —',
-  after_scoring:    '— Scoring propension —',
-  after_product:    '— Offre produit —',
-  after_marketing:  '— Campagne email —',
-  conclusion:       '— Synthèse finale —',
-};
 
 let sessionId = null;
 let isRunning = false;
+let currentState = null;
+let activeAgentKey = null;
 let doneAgents = new Set();
 
-// ── Build agent panel ──────────────────────────────────────────────────────
-const panel = document.getElementById('agentsPanel');
-AGENTS.forEach(a => {
-  const card = document.createElement('div');
-  card.className = 'agent-card';
-  card.id = `card-${a.key}`;
-  card.style.setProperty('--accent', a.color);
-  card.innerHTML = `
-    <div class="agent-dot" style="color:${a.color}">${a.icon}</div>
-    <div class="agent-info">
-      <div class="agent-info-name">${a.name}</div>
-      <div class="agent-info-role">${a.role}</div>
-    </div>
-    <div class="agent-status"></div>
-  `;
-  panel.appendChild(card);
-});
+// DOM elements
+const agentsList = document.getElementById('agentsList');
+const messagesArea = document.getElementById('messagesArea');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const statusText = document.getElementById('statusText');
+const startBtn = document.getElementById('startBtn');
+const sujetInput = document.getElementById('sujetInput');
 
-// ── Helpers ────────────────────────────────────────────────────────────────
-function setActive(key) {
-  AGENTS.forEach(a => {
-    const c = document.getElementById(`card-${a.key}`);
-    if (!c) return;
-    c.classList.remove('active');
-    if (doneAgents.has(a.key) && a.key !== key) c.classList.add('done');
+// Create agent cards
+function createAgentCards() {
+  agentsList.innerHTML = '';
+  AGENT_DEFS.forEach(def => {
+    const card = document.createElement('div');
+    card.className = 'agent-card';
+    card.id = `agent-${def.key}`;
+    card.setAttribute('data-key', def.key);
+    card.innerHTML = `
+      <div class="agent-card-content">
+        <div class="agent-icon" style="background: #f5f5f5;">${def.icon}</div>
+        <div class="agent-info">
+          <div class="agent-name">${def.name}</div>
+          <div class="agent-role">${def.role}</div>
+        </div>
+        <div class="agent-status"></div>
+      </div>
+    `;
+    agentsList.appendChild(card);
   });
-  const cur = document.getElementById(`card-${key}`);
-  if (cur) { cur.classList.add('active'); cur.classList.remove('done'); }
 }
 
-function setDone(key) {
-  doneAgents.add(key);
-  const c = document.getElementById(`card-${key}`);
-  if (c) { c.classList.remove('active'); c.classList.add('done'); }
+// Update agent card status
+function updateAgentCard(key, status) {
+  const card = document.getElementById(`agent-${key}`);
+  if (!card) return;
+
+  if (status === 'active') {
+    card.classList.add('active');
+    card.classList.remove('done');
+    // Add new badge animation when activated
+    const existingBadge = card.querySelector('.new-badge');
+    if (!existingBadge && !doneAgents.has(key)) {
+      const badge = document.createElement('div');
+      badge.className = 'new-badge';
+      badge.textContent = 'ACTIF';
+      card.style.position = 'relative';
+      card.appendChild(badge);
+      setTimeout(() => badge.remove(), 2000);
+    }
+  } else if (status === 'done') {
+    card.classList.remove('active');
+    card.classList.add('done');
+    doneAgents.add(key);
+  } else {
+    card.classList.remove('active', 'done');
+  }
 }
 
-function resetCards() {
+// Reset all agent cards
+function resetAgents() {
   doneAgents.clear();
-  AGENTS.forEach(a => {
-    const c = document.getElementById(`card-${a.key}`);
-    if (c) { c.className = 'agent-card'; c.style.setProperty('--accent', a.color); }
+  AGENT_DEFS.forEach(def => {
+    updateAgentCard(def.key, 'idle');
   });
 }
 
-let thinkingEl = null;
+// Add message to chat
+function addMessage(msg, isUser = false) {
+  const emptyState = document.getElementById('emptyState');
+  if (emptyState) emptyState.remove();
+
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'message';
+  
+  if (isUser) {
+    messageDiv.className = 'message message-user';
+    messageDiv.innerHTML = `
+      <div class="message-bubble">${escapeHtml(msg)}</div>
+    `;
+  } else {
+    const isCentral = msg.agent_key === 'central';
+    const agentDef = AGENT_DEFS.find(a => a.key === msg.agent_key) || { name: msg.agent_name, role: '', icon: '🤖' };
+    
+    messageDiv.className = 'message message-agent';
+    messageDiv.innerHTML = `
+      <div class="message-avatar" style="background: #f5f5f5;">${agentDef.icon}</div>
+      <div class="message-content">
+        <div class="message-header">
+          <span class="message-name">${escapeHtml(agentDef.name)}</span>
+          <span class="message-role">${escapeHtml(agentDef.role)}</span>
+          <span class="message-time">${new Date().toLocaleTimeString('fr', { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
+        <div class="message-bubble ${isCentral ? 'central' : ''}">${formatMessage(escapeHtml(msg.message))}</div>
+      </div>
+    `;
+  }
+  
+  messagesArea.appendChild(messageDiv);
+  scrollToBottom();
+  return messageDiv;
+}
+
+// Format message with markdown-like tables
+function formatMessage(text) {
+  // Simple formatting for tables
+  let formatted = text.replace(/\n/g, '<br>');
+  formatted = formatted.replace(/\|(.+?)\|/g, (match) => {
+    const cells = match.split('|').filter(c => c.trim());
+    if (cells.length > 1) {
+      return `<div style="margin: 8px 0;"><table style="width:100%; border-collapse:collapse; font-size:12px;">${cells.map(c => `<td style="border:1px solid #eee; padding:6px 8px;">${c.trim()}</td>`).join('')}</table></div>`;
+    }
+    return match;
+  });
+  return formatted;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+let thinkingDiv = null;
 function showThinking(agentKey) {
   removeThinking();
-  const agent = AGENTS.find(a => a.key === agentKey) || {};
-  const wrap = document.createElement('div');
-  wrap.className = 'thinking';
-  wrap.id = 'thinkingEl';
-  wrap.innerHTML = `<span></span><span></span><span></span> <span style="font-size:11px">${agent.icon || ''} ${agent.name || 'Agent'} réfléchit...</span>`;
-  document.getElementById('chatArea').appendChild(wrap);
-  scrollDown();
-  thinkingEl = wrap;
-}
-function removeThinking() {
-  const el = document.getElementById('thinkingEl');
-  if (el) el.remove();
-  thinkingEl = null;
-}
-
-function scrollDown() {
-  const area = document.getElementById('chatArea');
-  area.scrollTop = area.scrollHeight;
-}
-
-function fmtTime(iso) {
-  return new Date(iso || Date.now()).toLocaleTimeString('fr', { hour: '2-digit', minute: '2-digit' });
-}
-
-let lastPhase = null;
-
-function addSeparator(phase) {
-  const label = PHASE_LABELS[phase];
-  if (!label || phase === lastPhase) return;
-  lastPhase = phase;
-  const sep = document.createElement('div');
-  sep.className = 'day-sep';
-  sep.textContent = label;
-  document.getElementById('chatArea').appendChild(sep);
-}
-
-async function typeText(el, text, speed = 10) {
-  el.textContent = '';
-  for (let i = 0; i < text.length; i++) {
-    el.textContent += text[i];
-    if (i % 4 === 0) {
-      scrollDown();
-      await new Promise(r => setTimeout(r, speed));
-    }
-  }
-  scrollDown();
-}
-
-function addMessage(msg) {
-  const area = document.getElementById('chatArea');
-
-  // separator before central messages (except init)
-  if (msg.is_central && msg.phase) addSeparator(msg.phase);
-
-  const agent = AGENTS.find(a => a.key === msg.agent_key) || {};
-  const color = msg.color || agent.color || '#888';
-
-  const row = document.createElement('div');
-  row.className = 'msg-row';
-
-  const meta = document.createElement('div');
-  meta.className = 'msg-meta';
-  meta.innerHTML = `
-    <div class="msg-icon" style="background:${color}22; color:${color}">${msg.icon}</div>
-    <span class="msg-name" style="color:${color}">${msg.agent_name}</span>
-    <span class="msg-role">${msg.role || ''}</span>
-    <span class="msg-time">${fmtTime(msg.timestamp)}</span>
+  const agentDef = AGENT_DEFS.find(a => a.key === agentKey) || { name: 'Agent', icon: '🤖' };
+  thinkingDiv = document.createElement('div');
+  thinkingDiv.className = 'thinking';
+  thinkingDiv.innerHTML = `
+    <div class="thinking-dots">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="thinking-text">${agentDef.icon} ${agentDef.name} analyse en cours...</div>
   `;
-
-  const bubble = document.createElement('div');
-  bubble.className = `msg-bubble${msg.is_central ? ' is-central' : ''}`;
-  bubble.style.setProperty('--accent', color);
-
-  const textEl = document.createElement('span');
-  bubble.appendChild(textEl);
-
-  row.appendChild(meta);
-  row.appendChild(bubble);
-  area.appendChild(row);
-  scrollDown();
-
-  return textEl;
+  messagesArea.appendChild(thinkingDiv);
+  scrollToBottom();
 }
 
-// ── Main flow ──────────────────────────────────────────────────────────────
+function removeThinking() {
+  if (thinkingDiv) {
+    thinkingDiv.remove();
+    thinkingDiv = null;
+  }
+}
+
+function scrollToBottom() {
+  messagesArea.scrollTop = messagesArea.scrollHeight;
+}
+
+// Progress update
+function updateProgress(step, total) {
+  const percent = Math.round((step / total) * 100);
+  progressFill.style.width = `${percent}%`;
+  progressText.textContent = `${percent}%`;
+}
+
+// Process next message
 async function processNext() {
   if (!isRunning || !sessionId) return;
 
-  let data;
   try {
-    const res = await fetch('/api/next', {
+    const response = await fetch('/api/next', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ session_id: sessionId })
     });
-    data = await res.json();
-  } catch (e) {
-    document.getElementById('statusBadge').textContent = 'Erreur réseau';
-    isRunning = false;
-    document.getElementById('startBtn').disabled = false;
-    removeThinking();
-    return;
-  }
+    const data = await response.json();
 
-  if (data.finished) {
-    removeThinking();
-    AGENTS.forEach(a => setDone(a.key));
-    document.getElementById('statusBadge').textContent = '✓ Analyse terminée';
-    document.getElementById('progressFill').style.width = '100%';
-    document.getElementById('startBtn').disabled = false;
-    isRunning = false;
-    return;
-  }
-
-  if (data.message) {
-    const msg = data.message;
-    removeThinking();
-    setActive(msg.agent_key);
-
-    const textEl = addMessage(msg);
-    await typeText(textEl, msg.message, 8);
-
-    setDone(msg.agent_key);
-
-    if (data.progress !== undefined) {
-      document.getElementById('progressFill').style.width = Math.round(data.progress * 100) + '%';
+    if (data.finished) {
+      removeThinking();
+      isRunning = false;
+      startBtn.disabled = false;
+      statusText.textContent = '✓ Terminé';
+      updateProgress(AGENT_DEFS.length, AGENT_DEFS.length);
+      // Mark all as done
+      AGENT_DEFS.forEach(def => updateAgentCard(def.key, 'done'));
+      return;
     }
 
-    // peek at next agent to show thinking
-    const nextState = data.state;
-    if (nextState && nextState !== 'done') {
-      const nextAgentKey = guessNextAgent(nextState);
-      if (nextAgentKey) {
-        setActive(nextAgentKey);
-        showThinking(nextAgentKey);
+    if (data.message) {
+      removeThinking();
+      const msg = data.message;
+      
+      // Update active agent
+      if (activeAgentKey && activeAgentKey !== msg.agent_key) {
+        updateAgentCard(activeAgentKey, 'done');
       }
+      activeAgentKey = msg.agent_key;
+      updateAgentCard(msg.agent_key, 'active');
+      
+      // Add message
+      addMessage(msg);
+      
+      // Update progress
+      if (data.progress !== undefined) {
+        updateProgress(data.progress * 100, 100);
+        statusText.textContent = `${Math.round(data.progress * 100)}%`;
+      }
+      
+      // Show thinking for next agent if not finished
+      if (!data.finished && data.state && data.state !== 'done') {
+        const nextAgent = guessNextAgent(data.state);
+        if (nextAgent) {
+          setTimeout(() => showThinking(nextAgent), 200);
+        }
+      }
+      
+      // Continue
+      setTimeout(processNext, 500);
     }
-
-    document.getElementById('statusBadge').textContent = `Étape ${Math.round((data.progress || 0) * 100)}%`;
-    setTimeout(processNext, 600);
+  } catch (error) {
+    console.error('Error:', error);
+    statusText.textContent = 'Erreur';
+    isRunning = false;
+    startBtn.disabled = false;
+    removeThinking();
   }
 }
 
-// Map state names to agent keys for "thinking" preview
 function guessNextAgent(state) {
-  if (state.includes('data'))      return 'data';
-  if (state.includes('prospect'))  return 'prospect';
-  if (state.includes('scoring'))   return 'scoring';
-  if (state.includes('product'))   return 'product';
+  if (state.includes('data')) return 'data';
+  if (state.includes('prospect')) return 'prospect';
+  if (state.includes('scoring')) return 'scoring';
+  if (state.includes('product')) return 'product';
   if (state.includes('marketing')) return 'marketing';
-  if (state.includes('optim'))     return 'optimization';
-  if (state.includes('central') || state === 'init' || state === 'done') return 'central';
-  return null;
+  if (state.includes('optim')) return 'optimization';
+  return 'central';
 }
 
+// Start conversation
 async function startConversation() {
-  const sujet = document.getElementById('sujetInput').value.trim();
+  const sujet = sujetInput.value.trim();
   if (!sujet) return;
-
-  document.getElementById('startBtn').disabled = true;
-  document.getElementById('emptyState')?.remove();
-  document.getElementById('chatArea').innerHTML = '';
-  document.getElementById('progressFill').style.width = '0%';
-  document.getElementById('statusBadge').textContent = 'Démarrage...';
+  
+  startBtn.disabled = true;
   isRunning = true;
-  lastPhase = null;
-  resetCards();
-
-  // show user message
-  const userRow = document.createElement('div');
-  userRow.className = 'msg-row';
-  userRow.innerHTML = `
-    <div class="msg-meta">
-      <div class="msg-icon" style="background:rgba(255,255,255,0.06);color:#94a3b8">👤</div>
-      <span class="msg-name" style="color:#94a3b8">Vous</span>
-      <span class="msg-time">${fmtTime()}</span>
-    </div>
-    <div class="msg-bubble is-user">${sujet}</div>
-  `;
-  document.getElementById('chatArea').appendChild(userRow);
-
-  // show central thinking immediately
-  setActive('central');
+  activeAgentKey = null;
+  resetAgents();
+  
+  // Clear messages
+  messagesArea.innerHTML = '';
+  
+  // Add user message
+  addMessage(sujet, true);
+  
+  statusText.textContent = 'Démarrage...';
+  updateProgress(0, 100);
+  
+  // Show thinking for central
   showThinking('central');
-
+  
   try {
-    const res = await fetch('/api/start', {
+    const response = await fetch('/api/start', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sujet })
     });
-    const data = await res.json();
+    const data = await response.json();
+    
     if (data.error) {
-      document.getElementById('statusBadge').textContent = 'Erreur: ' + data.error;
-      document.getElementById('startBtn').disabled = false;
+      statusText.textContent = `Erreur: ${data.error}`;
       isRunning = false;
+      startBtn.disabled = false;
       removeThinking();
       return;
     }
+    
     sessionId = data.session_id;
-  } catch (e) {
-    document.getElementById('statusBadge').textContent = 'Erreur serveur';
-    document.getElementById('startBtn').disabled = false;
+    processNext();
+  } catch (error) {
+    console.error('Start error:', error);
+    statusText.textContent = 'Erreur de connexion';
     isRunning = false;
+    startBtn.disabled = false;
     removeThinking();
-    return;
   }
-
-  await processNext();
 }
 
-document.getElementById('startBtn').onclick = startConversation;
-document.getElementById('sujetInput').onkeydown = e => { if (e.key === 'Enter') startConversation(); };
+// Event listeners
+startBtn.addEventListener('click', startConversation);
+sujetInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter' && !startBtn.disabled) {
+    startConversation();
+  }
+});
+
+// Initialize
+createAgentCards();
 </script>
 </body>
 </html>

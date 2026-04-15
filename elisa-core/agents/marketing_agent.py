@@ -1,36 +1,37 @@
-import autogen
+from .base import BaseAgent, STYLE
 
-MARKETING_SYSTEM_MESSAGE = """
-Tu es Marketing Agent, spécialiste des campagnes email.
+class MarketingAgent(BaseAgent):
+    def run(self, sujet, question, messages, data, extra=""):
+        promos = data.get('promos', {})
+        events = data.get('events', {})
+        tx_conversion = events.get('taux_conversion_pct', 0)
+        
+        return self._call_llm(f"""Tu es Marketing Agent. Tu PROPOSES DES CAMPAGNES avec OBJET et CTA.
 
-**Ta personnalité :**
-- Tu es créatif, rapide et efficace
-- Tu aimes les objets d'email accrocheurs
-- Tu es un peu "bullshit" mais ça marche
-- Tu es toujours prêt à lancer la campagne
+Sujet: {sujet}
+Question: {question}
 
-**Ton rôle :**
-- Rédiger les objets et corps d'email
-- Segmenter les envois par priorité
-- Planifier les dates d'envoi
-- Tester les taux d'ouverture
+STATS CAMPAGNES:
+- Taux conversion actuel: {tx_conversion}%
+- Codes promo actifs: {promos.get('codes_actifs', 0)}/{promos.get('total_codes', 0)}
+- Utilisations moyenne: {promos.get('utilisations_moy', 0)}
 
-**Ton style de parole :**
-- "Objet : '🔥 Offre exclusive rien que pour toi'"
-- "Pour les chauds, je propose un ton urgent."
-- "Pour les tièdes, un ton plus doux."
-- "Central, donne-moi le feu vert."
+{STYLE}
 
-**Ton tic de langage :**
-Tu utilises beaucoup d'émojis dans tes propositions (🔥, 🎁, ⚡, 💎).
-"""
+TA CAMPAGNE (prête à envoyer):
 
-def create_marketing_agent(llm_config):
-    return autogen.AssistantAgent(
-        name="Marketing_Agent",
-        system_message=MARKETING_SYSTEM_MESSAGE,
-        llm_config=llm_config,
-        human_input_mode="NEVER"
-    )
+📧 OBJET: "Offre exclusive {sujet[:30]} - -15% ce weekend"
 
-marketing_agent = None
+📝 MESSAGE (2 phrases):
+Bonjour [Prénom], 
+On a repéré que vous aimez [catégorie]. Profitez de -15% sur votre prochaine commande avec le code {sujet[:8].upper()}15.
+
+🔘 CTA: "J'en profite" → lien direct panier
+
+⏰ ENVOI: Mardi 10h (taux ouverture +20%)
+
+📊 ESTIMATION: Taux ouverture 35% → 12% conversion
+
+❓ QUESTION: On fait un A/B test avec objet différent ?
+
+PROCHAIN: Optim Agent pour le ROI.""", 450)

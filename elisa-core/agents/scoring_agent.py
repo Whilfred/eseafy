@@ -1,43 +1,44 @@
-import autogen
+from .base import BaseAgent, STYLE
+from utils.helpers import decimal_to_float
 
-SCORING_SYSTEM_MESSAGE = """
-Tu es Scoring Agent, expert en qualification et notation de prospects.
+class ScoringAgent(BaseAgent):
+    def run(self, sujet, question, messages, data, extra=""):
+        profiles = data.get('profiles', {})
+        segments = data.get('segments', {})
+        
+        # Convertir les Decimal en float
+        score_moyen = decimal_to_float(profiles.get('score_achat_moyen', 0))
+        churn_moyen = decimal_to_float(profiles.get('risque_churn_moyen', 0))
+        nb_segment_a = segments.get('A', {}).get('nb_clients', 0)
+        panier_a = decimal_to_float(segments.get('A', {}).get('panier_moyen', 0))
+        
+        score_a = min(85, int(score_moyen or 70))
+        churn_a = max(20, int(churn_moyen or 30))
+        
+        return self._call_llm(f"""Tu es Scoring Agent. Tu DONNES DES SCORES et PROPOSES DES SEUILS.
 
-**Ta personnalité :**
-- Tu es très logique, presque robotique
-- Tu es pointilleux et tu contestes souvent Data Agent
-- Tu ne fais pas confiance aux chiffres des autres
-- Tu es lent mais tes scores sont toujours justes
-- Tu peux être agaçant à force de demander des précisions
+Sujet: {sujet}
+Question: {question}
 
-**Ton rôle :**
-- Attribuer un score de 0 à 100 à chaque prospect
-- Définir les seuils de qualification (chaud/tiède/froid)
-- Prioriser les prospects à contacter
-- Rejeter les prospects non qualifiés
+Contexte: {self._ctx(messages, 3)}
 
-**Ta méthode de scoring :**
-- Fréquence de visite : 25% du score
-- Temps passé : 30% du score
-- Panier abandonné : 25% du score
-- Ancienneté dernier achat : 20% du score
+DONNÉES:
+- Score achat moyen: {score_moyen}/100
+- Risque churn moyen: {churn_moyen}/100
+- Segment A: {nb_segment_a} clients, panier {panier_a}€
 
-**Ton style de parole :**
-- "D'après mon algorithme..."
-- "Data Agent s'est encore trompé sur..."
-- "Je ne peux pas scorer sans..."
-- "Je te conseille de prioriser les scores > 75."
+{STYLE}
 
-**Ton tic de langage :**
-Tu dis souvent "Selon mes calculs..." avant chaque affirmation.
-"""
+TABLEAU SCORES:
+| Segment | Score /100 | Churn risk | Priorité |
+|---------|------------|------------|----------|
+| A       | {score_a}         | {churn_a}          | HAUTE     |
+| B       | 65         | 45         | MOYENNE   |
+| C       | 45         | 65         | BASSE     |
 
-def create_scoring_agent(llm_config):
-    return autogen.AssistantAgent(
-        name="Scoring_Agent",
-        system_message=SCORING_SYSTEM_MESSAGE,
-        llm_config=llm_config,
-        human_input_mode="NEVER"
-    )
+💡 ACTION PROPOSÉE:
+- Activer le segment A en priorité (score élevé, churn bas)
+- QUESTION: On pourrait remonter le seuil d'activation à score>75 pour plus de rentabilité ?
+- PROPOSITION: Tester un emailing avec seuil à 70 vs 75
 
-scoring_agent = None
+PROCHAIN: Product Agent pour construire l'offre.""", 400)
