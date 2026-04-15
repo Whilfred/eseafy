@@ -94,7 +94,7 @@ async function sendConfirmationCommande({ email, nom_client, reference, produit,
     await transporter.sendMail({
       from:    `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
       to:      email,
-      cc:      process.env.EMAIL_FROM, // ← copie admin
+      cc:      process.env.EMAIL_FROM,
       subject: `✅ Commande #${reference} confirmée — Ojafy`,
       html:    baseTemplate(content, `Commande #${reference}`),
     });
@@ -148,7 +148,7 @@ async function sendNotificationVendeur({ email_vendeur, nom_vendeur, reference, 
     await transporter.sendMail({
       from:    `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
       to:      email_vendeur,
-      cc:      process.env.EMAIL_FROM, // ← copie admin
+      cc:      process.env.EMAIL_FROM,
       subject: `🛒 Nouvelle commande #${reference} — ${Number(montant).toLocaleString('fr-FR')} XOF`,
       html:    baseTemplate(content, `Nouvelle commande #${reference}`),
     });
@@ -205,7 +205,7 @@ async function sendEmailBienvenue({ email, prenom, boutique_slug }) {
     await transporter.sendMail({
       from:    `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
       to:      email,
-      cc:      process.env.EMAIL_FROM, // ← copie admin
+      cc:      process.env.EMAIL_FROM,
       subject: `Bienvenue sur ojafy ! Votre boutique est prête 🚀`,
       html:    baseTemplate(content, 'Bienvenue sur ojafy'),
     });
@@ -244,7 +244,7 @@ async function sendNotificationInscription({ email, prenom, nom }) {
   try {
     await transporter.sendMail({
       from:    `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
-      to:      process.env.EMAIL_FROM, // ← uniquement admin
+      to:      process.env.EMAIL_FROM,
       subject: `👤 Nouvel inscrit sur ojafy — ${email}`,
       html:    baseTemplate(content, 'Nouvel inscrit'),
     });
@@ -255,12 +255,22 @@ async function sendNotificationInscription({ email, prenom, nom }) {
 }
 
 // ══════════════════════════════════════
-//  6. EMAIL OTP (CONNEXION)
+//  6. EMAIL OTP (Connexion + Réinitialisation)
 // ══════════════════════════════════════
-async function sendOTP({ email, prenom, otp }) {
+async function sendOTP({ email, prenom, otp, context = 'login' }) {
+  const isReset = context === 'reset';
+
+  const titre  = isReset ? '🔑 Réinitialisation de votre mot de passe' : '🔐 Code de vérification';
+  const intro  = isReset
+    ? 'Vous avez demandé une réinitialisation de votre mot de passe. Voici votre code :'
+    : 'Voici votre code de connexion.';
+  const warning = isReset
+    ? '<p style="color:#FF5F7A;font-size:12.5px;text-align:center;margin-top:12px;">⚠️ Si vous n\'avez pas demandé cette réinitialisation, changez votre mot de passe immédiatement.</p>'
+    : '<p style="color:#6a6760;font-size:13px;text-align:center;">Si vous n\'avez pas demandé ce code, ignorez cet email.</p>';
+
   const content = `
-    <h1 style="font-size:22px;color:#0a0a0a;margin:0 0 8px;">🔐 Code de vérification</h1>
-    <p style="color:#6a6760;font-size:14px;margin:0 0 24px;">Bonjour <strong>${prenom || ''}</strong>, voici votre code de connexion.</p>
+    <h1 style="font-size:22px;color:#0a0a0a;margin:0 0 8px;">${titre}</h1>
+    <p style="color:#6a6760;font-size:14px;margin:0 0 24px;">Bonjour <strong>${prenom || ''}</strong>, ${intro}</p>
     <div style="text-align:center;margin:32px 0;">
       <div style="display:inline-block;background:#f0f5ff;border:2px solid #1A6BFF;border-radius:16px;padding:24px 40px;">
         <div style="font-size:11px;color:#9e9b97;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Votre code</div>
@@ -268,21 +278,77 @@ async function sendOTP({ email, prenom, otp }) {
         <div style="font-size:12px;color:#9e9b97;margin-top:8px;">Expire dans 10 minutes</div>
       </div>
     </div>
-    <p style="color:#6a6760;font-size:13px;text-align:center;">Si vous n'avez pas demandé ce code, ignorez cet email.</p>`;
+    ${warning}`;
+
+  const subject = isReset
+    ? `🔑 ${otp} — Réinitialisation mot de passe ojafy`
+    : `🔐 ${otp} — Votre code de connexion ojafy`;
 
   try {
     await transporter.sendMail({
       from:    `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
       to:      email,
-      subject: `🔐 ${otp} — Votre code de connexion ojafy`,
-      html:    baseTemplate(content, 'Code de connexion'),
+      subject,
+      html:    baseTemplate(content, 'Code de vérification'),
     });
-    console.log(`📧 OTP envoyé → ${email}`);
+    console.log(`📧 OTP (${context}) envoyé → ${email}`);
   } catch (err) {
     console.error('❌ Erreur envoi OTP :', err.message);
   }
 }
 
+// ══════════════════════════════════════
+//  7. EMAIL CONFIRMATION MOT DE PASSE MODIFIÉ
+// ══════════════════════════════════════
+async function sendPasswordChanged({ email, prenom }) {
+  if (!email) return;
+
+  const dateStr = new Date().toLocaleDateString('fr-FR', {
+    day: '2-digit', month: 'long', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+
+  const content = `
+    <h1 style="font-size:22px;color:#0a0a0a;margin:0 0 8px;">✅ Mot de passe modifié</h1>
+    <p style="color:#6a6760;font-size:14px;margin:0 0 24px;">Bonjour <strong>${prenom || ''}</strong>, votre mot de passe ojafy a bien été modifié.</p>
+    <div style="background:#f0fff8;border:1px solid #b7f0d8;border-radius:12px;padding:20px;margin-bottom:24px;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="font-size:13px;color:#6a6760;">Date de modification</td>
+          <td style="text-align:right;font-size:13px;font-weight:600;color:#0a0a0a;">${dateStr}</td>
+         </tr>
+         <tr>
+          <td style="font-size:13px;color:#6a6760;padding-top:8px;">Email</td>
+          <td style="text-align:right;font-size:13px;padding-top:8px;">${email}</td>
+         </tr>
+       </table>
+    </div>
+    <div style="background:#fff5f6;border:1px solid #ffd6db;border-radius:12px;padding:16px;margin-bottom:24px;">
+      <p style="font-size:13px;color:#c0384a;margin:0;line-height:1.6;">
+        ⚠️ <strong>Ce n'était pas vous ?</strong> Votre compte est peut-être compromis.
+        Contactez-nous immédiatement ou réinitialisez à nouveau votre mot de passe.
+      </p>
+    </div>
+    <div style="text-align:center;">
+      <a href="https://ojafy.store/login" style="display:inline-block;background:#1A6BFF;color:#ffffff;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;">🔐 Accéder à mon compte</a>
+    </div>`;
+
+  try {
+    await transporter.sendMail({
+      from:    `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
+      to:      email,
+      subject: `✅ Votre mot de passe ojafy a été modifié`,
+      html:    baseTemplate(content, 'Mot de passe modifié'),
+    });
+    console.log(`📧 Email password changed → ${email}`);
+  } catch (err) {
+    console.error('❌ Erreur email password changed :', err.message);
+  }
+}
+
+// ══════════════════════════════════════
+//  EXPORTS (CORRIGÉ avec sendPasswordChanged)
+// ══════════════════════════════════════
 module.exports = {
   sendConfirmationCommande,
   sendNotificationVendeur,
@@ -290,4 +356,5 @@ module.exports = {
   sendEmailBienvenue,
   sendNotificationInscription,
   sendOTP,
+  sendPasswordChanged,
 };

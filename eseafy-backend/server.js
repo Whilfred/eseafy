@@ -31,6 +31,14 @@ app.use('/api/affiliation', require('./routes/affiliation'));
 app.use('/boutique',        require('./routes/boutique'));
 app.use('/api/elisa',       require('./routes/elisa'));
 app.use('/api/tracker',     require('./routes/tracker'));
+app.use('/api/auth',        require('./routes/forgot-password'));
+
+// ══ ROUTES ══
+app.use('/api/auth',        require('./routes/auth'));
+app.use('/api/auth',        require('./routes/forgot-password'));  // ← AJOUTE CETTE LIGNE
+app.use('/api/auth',        require('./routes/google-auth'));      // si tu as déjà la route Google
+app.use('/api/produits',    require('./routes/produits'));
+// ... le reste des routes
 
 // ══ PIXELS ══
 app.put('/api/boutique/pixels', require('./middleware/auth'), async (req, res) => {
