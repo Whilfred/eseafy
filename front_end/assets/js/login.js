@@ -519,6 +519,93 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ══════════════════════════════════════
+//  GOOGLE SIGN-IN
+// ══════════════════════════════════════
+function initGoogleSignIn() {
+  console.log('🔐 Initialisation Google Sign-In...');
+  
+  const googleBtn = document.getElementById('googleBtn');
+  if (!googleBtn) {
+    console.log('❌ Bouton Google non trouvé');
+    return;
+  }
+  
+  if (typeof google === 'undefined') {
+    console.log('⏳ Attente chargement Google...');
+    setTimeout(initGoogleSignIn, 500);
+    return;
+  }
+  
+  google.accounts.id.initialize({
+    client_id: '989060716042-9mmdrfdcuoe7h06pco59ka1b8ggu9gl6.apps.googleusercontent.com', // ← Remplace par ton vrai ID client !
+    callback: handleGoogleCredential,
+  });
+  
+  google.accounts.id.renderButton(
+    googleBtn,
+    { theme: 'outline', size: 'large', width: '100%' }
+  );
+  
+  console.log('✅ Google Sign-In initialisé');
+}
+
+async function handleGoogleCredential(response) {
+  console.log('🔐 Réponse Google reçue');
+  hideError();
+  setLoading(true);
+  
+  try {
+    // Décoder le token Google (sans bibliothèque externe)
+    const base64Url = response.credential.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    
+    const decoded = JSON.parse(jsonPayload);
+    console.log('📧 Email Google:', decoded.email);
+    
+    const { email, given_name, family_name, picture, sub } = decoded;
+    
+    const res = await fetch(`${API_URL}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        prenom: given_name || '',
+        nom: family_name || '',
+        googleId: sub,
+        picture: picture || null,
+      }),
+    });
+    
+    const data = await res.json();
+    console.log('📡 Réponse backend:', data);
+    
+    if (!res.ok) {
+      showError(data.message || 'Erreur Google.');
+      return;
+    }
+    
+    // Connexion réussie
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    window.location.href = 'home.html';
+    
+  } catch (err) {
+    console.error('❌ Erreur Google:', err);
+    showError('Erreur lors de la connexion Google.');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// Initialiser Google au chargement
+document.addEventListener('DOMContentLoaded', () => {
+  initGoogleSignIn();
+});
+
+// ══════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════
 switchTab('login');

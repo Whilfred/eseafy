@@ -686,7 +686,7 @@
     </div>
   </div>
 
-  <!-- Curseur personnalisé uniquement -->
+  <!-- Curseur personnalisé -->
   <script>
     const cursor = document.getElementById('cursor');
     const ring   = document.getElementById('cursor-ring');
@@ -699,7 +699,11 @@
     })();
   </script>
 
-  <!-- Charger login.js UNE SEULE FOIS -->
+  <!-- Google Sign-In -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+
+  <!-- Charger login.js -->
   <script src="./assets/js/login.js"></script>
 </body>
 </html>
