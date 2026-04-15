@@ -8,6 +8,7 @@ const API_URL = 'https://eseafy-backend.fly.dev/api';
 // ══════════════════════════════════════
 let currentTab   = 'login';
 let pendingEmail = null; // email en attente de vérification OTP
+let resetEmail   = null; // email pour la réinitialisation du mot de passe
 
 // ══════════════════════════════════════
 //  SWITCH ONGLETS login / register
@@ -52,6 +53,22 @@ function showOTPStep(email) {
   document.getElementById('form-title').textContent  = 'Vérification 🔐';
   document.getElementById('form-sub').innerHTML      = 'Entrez le code reçu par email';
   document.querySelectorAll('.auth-tabs, .divider, .social-btns, .feature-pills').forEach(el => el.style.display = 'none');
+  
+  // Restaurer le comportement normal du bouton OTP
+  const otpBtn = document.getElementById('otp-btn');
+  otpBtn.onclick = verifyOTP;
+  const otpBtnText = document.getElementById('otp-btn-text');
+  if (otpBtnText) otpBtnText.textContent = 'Vérifier le code';
+  
+  // Restaurer le lien renvoyer
+  const resendLink = document.querySelector('.otp-actions a:first-child');
+  if (resendLink) {
+    resendLink.onclick = (e) => {
+      e.preventDefault();
+      resendOTP();
+    };
+  }
+  
   // Focus automatique sur l'input OTP
   setTimeout(() => document.getElementById('otpInput')?.focus(), 100);
 }
@@ -62,6 +79,7 @@ function showMainForm() {
   if (otpStep) otpStep.style.display = 'none';
   document.querySelectorAll('.auth-tabs, .divider, .social-btns, .feature-pills').forEach(el => el.style.display = '');
   pendingEmail = null;
+  resetEmail = null;
 }
 
 function backToLogin() {
@@ -92,16 +110,16 @@ function setLoading(loading) {
   const text    = document.getElementById('btn-text');
   const arrow   = document.getElementById('btn-arrow');
   const spinner = document.getElementById('spinner');
-  btn.disabled         = loading;
-  text.style.opacity   = loading ? '0' : '1';
-  arrow.style.display  = loading ? 'none' : 'inline';
-  spinner.style.display = loading ? 'block' : 'none';
+  if (btn) btn.disabled = loading;
+  if (text) text.style.opacity = loading ? '0' : '1';
+  if (arrow) arrow.style.display = loading ? 'none' : 'inline';
+  if (spinner) spinner.style.display = loading ? 'block' : 'none';
 }
 
 function setOTPLoading(loading) {
   const btn     = document.getElementById('otp-btn');
   const spinner = document.getElementById('otp-spinner');
-  if (btn)     btn.disabled          = loading;
+  if (btn) btn.disabled = loading;
   if (spinner) spinner.style.display = loading ? 'block' : 'none';
 }
 
@@ -154,7 +172,7 @@ async function doLogin(email, password) {
   }
 }
 
-// ── VÉRIFIER L'OTP — Étape 2 ──
+// ── VÉRIFIER L'OTP — Étape 2 (connexion normale) ──
 async function verifyOTP() {
   const otp = document.getElementById('otpInput').value.trim();
   hideError();
@@ -190,10 +208,11 @@ async function verifyOTP() {
   }
 }
 
-// ── RENVOYER L'OTP ──
+// ── RENVOYER L'OTP (connexion normale) ──
 async function resendOTP() {
   if (!pendingEmail) return;
   hideError();
+  setOTPLoading(true);
   try {
     const res  = await fetch(`${API_URL}/auth/resend-otp`, {
       method:  'POST',
@@ -201,14 +220,17 @@ async function resendOTP() {
       body:    JSON.stringify({ email: pendingEmail }),
     });
     const data = await res.json();
+    setOTPLoading(false);
     if (res.ok) {
       showError('✅ Nouveau code envoyé !');
       document.getElementById('errorBanner').style.background = '#d4edda';
       document.getElementById('errorBanner').style.color      = '#1c7a4a';
+      setTimeout(() => hideError(), 3000);
     } else {
       showError(data.message);
     }
   } catch (err) {
+    setOTPLoading(false);
     showError('Erreur serveur.');
   }
 }
@@ -254,6 +276,247 @@ async function doRegister(email, password) {
 if (localStorage.getItem('token')) {
   window.location.href = 'home.html';
 }
+
+// ══════════════════════════════════════
+//  GOOGLE LOGIN
+// ══════════════════════════════════════
+function initGoogleSignIn() {
+  if (typeof google !== 'undefined') {
+    google.accounts.id.initialize({
+      client_id: 'VOTRE_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+      callback: handleGoogleCredential,
+    });
+    google.accounts.id.renderButton(
+      document.getElementById('google-btn'),
+      { theme: 'outline', size: 'large', width: '100%' }
+    );
+  }
+}
+
+async function handleGoogleCredential(response) {
+  hideError();
+  setLoading(true);
+
+  try {
+    const decoded = jwt_decode(response.credential);
+    const { email, given_name, family_name, picture, sub } = decoded;
+
+    const res = await fetch(`${API_URL}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        prenom: given_name,
+        nom: family_name,
+        googleId: sub,
+        picture,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError(data.message || 'Erreur Google.');
+      return;
+    }
+
+    if (data.step === 'otp_required') {
+      pendingEmail = data.email;
+      showOTPStep(data.email);
+      return;
+    }
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    window.location.href = 'home.html';
+  } catch (err) {
+    showError('Erreur lors de la connexion Google.');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ══════════════════════════════════════
+//  MOT DE PASSE OUBLIÉ (RÉINITIALISATION)
+// ══════════════════════════════════════
+
+async function requestPasswordReset() {
+  const email = prompt('Entrez votre adresse email :');
+  if (!email) return;
+
+  hideError();
+  setLoading(true);
+  
+  try {
+    const res = await fetch(`${API_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+    setLoading(false);
+
+    if (res.ok) {
+      resetEmail = email;
+      showResetOTPStep(email);
+    } else {
+      showError(data.message || 'Erreur lors de la demande.');
+    }
+  } catch (err) {
+    setLoading(false);
+    showError('Erreur serveur. Veuillez réessayer.');
+  }
+}
+
+function showResetOTPStep(email) {
+  // Sauvegarder l'email
+  resetEmail = email;
+  
+  // Afficher l'interface OTP
+  document.getElementById('auth-form').style.display = 'none';
+  document.getElementById('otp-step').style.display = 'block';
+  document.getElementById('otp-email').textContent = email;
+  document.getElementById('form-title').textContent = 'Réinitialisation 🔑';
+  document.getElementById('form-sub').innerHTML = 'Entrez le code reçu par email pour réinitialiser votre mot de passe';
+  
+  // Changer le comportement du bouton OTP pour la réinitialisation
+  const otpBtn = document.getElementById('otp-btn');
+  otpBtn.onclick = verifyResetOTP;
+  const otpBtnText = document.getElementById('otp-btn-text');
+  if (otpBtnText) otpBtnText.textContent = 'Vérifier et réinitialiser';
+  
+  // Changer le comportement du lien "Renvoyer"
+  const resendLink = document.querySelector('.otp-actions a:first-child');
+  if (resendLink) {
+    resendLink.onclick = (e) => {
+      e.preventDefault();
+      resendResetOTP();
+    };
+  }
+  
+  // Réinitialiser l'input OTP
+  document.getElementById('otpInput').value = '';
+  setTimeout(() => document.getElementById('otpInput')?.focus(), 100);
+}
+
+async function verifyResetOTP() {
+  const otp = document.getElementById('otpInput').value.trim();
+  
+  if (!otp || otp.length !== 6) {
+    showError('Veuillez saisir le code à 6 chiffres.');
+    return;
+  }
+  
+  // Vérifier que resetEmail existe
+  if (!resetEmail) {
+    showError('Email non trouvé. Veuillez recommencer.');
+    return;
+  }
+  
+  // Demander le nouveau mot de passe
+  const newPassword = prompt('Nouveau mot de passe (minimum 6 caractères) :');
+  
+  if (!newPassword) {
+    showError('Veuillez saisir un nouveau mot de passe.');
+    return;
+  }
+  
+  if (newPassword.length < 6) {
+    showError('Le mot de passe doit faire au moins 6 caractères.');
+    return;
+  }
+
+  setOTPLoading(true);
+  
+  try {
+    const res = await fetch(`${API_URL}/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: resetEmail,
+        otp: otp,
+        newPassword: newPassword,
+      }),
+    });
+
+    const data = await res.json();
+    setOTPLoading(false);
+
+    if (res.ok) {
+      showError('✅ Mot de passe modifié avec succès ! Connectez-vous.');
+      const banner = document.getElementById('errorBanner');
+      banner.style.background = '#d4edda';
+      banner.style.color = '#1c7a4a';
+      
+      setTimeout(() => {
+        backToLogin();
+      }, 2000);
+    } else {
+      showError(data.message || 'Erreur lors de la réinitialisation.');
+    }
+  } catch (err) {
+    setOTPLoading(false);
+    showError('Erreur serveur. Veuillez réessayer.');
+  }
+}
+
+async function resendResetOTP() {
+  if (!resetEmail) {
+    showError('Email non trouvé. Veuillez recommencer.');
+    return;
+  }
+  
+  hideError();
+  setOTPLoading(true);
+  
+  try {
+    const res = await fetch(`${API_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: resetEmail }),
+    });
+    
+    const data = await res.json();
+    setOTPLoading(false);
+    
+    if (res.ok) {
+      showError('✅ Nouveau code envoyé ! Vérifiez votre boîte email.');
+      const banner = document.getElementById('errorBanner');
+      banner.style.background = '#d4edda';
+      banner.style.color = '#1c7a4a';
+      setTimeout(() => hideError(), 3000);
+    } else {
+      showError(data.message || 'Erreur lors du renvoi.');
+    }
+  } catch (err) {
+    setOTPLoading(false);
+    showError('Erreur serveur.');
+  }
+}
+
+// ══════════════════════════════════════
+//  INITIALISATION DES LIENS
+// ══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Lien mot de passe oublié
+  const forgotLink = document.getElementById('forgot-hint')?.querySelector('a');
+  if (forgotLink) {
+    forgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      requestPasswordReset();
+    });
+  }
+  
+  // Bouton retour de l'OTP
+  const backLink = document.getElementById('backToLoginLink');
+  if (backLink) {
+    backLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      backToLogin();
+    });
+  }
+});
 
 // ══════════════════════════════════════
 //  INIT

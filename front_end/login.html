@@ -77,7 +77,6 @@
         radial-gradient(ellipse 50% 40% at 80% 80%, rgba(26,107,255,0.08) 0%, transparent 50%);
     }
 
-    /* Subtle grid */
     .grid-lines {
       position: absolute; inset: 0; z-index: 0; opacity: 0.04;
       background-image: 
@@ -86,7 +85,6 @@
       background-size: 60px 60px;
     }
 
-    /* Floating orbs */
     .orb {
       position: absolute; border-radius: 50%;
       filter: blur(80px); pointer-events: none; z-index: 0;
@@ -148,7 +146,6 @@
       max-width: 420px; margin-bottom: 40px;
     }
 
-    /* Proof cards */
     .proof-float { display: flex; flex-direction: column; gap: 10px; }
     .proof-card {
       display: flex; align-items: center; gap: 12px;
@@ -171,7 +168,6 @@
     .proof-info { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
     .proof-amount { margin-left: auto; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: var(--success); white-space: nowrap; }
 
-    /* Stats */
     .left-stats { position: relative; z-index: 2; display: flex; gap: 0; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.07); }
     .l-stat { flex: 1; text-align: center; }
     .l-stat + .l-stat { border-left: 1px solid rgba(255,255,255,0.07); }
@@ -210,7 +206,6 @@
     .form-sub a { color: var(--blue); font-weight: 600; text-decoration: none; }
     .form-sub a:hover { text-decoration: underline; }
 
-    /* Tabs */
     .auth-tabs {
       display: flex; background: #F3F4F8; border-radius: 12px;
       padding: 4px; margin-bottom: 28px;
@@ -226,7 +221,6 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.1), 0 2px 12px rgba(0,0,0,0.06);
     }
 
-    /* Error banner */
     .error-banner {
       display: none; align-items: center; gap: 9px;
       padding: 12px 16px; border-radius: 10px;
@@ -235,9 +229,7 @@
       font-weight: 500;
     }
 
-    /* Fields */
     .register-only { display: none; }
-    .register-mode .register-only { display: block; }
 
     .field { margin-bottom: 18px; }
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -271,9 +263,7 @@
 
     .field-hint { margin-top: 7px; text-align: right; font-size: 12.5px; }
     .field-hint a { color: var(--blue); text-decoration: none; font-weight: 600; }
-    .field-hint a:hover { text-decoration: underline; }
 
-    /* Submit btn */
     .btn-submit {
       width: 100%; padding: 15px;
       background: linear-gradient(135deg, var(--blue), #4D8FFF);
@@ -281,7 +271,7 @@
       font-family: 'Sora', sans-serif;
       font-size: 14.5px; font-weight: 700; letter-spacing: .03em;
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: all .22s; position: relative; overflow: hidden;
+      transition: all .22s;
       box-shadow: 0 6px 24px rgba(26,107,255,0.35);
       margin-bottom: 24px;
     }
@@ -298,7 +288,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Divider */
     .divider {
       display: flex; align-items: center; gap: 12px;
       font-size: 12px; color: #9CA3AF; font-weight: 500;
@@ -308,7 +297,6 @@
       content: ''; flex: 1; height: 1px; background: #E5E7EB;
     }
 
-    /* Social btns */
     .social-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
     .btn-social {
       display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -319,7 +307,6 @@
     }
     .btn-social:hover { background: #F3F4F8; border-color: #D1D5DB; transform: translateY(-1px); }
 
-    /* Pills */
     .feature-pills { display: flex; flex-wrap: wrap; gap: 8px; }
     .pill {
       display: flex; align-items: center; gap: 5px;
@@ -329,11 +316,9 @@
     }
     .pill-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--blue); }
 
-    /* Terms */
     .terms-text { font-size: 11.5px; color: #9CA3AF; text-align: center; margin-top: 16px; line-height: 1.6; }
     .terms-text a { color: var(--blue); font-weight: 600; text-decoration: none; }
 
-    /* OTP Step */
     .otp-box { text-align: center; margin-bottom: 24px; }
     .otp-icon { font-size: 52px; margin-bottom: 12px; display: block; }
     .otp-title { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 8px; color: var(--ink); }
@@ -358,7 +343,6 @@
     .otp-actions a:hover { text-decoration: underline; }
     .otp-actions span { color: #E5E7EB; }
 
-    /* Responsive */
     @media (max-width: 960px) {
       body { flex-direction: column; overflow: auto; }
       .left-panel { width: 100%; min-height: auto; padding: 36px 28px; }
@@ -460,21 +444,17 @@
         <a href="#" onclick="switchTab('register');return false;">Créer un compte</a>
       </p>
 
-      <!-- Onglets -->
       <div class="auth-tabs" id="auth-tabs">
-        <button class="auth-tab active" id="tab-login"    onclick="switchTab('login')">Connexion</button>
-        <button class="auth-tab"        id="tab-register" onclick="switchTab('register')">Inscription</button>
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Connexion</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Inscription</button>
       </div>
 
-      <!-- Bannière erreur/succès -->
       <div class="error-banner" id="errorBanner">
         <span>⚠</span>
         <span id="errorMsg">Erreur</span>
       </div>
 
-      <!-- ══ FORMULAIRE PRINCIPAL ══ -->
       <form id="auth-form" onsubmit="handleSubmit(event)">
-
         <div class="field register-only" id="field-name">
           <div class="field-row">
             <div class="field">
@@ -509,7 +489,7 @@
             <input type="password" id="password" placeholder="••••••••" required minlength="6" />
           </div>
           <div class="field-hint" id="forgot-hint">
-            <a href="#">Mot de passe oublié ?</a>
+            <a href="#" id="forgotPasswordLink">Mot de passe oublié ?</a>
           </div>
         </div>
 
@@ -522,13 +502,12 @@
         </div>
 
         <button type="submit" class="btn-submit" id="submit-btn">
-          <span id="btn-text"></span>
+          <span id="btn-text">Se connecter</span>
           <span class="btn-arrow" id="btn-arrow">→</span>
           <div class="spinner" id="spinner"></div>
         </button>
       </form>
 
-      <!-- ══ ÉTAPE OTP ══ -->
       <div id="otp-step" style="display:none;">
         <div class="otp-box">
           <div class="otp-icon">📧</div>
@@ -546,28 +525,28 @@
           placeholder="000000"
           maxlength="6"
           oninput="this.value=this.value.replace(/\D/g,'')"
-          onkeydown="if(event.key==='Enter')verifyOTP()"
+          onkeydown="if(event.key==='Enter'){const btn=document.getElementById('otp-btn');if(btn.onclick)btn.onclick();}"
         />
         <div class="otp-timer">Le code expire dans 10 minutes</div>
 
-        <button class="btn-submit" onclick="verifyOTP()" id="otp-btn" style="margin-top:16px;">
+        <!-- ⚠️ SUPPRIMÉ onclick="verifyOTP()" pour que JS gère -->
+        <button class="btn-submit" id="otp-btn" style="margin-top:16px;">
           <span id="otp-btn-text">Vérifier le code</span>
           <span class="btn-arrow">→</span>
           <div class="spinner" id="otp-spinner" style="display:none;"></div>
         </button>
 
         <div class="otp-actions">
-          <a href="#" onclick="resendOTP();return false;">🔄 Renvoyer le code</a>
+          <a href="#" id="resendOtpLink">🔄 Renvoyer le code</a>
           <span>|</span>
-          <a href="#" onclick="backToLogin();return false;">← Retour</a>
+          <a href="#" id="backToLoginLink">← Retour</a>
         </div>
       </div>
 
-      <!-- Séparateur et social (masqués pendant OTP) -->
       <div id="social-section">
         <div class="divider">ou continuer avec</div>
         <div class="social-btns">
-          <button class="btn-social" onclick="showError('Google non disponible pour l\'instant')">
+          <button class="btn-social" id="googleBtn">
             <svg width="15" height="15" viewBox="0 0 24 24">
               <path fill="#1A6BFF" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#3D87FF" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -576,7 +555,7 @@
             </svg>
             Google
           </button>
-          <button class="btn-social" onclick="showError('Facebook non disponible pour l\'instant')">
+          <button class="btn-social" id="facebookBtn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="#1A6BFF">
               <path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/>
             </svg>
@@ -597,6 +576,7 @@
     </div>
   </div>
 
+  <script src="./assets/js/login.js"></script>
   <script>
     /* Custom cursor */
     const cursor = document.getElementById('cursor');
@@ -609,6 +589,5 @@
       requestAnimationFrame(animRing);
     })();
   </script>
-  <script src="./assets/js/login.js"></script>
 </body>
 </html>
