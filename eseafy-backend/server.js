@@ -10,17 +10,45 @@ setTimeout(envoyerCampagnesElisa, 3000);
 
 const app = express();
 
-app.use(cors({ 
-  origin: ['http://localhost:3001', 'http://127.0.0.1:5500', 'null', 'https://ojafy.store', 'https://www.ojafy.store'], 
-  credentials: true 
+// ══ CORS (version corrigée avec support preflight) ══
+const allowedOrigins = [
+  'http://localhost:3001',
+  'http://127.0.0.1:5500',
+  'null',
+  'https://ojafy.store',
+  'https://www.ojafy.store',
+  'https://products.ojafy.store',
+  'https://front-end-icy-morning-1132.fly.dev'
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    // Permettre les requêtes sans origin (comme les apps mobiles)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('❌ CORS bloqué:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Gérer explicitement les requêtes OPTIONS (preflight)
+app.options('*', cors());
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 
-// ══ ROUTES ══
+// ══ ROUTES (supprimé les doublons) ══
 app.use('/api/auth',        require('./routes/auth'));
+app.use('/api/auth',        require('./routes/forgot-password'));
+app.use('/api/auth',        require('./routes/google-auth'));
 app.use('/api/produits',    require('./routes/produits'));
 app.use('/api/stats',       require('./routes/stats'));
 app.use('/api/commandes',   require('./routes/commandes'));
@@ -31,13 +59,8 @@ app.use('/api/affiliation', require('./routes/affiliation'));
 app.use('/boutique',        require('./routes/boutique'));
 app.use('/api/elisa',       require('./routes/elisa'));
 app.use('/api/tracker',     require('./routes/tracker'));
-app.use('/api/auth',        require('./routes/forgot-password'));
-app.use('/api/auth',        require('./routes/auth'));
-app.use('/api/auth',        require('./routes/forgot-password'));
-app.use('/api/auth',        require('./routes/google-auth'));
-app.use('/api/produits',    require('./routes/produits'));
 
-
+// ══ PIXELS ══
 app.put('/api/boutique/pixels', require('./middleware/auth'), async (req, res) => {
   const { fb_pixel_id, ga_id } = req.body;
   const pool = require('./config/db');

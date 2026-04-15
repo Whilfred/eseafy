@@ -176,7 +176,7 @@ router.post('/', async (req, res) => {
       ]
     );
 
-    const lien_public = `http://localhost:3001/boutique/${boutique.slug}/${slug}`;
+    const lien_public = `https://eseafy-backend.fly.dev/boutique/${boutique.slug}/${slug}`;
     console.log('🚀 Produit créé :', result.rows[0].nom);
     return res.status(201).json({ message: 'Produit créé.', produit: result.rows[0], lien_public });
 
