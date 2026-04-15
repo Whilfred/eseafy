@@ -7,8 +7,72 @@ const API_URL = 'https://eseafy-backend.fly.dev/api';
 //  ÉTAT
 // ══════════════════════════════════════
 let currentTab   = 'login';
-let pendingEmail = null; // email en attente de vérification OTP
-let resetEmail   = null; // email pour la réinitialisation du mot de passe
+let pendingEmail = null;
+let resetEmail   = null;
+
+// ══════════════════════════════════════
+//  MODAL PERSONNALISÉ
+// ══════════════════════════════════════
+function showModal(options) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('modalOverlay');
+    if (!modal) {
+      // Fallback si le modal n'existe pas dans le DOM
+      const result = prompt(options.title + '\n' + (options.subtitle || ''));
+      resolve(result);
+      return;
+    }
+    
+    const iconEl = document.getElementById('modalIcon');
+    const titleEl = document.getElementById('modalTitle');
+    const subEl = document.getElementById('modalSub');
+    const inputEl = document.getElementById('modalInput');
+    const confirmBtn = document.getElementById('modalConfirmBtn');
+    const cancelBtn = document.getElementById('modalCancelBtn');
+
+    iconEl.textContent = options.icon || '📧';
+    titleEl.textContent = options.title || 'Entrez votre email';
+    subEl.textContent = options.subtitle || 'Nous vous enverrons un code de réinitialisation';
+    inputEl.type = options.inputType || 'email';
+    inputEl.placeholder = options.placeholder || 'exemple@email.com';
+    inputEl.value = '';
+
+    const onConfirm = () => {
+      cleanup();
+      resolve(inputEl.value);
+    };
+    const onCancel = () => {
+      cleanup();
+      resolve(null);
+    };
+    const onOverlayClick = (e) => {
+      if (e.target === modal) {
+        cleanup();
+        resolve(null);
+      }
+    };
+    const onKeydown = (e) => {
+      if (e.key === 'Enter') onConfirm();
+      if (e.key === 'Escape') onCancel();
+    };
+
+    const cleanup = () => {
+      confirmBtn.removeEventListener('click', onConfirm);
+      cancelBtn.removeEventListener('click', onCancel);
+      modal.removeEventListener('click', onOverlayClick);
+      document.removeEventListener('keydown', onKeydown);
+      modal.classList.remove('active');
+    };
+
+    confirmBtn.addEventListener('click', onConfirm);
+    cancelBtn.addEventListener('click', onCancel);
+    modal.addEventListener('click', onOverlayClick);
+    document.addEventListener('keydown', onKeydown);
+
+    modal.classList.add('active');
+    setTimeout(() => inputEl.focus(), 100);
+  });
+}
 
 // ══════════════════════════════════════
 //  SWITCH ONGLETS login / register
@@ -37,8 +101,6 @@ function switchTab(tab) {
     : 'Pas encore de compte ? <a href="#" onclick="switchTab(\'register\');return false;">Créer un compte</a>';
 
   document.getElementById('auth-form').reset();
-
-  // Masquer l'étape OTP si on change d'onglet
   showMainForm();
 }
 
@@ -54,14 +116,12 @@ function showOTPStep(email) {
   document.getElementById('form-sub').innerHTML      = 'Entrez le code reçu par email';
   document.querySelectorAll('.auth-tabs, .divider, .social-btns, .feature-pills').forEach(el => el.style.display = 'none');
   
-  // Restaurer le comportement normal du bouton OTP
   const otpBtn = document.getElementById('otp-btn');
   otpBtn.onclick = verifyOTP;
   const otpBtnText = document.getElementById('otp-btn-text');
   if (otpBtnText) otpBtnText.textContent = 'Vérifier le code';
   
-  // Restaurer le lien renvoyer
-  const resendLink = document.querySelector('.otp-actions a:first-child');
+  const resendLink = document.getElementById('resendOtpLink');
   if (resendLink) {
     resendLink.onclick = (e) => {
       e.preventDefault();
@@ -69,7 +129,6 @@ function showOTPStep(email) {
     };
   }
   
-  // Focus automatique sur l'input OTP
   setTimeout(() => document.getElementById('otpInput')?.focus(), 100);
 }
 
@@ -154,13 +213,11 @@ async function doLogin(email, password) {
       return;
     }
 
-    // Si OTP requis → afficher l'étape OTP
     if (data.step === 'otp_required') {
       showOTPStep(data.email || email);
       return;
     }
 
-    // Connexion directe (si pas d'OTP)
     localStorage.setItem('token', data.token);
     localStorage.setItem('user',  JSON.stringify(data.user));
     window.location.href = 'home.html';
@@ -196,7 +253,6 @@ async function verifyOTP() {
       return;
     }
 
-    // Connecté !
     localStorage.setItem('token', data.token);
     localStorage.setItem('user',  JSON.stringify(data.user));
     window.location.href = 'home.html';
@@ -278,72 +334,19 @@ if (localStorage.getItem('token')) {
 }
 
 // ══════════════════════════════════════
-//  GOOGLE LOGIN
+//  MOT DE PASSE OUBLIÉ (AVEC MODAL)
 // ══════════════════════════════════════
-function initGoogleSignIn() {
-  if (typeof google !== 'undefined') {
-    google.accounts.id.initialize({
-      client_id: 'VOTRE_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
-      callback: handleGoogleCredential,
-    });
-    google.accounts.id.renderButton(
-      document.getElementById('google-btn'),
-      { theme: 'outline', size: 'large', width: '100%' }
-    );
-  }
-}
-
-async function handleGoogleCredential(response) {
-  hideError();
-  setLoading(true);
-
-  try {
-    const decoded = jwt_decode(response.credential);
-    const { email, given_name, family_name, picture, sub } = decoded;
-
-    const res = await fetch(`${API_URL}/auth/google`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        prenom: given_name,
-        nom: family_name,
-        googleId: sub,
-        picture,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      showError(data.message || 'Erreur Google.');
-      return;
-    }
-
-    if (data.step === 'otp_required') {
-      pendingEmail = data.email;
-      showOTPStep(data.email);
-      return;
-    }
-
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    window.location.href = 'home.html';
-  } catch (err) {
-    showError('Erreur lors de la connexion Google.');
-  } finally {
-    setLoading(false);
-  }
-}
-
-// ══════════════════════════════════════
-//  MOT DE PASSE OUBLIÉ (RÉINITIALISATION)
-// ══════════════════════════════════════
-
 async function requestPasswordReset() {
-  const email = prompt('Entrez votre adresse email :');
+  const email = await showModal({
+    icon: '🔐',
+    title: 'Mot de passe oublié',
+    subtitle: 'Entrez votre adresse email pour recevoir un code de réinitialisation',
+    inputType: 'email',
+    placeholder: 'votre@email.com'
+  });
+  
   if (!email) return;
-
+  
   hideError();
   setLoading(true);
   
@@ -353,10 +356,10 @@ async function requestPasswordReset() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     });
-
+    
     const data = await res.json();
     setLoading(false);
-
+    
     if (res.ok) {
       resetEmail = email;
       showResetOTPStep(email);
@@ -370,24 +373,20 @@ async function requestPasswordReset() {
 }
 
 function showResetOTPStep(email) {
-  // Sauvegarder l'email
   resetEmail = email;
   
-  // Afficher l'interface OTP
   document.getElementById('auth-form').style.display = 'none';
   document.getElementById('otp-step').style.display = 'block';
   document.getElementById('otp-email').textContent = email;
   document.getElementById('form-title').textContent = 'Réinitialisation 🔑';
   document.getElementById('form-sub').innerHTML = 'Entrez le code reçu par email pour réinitialiser votre mot de passe';
   
-  // Changer le comportement du bouton OTP pour la réinitialisation
   const otpBtn = document.getElementById('otp-btn');
   otpBtn.onclick = verifyResetOTP;
   const otpBtnText = document.getElementById('otp-btn-text');
   if (otpBtnText) otpBtnText.textContent = 'Vérifier et réinitialiser';
   
-  // Changer le comportement du lien "Renvoyer"
-  const resendLink = document.querySelector('.otp-actions a:first-child');
+  const resendLink = document.getElementById('resendOtpLink');
   if (resendLink) {
     resendLink.onclick = (e) => {
       e.preventDefault();
@@ -395,7 +394,6 @@ function showResetOTPStep(email) {
     };
   }
   
-  // Réinitialiser l'input OTP
   document.getElementById('otpInput').value = '';
   setTimeout(() => document.getElementById('otpInput')?.focus(), 100);
 }
@@ -408,14 +406,18 @@ async function verifyResetOTP() {
     return;
   }
   
-  // Vérifier que resetEmail existe
   if (!resetEmail) {
     showError('Email non trouvé. Veuillez recommencer.');
     return;
   }
   
-  // Demander le nouveau mot de passe
-  const newPassword = prompt('Nouveau mot de passe (minimum 6 caractères) :');
+  const newPassword = await showModal({
+    icon: '🔑',
+    title: 'Nouveau mot de passe',
+    subtitle: 'Minimum 6 caractères',
+    inputType: 'password',
+    placeholder: '••••••••'
+  });
   
   if (!newPassword) {
     showError('Veuillez saisir un nouveau mot de passe.');
@@ -426,7 +428,7 @@ async function verifyResetOTP() {
     showError('Le mot de passe doit faire au moins 6 caractères.');
     return;
   }
-
+  
   setOTPLoading(true);
   
   try {
@@ -439,10 +441,10 @@ async function verifyResetOTP() {
         newPassword: newPassword,
       }),
     });
-
+    
     const data = await res.json();
     setOTPLoading(false);
-
+    
     if (res.ok) {
       showError('✅ Mot de passe modifié avec succès ! Connectez-vous.');
       const banner = document.getElementById('errorBanner');
@@ -499,8 +501,7 @@ async function resendResetOTP() {
 //  INITIALISATION DES LIENS
 // ══════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  // Lien mot de passe oublié
-  const forgotLink = document.getElementById('forgot-hint')?.querySelector('a');
+  const forgotLink = document.getElementById('forgotPasswordLink');
   if (forgotLink) {
     forgotLink.addEventListener('click', (e) => {
       e.preventDefault();
@@ -508,7 +509,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // Bouton retour de l'OTP
   const backLink = document.getElementById('backToLoginLink');
   if (backLink) {
     backLink.addEventListener('click', (e) => {
