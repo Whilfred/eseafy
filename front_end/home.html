@@ -84,9 +84,9 @@
           <p>Voici un aperçu de votre boutique aujourd'hui</p>
         </div>
         <div class="kpi-row">
-          <div class="kpi"><div class="kpi-label">Revenus ce mois</div><div class="kpi-val">487 500 <span style="font-size:16px;font-family:'DM Sans'">XOF</span></div><div class="kpi-delta up"></div></div>
-          <div class="kpi"><div class="kpi-label">Ventes</div><div class="kpi-val">34</div><div class="kpi-delta up">↑ +5 cette semaine</div></div>
-          <div class="kpi"><div class="kpi-label">Clients</div><div class="kpi-val">128</div><div class="kpi-delta up">↑ +8 nouveaux</div></div>
+          <div class="kpi"><div class="kpi-label">Revenus ce mois</div><div class="kpi-val">0 <span style="font-size:16px;font-family:'DM Sans'">XOF</span></div><div class="kpi-delta up"></div></div>
+          <div class="kpi"><div class="kpi-label">Ventes</div><div class="kpi-val">0 </div><div class="kpi-delta up">↑ +0 cette semaine</div></div>
+          <div class="kpi"><div class="kpi-label">Clients</div><div class="kpi-val">0 </div><div class="kpi-delta up">↑ +0 nouveaux</div></div>
 <div class="kpi"><div class="kpi-label">Produits publiés</div><div class="kpi-val" id="kpiProduits">—</div><div class="kpi-delta up" id="kpiProduitsTotal"></div></div>        </div>
         <div class="dash-grid">
           <div>
@@ -621,36 +621,27 @@
 <!-- Hero -->
 <div style="border-radius:16px;background:var(--black);padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;">
   
-  <div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:110px;font-weight:900;color:rgba(255,255,255,0.04);pointer-events:none;letter-spacing:-4px;">ELISA</div>
-  
-  <div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-      <span style="font-size:11px;font-weight:700;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);padding:3px 10px;border-radius:20px;">IA · Automatisé</span>
-    </div>
+<div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:110px;font-weight:900;color:rgba(255,255,255,0.04);pointer-events:none;letter-spacing:-4px;">ELISA</div>
 
-    <div style="font-size:22px;font-weight:700;color:white;margin-bottom:6px;font-family:'DM Serif Display',serif;">
-      Campagnes intelligentes
-    </div>
-
-    <div style="font-size:13px;color:rgba(255,255,255,0.5);max-width:460px;line-height:1.6;">
-      Ojafy envoie automatiquement vos campagnes aux meilleurs prospects tous les 3 jours. Configurez votre ciblage une fois.
-    </div>
-
-    <!-- Voir plus -->
-    <div onclick="toggleElisaInfo()" 
-         style="margin-top:10px;font-size:12px;color:#f59e0b;cursor:pointer;font-weight:600;">
-      Voir plus →
-    </div>
-
-    <!-- Texte caché -->
-    <div id="elisaInfo" 
-         style="display:none;margin-top:12px;font-size:13px;color:rgba(255,255,255,0.6);max-width:460px;line-height:1.6;">
-      <strong style="color:white;">ELISA</strong> — Engagement • Lead Intelligence • Intelligent Scoring • Automation — 
-      est une plateforme intelligente qui analyse le comportement de vos utilisateurs afin d’identifier les prospects les plus pertinents, 
-      leur attribuer un score et déclencher automatiquement des campagnes marketing ciblées. Grâce à cette approche, vous maximisez 
-      vos conversions tout en offrant une expérience client personnalisée et efficace.
-    </div>
+<div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+    <span style="font-size:11px;font-weight:700;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);padding:3px 10px;border-radius:20px;">IA · Automatisé</span>
   </div>
+
+  <div style="font-size:22px;font-weight:700;color:white;margin-bottom:6px;font-family:'DM Serif Display',serif;">
+    Campagnes intelligentes
+  </div>
+
+  <div style="font-size:13px;color:rgba(255,255,255,0.5);max-width:460px;line-height:1.6;">
+    Ojafy envoie automatiquement vos campagnes aux meilleurs prospects tous les 3 jours. Configurez votre ciblage une fois.
+  </div>
+
+  <!-- En savoir plus - lien vers page externe -->
+<a href="elisa.html" 
+   style="margin-top:16px;display:inline-flex;align-items:center;gap:8px;font-size:12px;color:#f59e0b;text-decoration:none;font-weight:600;">
+  En savoir plus →
+</a>
+</div>
 
   <div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;">
     <button id="elisaToggleBtn" onclick="toggleElisa(this)"
