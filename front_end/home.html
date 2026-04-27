@@ -491,9 +491,9 @@
       <div class="revenus-wrap">
         <div class="page-header"><div><h1>Revenus</h1><p style="font-size:14px;color:var(--gray-600);margin-top:4px;">Suivi financier</p></div></div>
         <div class="rev-kpis">
-          <div class="kpi"><div class="kpi-label">Revenus ce mois</div><div class="kpi-val">487 500 <span style="font-size:14px;font-family:'DM Sans'">XOF</span></div><div class="kpi-delta up"></div></div>
-          <div class="kpi"><div class="kpi-label">Frais ojafy (5%)</div><div class="kpi-val">24 375 <span style="font-size:14px;font-family:'DM Sans'">XOF</span></div></div>
-          <div class="kpi"><div class="kpi-label">Net disponible</div><div class="kpi-val">463 125 <span style="font-size:14px;font-family:'DM Sans'">XOF</span></div><div class="kpi-delta up">Solde actuel</div></div>
+          <div class="kpi"><div class="kpi-label">Revenus ce mois</div><div class="kpi-val">0 <span style="font-size:14px;font-family:'DM Sans'">XOF</span></div><div class="kpi-delta up"></div></div>
+          <div class="kpi"><div class="kpi-label">Frais ojafy (0%)</div><div class="kpi-val">0 <span style="font-size:14px;font-family:'DM Sans'">XOF</span></div></div>
+          <div class="kpi"><div class="kpi-label">Net disponible</div><div class="kpi-val">0 <span style="font-size:14px;font-family:'DM Sans'">XOF</span></div><div class="kpi-delta up">Solde actuel</div></div>
         </div>
         <div id="revDetail"></div>
       </div>
@@ -1334,9 +1334,8 @@ async function loadDashboardStats() {
     const fraisEl = document.querySelector('#page-revenus .kpi:nth-child(2) .kpi-val');
     const netEl   = document.querySelector('#page-revenus .kpi:nth-child(3) .kpi-val');
     if (revEl)   revEl.innerHTML   = Number(k.total_paye).toLocaleString('fr-FR')        + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
-    if (fraisEl) fraisEl.innerHTML = Number(k.frais_eseafy).toLocaleString('fr-FR')      + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
-    if (netEl)   netEl.innerHTML   = Number(k.net_disponible).toLocaleString('fr-FR')    + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
-
+    if (fraisEl) fraisEl.innerHTML = '0 <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
+    if (netEl)   netEl.innerHTML   = Number(k.total_paye).toLocaleString('fr-FR') + ' <span style="font-size:14px;font-family:\'DM Sans\'">XOF</span>';
     // ── Détail revenus par statut sur page revenus ──
     const revDetail = document.getElementById('revDetail');
     if (revDetail) {
@@ -1410,9 +1409,12 @@ if (ctx) {
           label: 'Revenus (XOF)',
           data: revenusData,
           borderColor: '#1A6BFF',
-          backgroundColor: 'rgba(26,107,255,.08)',
-          borderWidth: 2.5,
-          pointRadius: 4,
+          backgroundColor: 'rgba(26,107,255,.05)',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          pointBorderWidth: 0,
+          hitRadius: 15,
           fill: true,
           tension: 0.4
         }
@@ -1447,15 +1449,24 @@ if (ctx) {
                 `Revenus : ${Number(d.total).toLocaleString('fr-FR')} XOF`
               ];
             }
-          }
+          },
+          backgroundColor: '#1a1a1a',
+          titleColor: '#ffffff',
+          bodyColor: '#cccccc',
+          padding: 10,
+          cornerRadius: 8,
+          displayColors: false
         }
       },
       scales: {
         x: {
-          grid: { display: false }
+          grid: { display: false },
+          ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9b97' }
         },
         y: {
-          beginAtZero: true
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,.05)' },
+          ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9b97' }
         }
       }
     }
@@ -1524,6 +1535,7 @@ function showProdSubview(id) {
 }
 
 // ══ PRODUITS ══
+// ══ PRODUITS ══
 async function loadProduits(filtre = 'tous') {
   const table = document.getElementById('produitsTable');
   if (!table) return;
@@ -1577,18 +1589,20 @@ async function loadProduits(filtre = 'tous') {
 
     // rows
     produits.forEach(p => {
-
       const statutHtml = p.statut === 'publie'
         ? '<span class="badge green">Publié</span>'
         : '<span class="badge orange">Brouillon</span>';
+
+      // Générer un ID unique pour chaque dropdown
+      const dropdownId = `dropdown-${p.id}`;
 
       table.innerHTML += `
         <div class="pt-row">
           <div class="pt-prod">
             <div class="pt-thumb">🚚</div>
             <div>
-              <div class="pt-name">${p.nom}</div>
-              <div class="pt-type">${p.categorie || '—'}</div>
+              <div class="pt-name">${escapeHtml(p.nom)}</div>
+              <div class="pt-type">${escapeHtml(p.categorie) || '—'}</div>
             </div>
           </div>
 
@@ -1603,12 +1617,57 @@ async function loadProduits(filtre = 'tous') {
           <span>${statutHtml}</span>
 
           <div class="pt-actions">
-            <button class="icon-btn" title="Modifier" onclick="editProduit(${p.id})">✏️</button>
-            <button class="icon-btn" title="Copier lien" onclick="copyLien('${p.slug}')">🔗</button>
-            <button class="icon-btn" title="Supprimer" onclick="deleteProduit(${p.id}, this)">🗑️</button>
+            <button class="dropdown-btn" onclick="toggleDropdown(event, '${dropdownId}')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"/>
+                <circle cx="12" cy="5" r="1"/>
+                <circle cx="12" cy="19" r="1"/>
+              </svg>
+            </button>
+            <div class="dropdown-menu" id="${dropdownId}">
+              <button class="dropdown-item" onclick="viewProduit('${p.slug}')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+                Voir le produit
+              </button>
+              <button class="dropdown-item" onclick="copyLien('${p.slug}')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                Copier le lien
+              </button>
+              <button class="dropdown-item" onclick="editProduit(${p.id})">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 3l4 4-7 7H10v-4l7-7z"/><path d="M4 20h16"/>
+                </svg>
+                Modifier
+              </button>
+              <button class="dropdown-item" onclick="duplicateProduit(${p.id})">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Dupliquer
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item danger" onclick="deleteProduit(${p.id}, this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <line x1="10" y1="11" x2="10" y2="17"/>
+                  <line x1="14" y1="11" x2="14" y2="17"/>
+                </svg>
+                Supprimer
+              </button>
+            </div>
           </div>
         </div>`;
     });
+
+    // Fermer les dropdowns quand on clique ailleurs
+    document.addEventListener('click', closeAllDropdowns);
 
   } catch (err) {
     console.error('❌ Erreur loadProduits :', err);
@@ -1617,6 +1676,133 @@ async function loadProduits(filtre = 'tous') {
         ❌ Erreur : ${err.message}
       </div>`;
   }
+}
+
+// Fonction pour échapper le HTML (sécurité)
+function escapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Fonction pour afficher/masquer le dropdown
+function toggleDropdown(event, dropdownId) {
+  event.stopPropagation();
+  
+  // Fermer tous les autres dropdowns
+  document.querySelectorAll('.dropdown-menu').forEach(menu => {
+    if (menu.id !== dropdownId) {
+      menu.classList.remove('show');
+    }
+  });
+  
+  const dropdown = document.getElementById(dropdownId);
+  dropdown.classList.toggle('show');
+}
+
+// Fermer tous les dropdowns
+function closeAllDropdowns() {
+  document.querySelectorAll('.dropdown-menu').forEach(menu => {
+    menu.classList.remove('show');
+  });
+}
+
+// Fonction pour voir le produit - REDIRIGE VERS LE LIEN
+function viewProduit(slug) {
+  const lien = `https://products.ojafy.store/boutique/boutique-${user.id}/${slug}`;
+  window.open(lien, '_blank'); // Ouvre dans un nouvel onglet
+  closeAllDropdowns();
+}
+
+// Fonction pour copier le lien
+function copyLien(slug) {
+  const lien = `https://products.ojafy.store/boutique/boutique-${user.id}/${slug}`;
+  navigator.clipboard.writeText(lien).then(() => {
+    // Notification plus discrète
+    showToast('✅ Lien copié !', 'success');
+  }).catch(() => {
+    showToast('❌ Erreur lors de la copie', 'error');
+  });
+  console.log('🔗 Lien :', lien);
+  closeAllDropdowns();
+}
+
+// Fonction pour dupliquer un produit
+async function duplicateProduit(id) {
+  closeAllDropdowns();
+  
+  if (!confirm('Dupliquer ce produit ?')) return;
+  
+  try {
+    const res = await fetch(`${API_URL}/produits/${id}/duplicate`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    
+    if (res.ok) {
+      showToast('✅ Produit dupliqué avec succès !', 'success');
+      loadProduits(); // Recharger la liste
+    } else {
+      showToast('❌ ' + data.message, 'error');
+    }
+  } catch (err) {
+    console.error('❌ Erreur duplication:', err);
+    showToast('❌ Erreur lors de la duplication', 'error');
+  }
+}
+
+async function deleteProduit(id, btn) {
+  closeAllDropdowns();
+  
+  if (!confirm('Supprimer ce produit définitivement ?')) return;
+  
+  console.log('🗑️ Suppression id :', id);
+  const res = await fetch(`${API_URL}/produits/${id}`, { 
+    method: 'DELETE', 
+    headers: { 'Authorization': 'Bearer ' + token } 
+  });
+  const data = await res.json();
+  console.log('🗑️ Résultat :', data);
+  
+  if (res.ok) {
+    const row = btn.closest('.pt-row');
+    if (row) row.remove();
+    showToast('✅ Produit supprimé', 'success');
+  } else {
+    showToast('❌ ' + data.message, 'error');
+  }
+}
+
+// Fonction utilitaire pour les notifications toast (optionnelle, plus discrète que alert)
+function showToast(message, type = 'success') {
+  // Créer un toast temporaire
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: ${type === 'success' ? '#10b981' : '#ef4444'};
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 10000;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  `;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
 }
 
 function copyLien(slug) {
@@ -2263,61 +2449,85 @@ async function loadAnalytics() {
     document.getElementById('anaTauxDelta').className        = 'kpi-delta ' + (k.taux_conversion > 0 ? 'up' : '');
 
     // ── Graphe Chart.js ──
-    const ctx = document.getElementById('anaGraph').getContext('2d');
-    if (window.anaChart) window.anaChart.destroy();
+// ── Graphe Chart.js ──
+const ctx = document.getElementById('anaGraph').getContext('2d');
+if (window.anaChart) window.anaChart.destroy();
 
-    if (data.graph_visites.length > 0) {
-      const labels = data.graph_visites.map(r => {
-        const d = new Date(r.jour);
-        return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
-      });
-      const values = data.graph_visites.map(r => parseInt(r.total));
+if (data.graph_visites.length > 0) {
+  const labels = data.graph_visites.map(r => {
+    const d = new Date(r.jour);
+    return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
+  });
+  const values = data.graph_visites.map(r => parseInt(r.total));
 
-      window.anaChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Visites',
-            data: values,
-            borderColor: '#1A6BFF',
-            backgroundColor: 'rgba(26,107,255,.08)',
-            borderWidth: 2.5,
-            pointBackgroundColor: '#1A6BFF',
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            fill: true,
-            tension: 0.4,
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: ctx => `${ctx.parsed.y} visite${ctx.parsed.y > 1 ? 's' : ''}`
-              }
+  window.anaChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Visites',
+        data: values,
+        borderColor: '#1A6BFF',
+        backgroundColor: 'rgba(26,107,255,.05)',
+        borderWidth: 1.5,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        pointBorderWidth: 0,
+        hitRadius: 15,
+        fill: true,
+        tension: 0.4,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (tooltipItems) => {
+              const index = tooltipItems[0].dataIndex;
+              const date = new Date(data.graph_visites[index].jour);
+              return date.toLocaleDateString('fr-FR', { 
+                weekday: 'long', 
+                day: '2-digit', 
+                month: 'long',
+                year: 'numeric'
+              });
+            },
+            label: (ctx) => {
+              const value = ctx.parsed.y;
+              return `${value} visite${value > 1 ? 's' : ''}`;
             }
           },
-          scales: {
-            x: {
-              grid: { display: false },
-              ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9b97' }
-            },
-            y: {
-              beginAtZero: true,
-              grid: { color: 'rgba(0,0,0,.05)' },
-              ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9b97', precision: 0 }
-            }
-          }
+          backgroundColor: '#1a1a1a',
+          titleColor: '#ffffff',
+          bodyColor: '#cccccc',
+          padding: 10,
+          cornerRadius: 8,
+          displayColors: false
         }
-      });
-    } else {
-      ctx.canvas.parentElement.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:220px;color:var(--gray-400);font-size:13px;">Aucune visite pour l'instant. Partagez votre boutique !</div>`;
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9b97' }
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,.05)' },
+          ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9b97', precision: 0 }
+        }
+      }
     }
-
+  });
+} else {
+  ctx.canvas.parentElement.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:220px;color:var(--gray-400);font-size:13px;">Aucune visite pour l'instant. Partagez votre boutique !</div>`;
+}
     // ── Top produits ──
     const topEl = document.getElementById('anaTopProduits');
     if (data.top_produits.length > 0) {
