@@ -497,7 +497,51 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 }
 
 
+/* Styles responsives pour les KPIs sur mobile */
+@media (max-width: 768px) {
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .kpi {
+    padding: 16px;
+    margin-bottom: 0;
+  }
+  
+  .kpi-val {
+    font-size: 22px;
+  }
+  
+  .kpi-label {
+    font-size: 12px;
+  }
+  
+  .kpi-delta {
+    font-size: 10px;
+  }
+}
 
+/* Pour les très petits écrans (< 480px) */
+@media (max-width: 480px) {
+  .kpi-row {
+    gap: 8px;
+  }
+  
+  .kpi {
+    padding: 12px;
+  }
+  
+  .kpi-val {
+    font-size: 18px;
+  }
+  
+  .kpi-label {
+    font-size: 11px;
+  }
+}
 
 .mobile-menu-toggle,
 .sidebar-overlay,
