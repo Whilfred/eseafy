@@ -549,6 +549,108 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
   display: none;
 }
 
+/* ══════════════════════════════
+   RESPONSIVE - MOBILE & TABLETTE
+══════════════════════════════ */
+
+/* Tablette (768px - 1024px) */
+@media (max-width: 1024px) {
+  .dash-wrap {
+    padding: 24px 20px;
+  }
+  
+  .dash-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* KPIs : 2 par ligne sur mobile */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .kpi {
+    padding: 16px;
+  }
+  
+  .kpi-val {
+    font-size: 22px;
+  }
+  
+  .kpi-label {
+    font-size: 11px;
+  }
+  
+  .kpi-delta {
+    font-size: 10px;
+  }
+  
+  .dash-wrap {
+    padding: 20px 16px;
+  }
+  
+  .dash-header h1 {
+    font-size: 24px;
+  }
+  
+  .dash-header p {
+    font-size: 13px;
+  }
+  
+  .card-head {
+    padding: 14px 18px;
+  }
+  
+  .card-body {
+    padding: 16px 18px;
+  }
+  
+  .recent-item {
+    padding: 10px 0;
+  }
+  
+  .ri-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .ri-name {
+    font-size: 12px;
+  }
+  
+  .ri-price {
+    font-size: 12px;
+  }
+}
+
+/* Très petits écrans (moins de 480px) */
+@media (max-width: 480px) {
+  .kpi-row {
+    gap: 8px;
+  }
+  
+  .kpi {
+    padding: 12px;
+  }
+  
+  .kpi-val {
+    font-size: 18px;
+  }
+  
+  .kpi-label {
+    font-size: 10px;
+  }
+  
+  .kpi-delta {
+    font-size: 9px;
+  }
+}
+
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
 
