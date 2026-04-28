@@ -10,137 +10,215 @@ from database.db import fetch_simulation_data
 
 load_dotenv()
 
-app = Flask(__name__)
+app   = Flask(__name__)
 CORS(app)
 
 conversations = {}
 
-# Pipeline
-PIPELINE = [
-    ('init',                    'central',      'init'),
-    ('central_asked_data',      'data',         None),
-    ('data_done',               'central',      'after_data'),
-    ('central_asked_prospect',  'prospect',     None),
-    ('prospect_done',           'central',      'after_prospect'),
-    ('central_asked_scoring',   'scoring',      None),
-    ('scoring_done',            'central',      'after_scoring'),
-    ('central_asked_product',   'product',      None),
-    ('product_done',            'central',      'after_product'),
-    ('central_asked_marketing', 'marketing',    None),
-    ('marketing_done',          'central',      'after_marketing'),
-    ('central_asked_optim',     'optimization', None),
-    ('optimization_done',       'central',      'conclusion'),
-]
+# Ordre logique par défaut que Central suit sauf s'il dévie
+DEFAULT_FLOW = ["data", "prospect", "scoring", "product", "marketing", "optimization"]
 
-TRANSITIONS = {p[0]: p for p in PIPELINE}
-NEXT_STATE = {PIPELINE[i][0]: (PIPELINE[i+1][0] if i+1 < len(PIPELINE) else 'done') for i in range(len(PIPELINE))}
-TOTAL_STEPS = len(PIPELINE)
+# ===========================================================================
+# ROUTES
+# ===========================================================================
 
-def last_from(messages, key):
-    for m in reversed(messages):
-        if m['agent_key'] == key:
-            return m['message']
-    return ""
-
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('chat.html')
+    return render_template("chat.html")
 
-@app.route('/api/start', methods=['POST'])
+@app.route("/api/start", methods=["POST"])
 def start_conversation():
-    sid = str(uuid.uuid4())
-    body = request.json or {}
-    sujet = body.get('sujet', '').strip()
-    boutique = body.get('boutique_id')
+    body    = request.json or {}
+    sujet   = body.get("sujet", "").strip()
+    boutique = body.get("boutique_id")
 
     if not sujet:
-        return jsonify({'error': 'Sujet requis'}), 400
+        return jsonify({"error": "Sujet requis"}), 400
 
     try:
         sim_data = fetch_simulation_data(boutique_id=boutique)
     except Exception as e:
-        print(f"DB error: {e}")
-        return jsonify({'error': f'Erreur base de données: {str(e)}'}), 500
+        return jsonify({"error": f"Erreur base de données: {e}"}), 500
 
+    sid = str(uuid.uuid4())
     conversations[sid] = {
-        'messages':       [],
-        'sujet':          sujet,
-        'boutique_id':    boutique,
-        'data':           sim_data,
-        'state':          'init',
-        'last_central_q': '',
-        'step_count':     0
+        "messages":       [],
+        "sujet":          sujet,
+        "boutique_id":    boutique,
+        "data":           sim_data,
+        "next_agent":     "central",         # Central parle toujours en premier
+        "central_phase":  "START",           # Signal de démarrage
+        "step_count":     0,
+        "finished":       False,
+        "data_retries":   0,                 # Nombre de fois qu'on a retappé Data
     }
-    return jsonify({'session_id': sid})
+    return jsonify({"session_id": sid})
 
-@app.route('/api/next', methods=['POST'])
+
+@app.route("/api/next", methods=["POST"])
 def next_message():
-    sid = request.json.get('session_id')
+    sid = (request.json or {}).get("session_id")
     if sid not in conversations:
-        return jsonify({'error': 'Session invalide'}), 404
+        return jsonify({"error": "Session invalide"}), 404
 
     conv = conversations[sid]
-    state = conv['state']
 
-    if state == 'done' or state not in TRANSITIONS:
-        return jsonify({'finished': True})
+    if conv["finished"]:
+        return jsonify({"finished": True})
 
-    _, agent_key, phase = TRANSITIONS[state]
-    agent_cfg = AGENTS.get(agent_key, {})
-    
-    sujet = conv['sujet']
-    messages = conv['messages']
-    data = conv['data']
+    # ---------- Quel agent parle maintenant ? ----------
+    agent_key = conv["next_agent"]
 
-    # Instancier l'agent et l'exécuter
-    agent_class = agent_cfg.get('class')
-    if not agent_class:
-        text = f"[{agent_cfg.get('name','Agent')}] Agent non disponible"
+    if agent_key not in AGENTS:
+        conv["finished"] = True
+        return jsonify({"finished": True})
+
+    agent_cfg   = AGENTS[agent_key]
+    agent_class = agent_cfg["class"]
+    agent       = agent_class()
+
+    sujet    = conv["sujet"]
+    messages = conv["messages"]
+    data     = conv["data"]
+
+    # ---------- Construire la "question" passée à l'agent ----------
+    if agent_key == "central":
+        # Central reçoit le dernier message d'un agent spécialiste
+        last_specialist_msg = _last_from(messages, exclude_key="central")
+        question = conv.get("central_phase", last_specialist_msg)
     else:
-        agent = agent_class()
-        
-        if agent_key == 'central':
-            extra = ''
-            if phase == 'after_data':       extra = last_from(messages, 'data')
-            elif phase == 'after_prospect': extra = last_from(messages, 'prospect')
-            elif phase == 'after_scoring':  extra = last_from(messages, 'scoring')
-            elif phase == 'after_product':  extra = last_from(messages, 'product')
-            elif phase == 'after_marketing':extra = last_from(messages, 'marketing')
-            elif phase == 'conclusion':     
-                extra = ''.join(f"[{m['agent_name']}]: {m['message'][:300]}\n" for m in messages[-12:])
-            
-            text = agent.run(sujet, phase, messages, data, extra)
-            conv['last_central_q'] = text or ""
-        else:
-            text = agent.run(sujet, conv['last_central_q'], messages, data)
+        # Spécialiste reçoit le dernier message de Central
+        question = _last_from(messages, only_key="central")
 
-    text = text or f"[{agent_cfg.get('name','Agent')}] En traitement..."
+    # ---------- Appel agent ----------
+    result = agent.run(sujet, question, messages, data)
 
+    message_text = result.get("message", "...")
+    next_agent   = result.get("next_agent") if agent_key == "central" else None
+
+    # ---------- Construire le message ----------
     msg = {
-        'agent_key':  agent_key,
-        'agent_name': agent_cfg.get('name', agent_key),
-        'icon':       agent_cfg.get('icon', '●'),
-        'color':      agent_cfg.get('color', '#888'),
-        'role':       agent_cfg.get('role', ''),
-        'message':    text,
-        'timestamp':  datetime.now().isoformat(),
-        'is_central': agent_key == 'central',
-        'phase':      phase
+        "agent_key":  agent_key,
+        "agent_name": agent_cfg["name"],
+        "icon":       agent_cfg["icon"],
+        "color":      agent_cfg["color"],
+        "role":       agent_cfg["role"],
+        "message":    message_text,
+        "timestamp":  datetime.now().isoformat(),
+        "is_central": agent_key == "central",
     }
 
-    conv['messages'].append(msg)
-    conv['step_count'] += 1
-    conv['state'] = NEXT_STATE.get(state, 'done')
-    finished = conv['state'] == 'done'
+    conv["messages"].append(msg)
+    conv["step_count"] += 1
+
+    # ---------- Déterminer le prochain tour ----------
+    if agent_key == "central":
+        # Central a décidé explicitement
+        _route_from_central(conv, next_agent)
+    else:
+        # Spécialiste vient de parler → retour à Central
+        conv["next_agent"]    = "central"
+        conv["central_phase"] = None   # Central lira le dernier message
+
+    # ---------- Sécurité anti-boucle infinie ----------
+    if conv["step_count"] >= 30:
+        conv["finished"] = True
+
+    finished = conv["finished"]
+    total    = 14   # max théorique de tours
 
     return jsonify({
-        'message':  msg,
-        'finished': finished,
-        'progress': min(conv['step_count'] / TOTAL_STEPS, 1.0),
-        'state':    conv['state']
+        "message":  msg,
+        "finished": finished,
+        "progress": min(conv["step_count"] / total, 1.0),
+        "state":    conv["next_agent"],
     })
 
-if __name__ == '__main__':
-    print("🧠 ELISA CORE — Multi-Agent System (PostgreSQL live)")
+
+# ===========================================================================
+# ROUTING LOGIC
+# ===========================================================================
+
+def _route_from_central(conv: dict, next_agent: str):
+    """
+    Interprète la décision de Central et configure le prochain tour.
+    """
+    if not next_agent:
+        # Central n'a pas indiqué de prochain agent → on devine
+        conv["next_agent"] = _guess_next(conv)
+        return
+
+    na = next_agent.upper()
+
+    if na in ("STOP", "FIN"):
+        conv["finished"]   = True
+        conv["next_agent"] = "central"
+        return
+
+    if next_agent == "data":
+        conv["data_retries"] += 1
+        if conv["data_retries"] > 3:
+            # Trop de retries Data → on arrête
+            conv["finished"] = True
+            return
+
+    if next_agent in AGENTS:
+        conv["next_agent"]    = next_agent
+        conv["central_phase"] = None
+    else:
+        # Nom d'agent non reconnu → essayer de matcher
+        matched = _fuzzy_match_agent(next_agent)
+        if matched:
+            conv["next_agent"] = matched
+        else:
+            conv["finished"] = True
+
+
+def _guess_next(conv: dict) -> str:
+    """
+    Si Central n'a pas indiqué d'agent, devine le prochain selon le flow par défaut.
+    """
+    agents_used = {m["agent_key"] for m in conv["messages"] if m["agent_key"] != "central"}
+    for agent in DEFAULT_FLOW:
+        if agent not in agents_used:
+            return agent
+    return "central"  # tous faits → Central fait la conclusion
+
+
+def _fuzzy_match_agent(name: str) -> str | None:
+    name = name.lower()
+    for key in AGENTS:
+        if key in name or name in key:
+            return key
+    aliases = {
+        "données": "data", "donnees": "data", "analys": "data",
+        "prosp":   "prospect", "lead": "prospect",
+        "scor":    "scoring", "score": "scoring",
+        "produit": "product", "offre": "product",
+        "market":  "marketing", "email": "marketing",
+        "optim":   "optimization", "roi": "optimization", "verdict": "optimization",
+    }
+    for kw, agent in aliases.items():
+        if kw in name:
+            return agent
+    return None
+
+
+def _last_from(messages: list, exclude_key: str = None, only_key: str = None) -> str:
+    for m in reversed(messages):
+        key = m.get("agent_key", "")
+        if exclude_key and key == exclude_key:
+            continue
+        if only_key and key != only_key:
+            continue
+        return m.get("message", "")
+    return ""
+
+
+# ===========================================================================
+# MAIN
+# ===========================================================================
+if __name__ == "__main__":
+    print("🧠 ELISA — Multi-Agent Intelligence (Pipeline Dynamique)")
     print("🚀 http://localhost:5000")
     app.run(debug=True, port=5000)
