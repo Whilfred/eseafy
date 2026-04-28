@@ -237,43 +237,60 @@
               <div><div class="card"><div class="card-head"><div><h2>À savoir</h2></div></div><div class="card-body-p"><div class="info-box">Vous pouvez modifier le statut à tout moment.</div></div></div></div>
             </div>
           </div>
-          <!-- Étape 2 -->
+
+<!-- Étape 2 -->
 <div class="step-panel" id="panel2">
   <div class="create-grid">
+
+    <!-- Colonne principale -->
     <div>
       <div class="card">
         <div class="card-head">
-          <div><h2>Informations du produit</h2></div>
+          <div>
+            <h2>Informations du produit</h2>
+            <p>Nom, description, catégorie</p>
+          </div>
         </div>
 
         <div class="card-body-p">
 
+          <!-- Nom -->
           <div class="fg">
             <label class="lbl">Nom du produit <span class="req">*</span></label>
-            <input class="inp" id="pName" type="text" placeholder="Ex : Guide Facebook Ads 2025" oninput="updateSEO()" />
+            <input class="inp" id="pName" type="text"
+              placeholder="Ex : Gourde en inox 500ml"
+              oninput="updateSEO()" />
           </div>
 
+          <!-- Éditeur description -->
           <div class="fg">
             <label class="lbl">Description</label>
+            <div class="editor-box2">
 
-            <div class="editor-box" style="border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;">
-              
-              <!-- Toolbar -->
-              <div class="editor-bar" style="display:flex;flex-wrap:wrap;gap:2px;padding:8px 10px;background:#fafafa;border-bottom:1px solid var(--gray-100);align-items:center;">
-                
-                <button class="tb" onclick="fmt('undo')">↩</button>
-                <button class="tb" onclick="fmt('redo')">↪</button>
+              <!-- Toolbar sticky -->
+              <div class="editor-toolbar2">
 
-                <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+                <!-- Undo / Redo -->
+                <button class="tb2" onclick="fmt('undo')" title="Annuler">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
+                </button>
+                <button class="tb2" onclick="fmt('redo')" title="Rétablir">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 019-9 9 9 0 016 2.3L21 13"/></svg>
+                </button>
 
-                <select onchange="document.execCommand('fontName',false,this.value);this.blur()" style="font-size:12px;padding:3px 6px;border:1px solid var(--gray-200);border-radius:5px;background:white;cursor:pointer;height:26px;">
+                <div class="tb2-sep"></div>
+
+                <!-- Police & taille -->
+                <select class="tb2-sel tb2-sel--font"
+                  onchange="document.execCommand('fontName',false,this.value);this.blur()">
                   <option value="'DM Sans',sans-serif">DM Sans</option>
                   <option value="Arial,sans-serif">Arial</option>
                   <option value="'Times New Roman',serif">Times New Roman</option>
                   <option value="Georgia,serif">Georgia</option>
                 </select>
 
-                <select onchange="document.execCommand('fontSize',false,this.value);this.blur()" style="font-size:12px;padding:3px 6px;border:1px solid var(--gray-200);border-radius:5px;background:white;cursor:pointer;height:26px;width:56px;">
+                <select class="tb2-sel tb2-sel--size"
+                  onchange="document.execCommand('fontSize',false,this.value);this.blur()">
                   <option value="2">10</option>
                   <option value="3" selected>12</option>
                   <option value="4">14</option>
@@ -282,48 +299,62 @@
                   <option value="7">36</option>
                 </select>
 
-                <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+                <div class="tb2-sep"></div>
 
-                <button class="tb" onclick="fmt('bold')"><b>B</b></button>
-                <button class="tb" onclick="fmt('italic')"><i>I</i></button>
-                <button class="tb" onclick="fmt('underline')"><u>U</u></button>
-                <button class="tb" onclick="fmt('strikeThrough')" style="text-decoration:line-through;">S</button>
+                <!-- Gras / Italique / Souligné / Barré -->
+                <button class="tb2" onclick="fmt('bold')" title="Gras"><b>B</b></button>
+                <button class="tb2 tb2--italic" onclick="fmt('italic')" title="Italique"><i>I</i></button>
+                <button class="tb2 tb2--underline" onclick="fmt('underline')" title="Souligné"><u>U</u></button>
+                <button class="tb2 tb2--strike" onclick="fmt('strikeThrough')" title="Barré">S</button>
 
-                <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+                <div class="tb2-sep"></div>
 
-                <!-- COULEUR TEXTE -->
-                <label style="position:relative;cursor:pointer;">
-                  <span class="tb" style="font-weight:700;border-bottom:3px solid #ef4444;">A</span>
+                <!-- Couleur texte -->
+                <label class="tb2-color" title="Couleur du texte">
+                  <span class="tb2-color-preview" id="textColorPreview" style="border-bottom:3px solid #ef4444;">A</span>
                   <input type="color" value="#ef4444"
                     onmousedown="saveSelection()"
-                    onchange="applyColor(this.value)"
+                    onchange="applyColor(this.value);document.getElementById('textColorPreview').style.borderBottomColor=this.value"
                     style="position:absolute;opacity:0;width:0;height:0;" />
                 </label>
 
-                <!-- SURBRILLANCE -->
-                <label style="position:relative;cursor:pointer;">
-                  <span class="tb" style="background:#fef08a;padding:2px 5px;border-radius:3px;font-size:11px;">ab</span>
+                <!-- Surbrillance -->
+                <label class="tb2-color" title="Surligner">
+                  <span class="tb2-hl-preview" id="hlPreview">ab</span>
                   <input type="color" value="#fef08a"
                     onmousedown="saveSelection()"
-                    onchange="applyHighlight(this.value)"
+                    onchange="applyHighlight(this.value);document.getElementById('hlPreview').style.background=this.value"
                     style="position:absolute;opacity:0;width:0;height:0;" />
                 </label>
 
-                <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+                <div class="tb2-sep"></div>
 
-                <button class="tb" onclick="fmt('justifyLeft')">⬅</button>
-                <button class="tb" onclick="fmt('justifyCenter')">≡</button>
-                <button class="tb" onclick="fmt('justifyRight')">➡</button>
-                <button class="tb" onclick="fmt('justifyFull')">☰</button>
+                <!-- Alignements -->
+                <button class="tb2" onclick="fmt('justifyLeft')" title="Gauche">
+                  <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="2" rx="1"/><rect x="3" y="10" width="12" height="2" rx="1"/><rect x="3" y="15" width="15" height="2" rx="1"/><rect x="3" y="20" width="9" height="2" rx="1"/></svg>
+                </button>
+                <button class="tb2" onclick="fmt('justifyCenter')" title="Centrer">
+                  <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="2" rx="1"/><rect x="6" y="10" width="12" height="2" rx="1"/><rect x="4" y="15" width="16" height="2" rx="1"/><rect x="7" y="20" width="10" height="2" rx="1"/></svg>
+                </button>
+                <button class="tb2" onclick="fmt('justifyRight')" title="Droite">
+                  <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="2" rx="1"/><rect x="9" y="10" width="12" height="2" rx="1"/><rect x="6" y="15" width="15" height="2" rx="1"/><rect x="12" y="20" width="9" height="2" rx="1"/></svg>
+                </button>
 
-                <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+                <div class="tb2-sep"></div>
 
-                <button class="tb" onclick="fmt('insertUnorderedList')">• —</button>
-                <button class="tb" onclick="fmt('insertOrderedList')">1. —</button>
+                <!-- Listes -->
+                <button class="tb2" onclick="fmt('insertUnorderedList')" title="Liste à puces">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
+                </button>
+                <button class="tb2" onclick="fmt('insertOrderedList')" title="Liste numérotée">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="10" y1="6" x2="20" y2="6"/><line x1="10" y1="12" x2="20" y2="12"/><line x1="10" y1="18" x2="20" y2="18"/><text x="2" y="8" font-size="7" fill="currentColor" stroke="none">1</text><text x="2" y="14" font-size="7" fill="currentColor" stroke="none">2</text><text x="2" y="20" font-size="7" fill="currentColor" stroke="none">3</text></svg>
+                </button>
 
-                <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+                <div class="tb2-sep"></div>
 
-                <select onchange="document.execCommand('formatBlock',false,this.value);this.value='p'" style="font-size:12px;padding:3px 6px;border:1px solid var(--gray-200);border-radius:5px;background:white;cursor:pointer;height:26px;">
+                <!-- Bloc -->
+                <select class="tb2-sel tb2-sel--block"
+                  onchange="document.execCommand('formatBlock',false,this.value);this.value='p'">
                   <option value="p">Paragraphe</option>
                   <option value="h1">Titre 1</option>
                   <option value="h2">Titre 2</option>
@@ -331,60 +362,100 @@
                   <option value="blockquote">Citation</option>
                 </select>
 
-                <div style="width:1px;height:20px;background:var(--gray-200);margin:0 4px;"></div>
+                <div class="tb2-sep"></div>
 
-                <button class="tb" onclick="document.execCommand('createLink',false,prompt('URL :','https://'))">🔗</button>
+                <!-- Lien & image -->
+                <button class="tb2" onclick="document.execCommand('createLink',false,prompt('URL :','https://'))" title="Insérer lien">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                </button>
 
-                <button class="tb" title="Insérer image/vidéo" onclick="document.getElementById('mediaInsertInput').click()">🖼️</button>
-                <input type="file" id="mediaInsertInput" accept="image/*,video/mp4" style="display:none;" onchange="insererMediaLocal(this)" />
+                <button class="tb2" title="Insérer image"
+                  onclick="document.getElementById('mediaInsertInput').click()">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </button>
+                <input type="file" id="mediaInsertInput" accept="image/*,video/mp4"
+                  style="display:none;" onchange="insererMediaLocal(this)" />
 
-                <button class="tb" onclick="fmt('removeFormat')" style="font-size:11px;">✕fmt</button>
+                <!-- Clear format -->
+                <button class="tb2 tb2--danger" onclick="fmt('removeFormat')" title="Effacer le formatage">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                </button>
 
-              </div>
+              </div><!-- /toolbar -->
 
-              <!-- Editor -->
-              <div class="editor-body" id="editorBody" contenteditable="true"
-                style="min-height:180px;padding:16px;font-size:13px;line-height:1.7;outline:none;font-family:'DM Sans',sans-serif;"
+              <!-- Zone de saisie scrollable -->
+              <div class="editor-body2" id="editorBody" contenteditable="true"
                 placeholder="Décrivez votre produit…"></div>
 
-            </div>
+            </div><!-- /editor-box2 -->
           </div>
 
+          <!-- Catégorie -->
           <div class="fg">
             <label class="lbl">Catégorie <span class="req">*</span></label>
             <select class="sel" id="catSelect"></select>
           </div>
 
+          <!-- Tags -->
           <div class="fg">
             <label class="lbl">Tags</label>
             <div class="tags-box" onclick="document.getElementById('tgInp').focus()">
-              <input class="tag-inp" id="tgInp" placeholder="Tag, Entrée pour valider…" onkeydown="addTag(event)" />
+              <input class="tag-inp" id="tgInp"
+                placeholder="Ajoutez un tag, Entrée pour valider…"
+                onkeydown="addTag(event)" />
             </div>
+            <span class="hint">Appuyez sur Entrée ou virgule pour valider chaque tag.</span>
           </div>
 
-        </div>
-      </div>
+        </div><!-- /card-body-p -->
+      </div><!-- /card -->
 
       <div class="actions-bar">
-        <button class="btn-back-step" onclick="goStep(1)">⬅ Retour</button>
-        <button class="btn-next" onclick="goStep(3)">Continuer : Médias ➡</button>
+        <button class="btn-back-step" onclick="goStep(1)">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Retour
+        </button>
+        <button class="btn-next" onclick="goStep(3)">
+          Continuer : Médias
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
 
-    </div>
+    </div><!-- /colonne principale -->
 
+    <!-- Colonne conseils -->
     <div>
       <div class="card">
         <div class="card-head">
           <div><h2>Conseils</h2></div>
         </div>
-        <div class="card-body-p">
-          <div class="info-box">💡 Les produits avec une description complète se vendent <strong>3× plus</strong>.</div>
+        <div class="card-body-p" style="gap:12px;">
+          <div class="info-box">
+            💡 Les produits avec une description complète se vendent <strong>3× plus</strong>.
+          </div>
+          <div class="info-box" style="background:var(--gray-50);border:1px solid var(--gray-100);">
+            🏷 Les <strong>tags</strong> aident les clients à trouver votre produit dans les recherches.
+          </div>
+          <div class="info-box" style="background:var(--gray-50);border:1px solid var(--gray-100);">
+            📂 Choisissez la <strong>catégorie</strong> la plus précise pour un meilleur référencement.
+          </div>
         </div>
       </div>
+
+      <!-- Compteur caractères -->
+      <div class="char-counter-card">
+        <div class="char-counter-label">Longueur description</div>
+        <div class="char-counter-bar-wrap">
+          <div class="char-counter-bar" id="charBar"></div>
+        </div>
+        <div class="char-counter-text" id="charCount">0 caractères</div>
+      </div>
+
     </div>
 
   </div>
 </div>
+
           <!-- Étape 3 -->
           <div class="step-panel" id="panel3">
             <div class="create-grid">
@@ -1526,7 +1597,6 @@ function showProdSubview(id) {
 }
 
 // ══ PRODUITS ══
-// ══ PRODUITS ══
 async function loadProduits(filtre = 'tous') {
   const table = document.getElementById('produitsTable');
   if (!table) return;
@@ -1926,6 +1996,21 @@ function updateSEO() {
   const t=document.getElementById('seoTtl'); if(t) t.textContent=title||name||"Votre titre s'affichera ici";
   const d=document.getElementById('seoDsc'); if(d) d.textContent=desc||"La description s'affiche dans les résultats de recherche.";
 }
+
+// ── Compteur caractères description ──
+document.addEventListener('input', function(e) {
+  if (e.target.id !== 'editorBody') return;
+  const text = e.target.innerText || '';
+  const len  = text.length;
+  const pct  = Math.min((len / 500) * 100, 100);
+  const bar  = document.getElementById('charBar');
+  const cnt  = document.getElementById('charCount');
+  if (bar) {
+    bar.style.width = pct + '%';
+    bar.style.background = len < 100 ? '#f59e0b' : len < 300 ? '#1A6BFF' : '#16a34a';
+  }
+  if (cnt) cnt.textContent = len + ' caractère' + (len > 1 ? 's' : '');
+});
 
 async function saveDraft(btn) {
   const nom = document.getElementById('pName').value.trim();
