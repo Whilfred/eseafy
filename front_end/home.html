@@ -302,51 +302,73 @@
                 <div class="tb2-sep"></div>
 
                 <!-- Gras / Italique / Souligné / Barré -->
-                <button class="tb2" onclick="fmt('bold')" title="Gras"><b>B</b></button>
-                <button class="tb2 tb2--italic" onclick="fmt('italic')" title="Italique"><i>I</i></button>
-                <button class="tb2 tb2--underline" onclick="fmt('underline')" title="Souligné"><u>U</u></button>
-                <button class="tb2 tb2--strike" onclick="fmt('strikeThrough')" title="Barré">S</button>
+<!-- Gras / Italique / Souligné / Barré -->
+<button class="tb2" onmousedown="event.preventDefault()" onclick="fmt('bold')" title="Gras"><b>B</b></button>
+<button class="tb2 tb2--italic" onmousedown="event.preventDefault()" onclick="fmt('italic')" title="Italique"><i>I</i></button>
+<button class="tb2 tb2--underline" onmousedown="event.preventDefault()" onclick="fmt('underline')" title="Souligné"><u>U</u></button>
+<button class="tb2 tb2--strike" onmousedown="event.preventDefault()" onclick="fmt('strikeThrough')" title="Barré">S</button>
+
+                <div class="tb2-sep"></div>
+<!-- Couleur du texte -->
+<div class="tb2-color" title="Couleur du texte" style="position:relative;">
+  <span class="tb2-color-preview" id="textColorPreview" style="border-bottom:3px solid #ef4444;cursor:pointer;" onmousedown="event.preventDefault();toggleColorPalette('textPalette')">A</span>
+  <div id="textPalette" style="display:none;position:absolute;top:100%;left:0;z-index:999;background:white;border:1px solid #e5e7eb;border-radius:10px;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);flex-wrap:wrap;gap:4px;width:152px;">
+    <div style="width:100%;font-size:10px;color:#9e9b97;margin-bottom:4px;">Couleur du texte</div>
+    <div onmousedown="event.preventDefault();applyColor('#000000');document.getElementById('textColorPreview').style.borderBottomColor='#000000';hidePalettes();" style="width:20px;height:20px;background:#000000;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#ef4444');document.getElementById('textColorPreview').style.borderBottomColor='#ef4444';hidePalettes();" style="width:20px;height:20px;background:#ef4444;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#f97316');document.getElementById('textColorPreview').style.borderBottomColor='#f97316';hidePalettes();" style="width:20px;height:20px;background:#f97316;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#f59e0b');document.getElementById('textColorPreview').style.borderBottomColor='#f59e0b';hidePalettes();" style="width:20px;height:20px;background:#f59e0b;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#22c55e');document.getElementById('textColorPreview').style.borderBottomColor='#22c55e';hidePalettes();" style="width:20px;height:20px;background:#22c55e;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#1A6BFF');document.getElementById('textColorPreview').style.borderBottomColor='#1A6BFF';hidePalettes();" style="width:20px;height:20px;background:#1A6BFF;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#8b5cf6');document.getElementById('textColorPreview').style.borderBottomColor='#8b5cf6';hidePalettes();" style="width:20px;height:20px;background:#8b5cf6;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#ec4899');document.getElementById('textColorPreview').style.borderBottomColor='#ec4899';hidePalettes();" style="width:20px;height:20px;background:#ec4899;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#6b7280');document.getElementById('textColorPreview').style.borderBottomColor='#6b7280';hidePalettes();" style="width:20px;height:20px;background:#6b7280;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#1e293b');document.getElementById('textColorPreview').style.borderBottomColor='#1e293b';hidePalettes();" style="width:20px;height:20px;background:#1e293b;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#dc2626');document.getElementById('textColorPreview').style.borderBottomColor='#dc2626';hidePalettes();" style="width:20px;height:20px;background:#dc2626;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#16a34a');document.getElementById('textColorPreview').style.borderBottomColor='#16a34a';hidePalettes();" style="width:20px;height:20px;background:#16a34a;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#1d4ed8');document.getElementById('textColorPreview').style.borderBottomColor='#1d4ed8';hidePalettes();" style="width:20px;height:20px;background:#1d4ed8;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#7c3aed');document.getElementById('textColorPreview').style.borderBottomColor='#7c3aed';hidePalettes();" style="width:20px;height:20px;background:#7c3aed;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyColor('#ffffff');document.getElementById('textColorPreview').style.borderBottomColor='#ffffff';hidePalettes();" style="width:20px;height:20px;background:#ffffff;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+  </div>
+</div>
+
+<!-- Surbrillance -->
+<div class="tb2-color" title="Surligner" style="position:relative;">
+  <span class="tb2-hl-preview" id="hlPreview" style="cursor:pointer;" onmousedown="event.preventDefault();toggleColorPalette('hlPalette')">ab</span>
+  <div id="hlPalette" style="display:none;position:absolute;top:100%;left:0;z-index:999;background:white;border:1px solid #e5e7eb;border-radius:10px;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);flex-wrap:wrap;gap:4px;width:152px;">
+    <div style="width:100%;font-size:10px;color:#9e9b97;margin-bottom:4px;">Surlignage</div>
+    <div onmousedown="event.preventDefault();applyHighlight('#fef08a');document.getElementById('hlPreview').style.background='#fef08a';hidePalettes();" style="width:20px;height:20px;background:#fef08a;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyHighlight('#bbf7d0');document.getElementById('hlPreview').style.background='#bbf7d0';hidePalettes();" style="width:20px;height:20px;background:#bbf7d0;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyHighlight('#bfdbfe');document.getElementById('hlPreview').style.background='#bfdbfe';hidePalettes();" style="width:20px;height:20px;background:#bfdbfe;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyHighlight('#fecaca');document.getElementById('hlPreview').style.background='#fecaca';hidePalettes();" style="width:20px;height:20px;background:#fecaca;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyHighlight('#fed7aa');document.getElementById('hlPreview').style.background='#fed7aa';hidePalettes();" style="width:20px;height:20px;background:#fed7aa;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyHighlight('#e9d5ff');document.getElementById('hlPreview').style.background='#e9d5ff';hidePalettes();" style="width:20px;height:20px;background:#e9d5ff;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyHighlight('#f1f5f9');document.getElementById('hlPreview').style.background='#f1f5f9';hidePalettes();" style="width:20px;height:20px;background:#f1f5f9;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+    <div onmousedown="event.preventDefault();applyHighlight('#ffffff');document.getElementById('hlPreview').style.background='#ffffff';hidePalettes();" style="width:20px;height:20px;background:#ffffff;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);"></div>
+  </div>
+</div>
+
 
                 <div class="tb2-sep"></div>
 
-                <!-- Couleur texte -->
-                <label class="tb2-color" title="Couleur du texte">
-                  <span class="tb2-color-preview" id="textColorPreview" style="border-bottom:3px solid #ef4444;">A</span>
-                  <input type="color" value="#ef4444"
-                    onmousedown="saveSelection()"
-                    onchange="applyColor(this.value);document.getElementById('textColorPreview').style.borderBottomColor=this.value"
-                    style="position:absolute;opacity:0;width:0;height:0;" />
-                </label>
-
-                <!-- Surbrillance -->
-                <label class="tb2-color" title="Surligner">
-                  <span class="tb2-hl-preview" id="hlPreview">ab</span>
-                  <input type="color" value="#fef08a"
-                    onmousedown="saveSelection()"
-                    onchange="applyHighlight(this.value);document.getElementById('hlPreview').style.background=this.value"
-                    style="position:absolute;opacity:0;width:0;height:0;" />
-                </label>
-
-                <div class="tb2-sep"></div>
-
-                <!-- Alignements -->
-                <button class="tb2" onclick="fmt('justifyLeft')" title="Gauche">
+<!-- Alignements -->
+                <button class="tb2" onmousedown="event.preventDefault()" onclick="fmt('justifyLeft')" title="Gauche">
                   <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="2" rx="1"/><rect x="3" y="10" width="12" height="2" rx="1"/><rect x="3" y="15" width="15" height="2" rx="1"/><rect x="3" y="20" width="9" height="2" rx="1"/></svg>
                 </button>
-                <button class="tb2" onclick="fmt('justifyCenter')" title="Centrer">
+                <button class="tb2" onmousedown="event.preventDefault()" onclick="fmt('justifyCenter')" title="Centrer">
                   <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="2" rx="1"/><rect x="6" y="10" width="12" height="2" rx="1"/><rect x="4" y="15" width="16" height="2" rx="1"/><rect x="7" y="20" width="10" height="2" rx="1"/></svg>
                 </button>
-                <button class="tb2" onclick="fmt('justifyRight')" title="Droite">
+                <button class="tb2" onmousedown="event.preventDefault()" onclick="fmt('justifyRight')" title="Droite">
                   <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="2" rx="1"/><rect x="9" y="10" width="12" height="2" rx="1"/><rect x="6" y="15" width="15" height="2" rx="1"/><rect x="12" y="20" width="9" height="2" rx="1"/></svg>
                 </button>
 
                 <div class="tb2-sep"></div>
 
                 <!-- Listes -->
-                <button class="tb2" onclick="fmt('insertUnorderedList')" title="Liste à puces">
+                <button class="tb2" onmousedown="event.preventDefault()" onclick="fmt('insertUnorderedList')" title="Liste à puces">
                   <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
                 </button>
-                <button class="tb2" onclick="fmt('insertOrderedList')" title="Liste numérotée">
+                <button class="tb2" onmousedown="event.preventDefault()" onclick="fmt('insertOrderedList')" title="Liste numérotée">
                   <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="10" y1="6" x2="20" y2="6"/><line x1="10" y1="12" x2="20" y2="12"/><line x1="10" y1="18" x2="20" y2="18"/><text x="2" y="8" font-size="7" fill="currentColor" stroke="none">1</text><text x="2" y="14" font-size="7" fill="currentColor" stroke="none">2</text><text x="2" y="20" font-size="7" fill="currentColor" stroke="none">3</text></svg>
                 </button>
 
@@ -365,7 +387,7 @@
                 <div class="tb2-sep"></div>
 
                 <!-- Lien & image -->
-                <button class="tb2" onclick="document.execCommand('createLink',false,prompt('URL :','https://'))" title="Insérer lien">
+                <button class="tb2" onmousedown="event.preventDefault()" onclick="document.execCommand('createLink',false,prompt('URL :','https://'))" title="Insérer lien">
                   <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
                 </button>
 
@@ -377,12 +399,12 @@
                   style="display:none;" onchange="insererMediaLocal(this)" />
 
                 <!-- Clear format -->
-                <button class="tb2 tb2--danger" onclick="fmt('removeFormat')" title="Effacer le formatage">
+                <button class="tb2 tb2--danger" onmousedown="event.preventDefault()" onclick="fmt('removeFormat')" title="Effacer le formatage">
                   <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
                 </button>
 
               </div><!-- /toolbar -->
-
+              
               <!-- Zone de saisie scrollable -->
               <div class="editor-body2" id="editorBody" contenteditable="true"
                 placeholder="Décrivez votre produit…"></div>
@@ -1901,7 +1923,103 @@ function showToast(message, type = 'success') {
 
 function copyLien(slug) {
   const lien = `https://products.ojafy.store/boutique/boutique-${user.id}/${slug}`;
-  navigator.clipboard.writeText(lien).then(() => alert('✅ Lien copié !\n' + lien));
+  
+  navigator.clipboard.writeText(lien).then(() => {
+    // Créer un toast personnalisé avec animation de vérification
+    const toast = document.createElement('div');
+    toast.className = 'copy-toast';
+    toast.innerHTML = `
+      <div class="copy-toast-content">
+        <svg class="check-animation" viewBox="0 0 24 24" width="24" height="24">
+          <circle cx="12" cy="12" r="11" fill="none" stroke="white" stroke-width="2" stroke-dasharray="70" stroke-dashoffset="70">
+            <animate attributeName="stroke-dashoffset" from="70" to="0" dur="0.3s" fill="freeze"/>
+          </circle>
+          <polyline points="7,12 10,15 17,8" fill="none" stroke="white" stroke-width="2" stroke-dasharray="30" stroke-dashoffset="30">
+            <animate attributeName="stroke-dashoffset" from="30" to="0" dur="0.3s" begin="0.2s" fill="freeze"/>
+          </polyline>
+        </svg>
+        <span>Lien copié !</span>
+      </div>
+    `;
+    
+    // Styles du toast
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e293b;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 10000;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+      font-family: 'DM Sans', sans-serif;
+      backdrop-filter: blur(8px);
+      background: rgba(30, 41, 59, 0.95);
+      pointer-events: none;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Déclencher l'animation d'entrée
+    setTimeout(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+    }, 10);
+    
+    // Supprimer après 2 secondes
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(100px)';
+      setTimeout(() => toast.remove(), 300);
+    }, 2000);
+    
+  }).catch(() => {
+    // Toast d'erreur si la copie échoue
+    const toastError = document.createElement('div');
+    toastError.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 18px;">❌</span>
+        <span>Erreur lors de la copie</span>
+      </div>
+    `;
+    toastError.style.cssText = `
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #ef4444;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 10000;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+      font-family: 'DM Sans', sans-serif;
+      pointer-events: none;
+    `;
+    document.body.appendChild(toastError);
+    
+    setTimeout(() => {
+      toastError.style.opacity = '1';
+      toastError.style.transform = 'translateX(-50%) translateY(0)';
+    }, 10);
+    
+    setTimeout(() => {
+      toastError.style.opacity = '0';
+      toastError.style.transform = 'translateX(-50%) translateY(100px)';
+      setTimeout(() => toastError.remove(), 300);
+    }, 2000);
+  });
+  
   console.log('🔗 Lien :', lien);
 }
 
@@ -1974,7 +2092,7 @@ function addTag(e) {
 
 function handleImages(input) {
   const grid = document.getElementById('imgGrid');
-  selectedFiles = Array.from(input.files).slice(0, 8); // ← sauvegarder les fichiers
+  selectedFiles = Array.from(input.files).slice(0, 8);
   selectedFiles.forEach(file => {
     const r = new FileReader();
     r.onload = e => {
@@ -2050,7 +2168,7 @@ async function publishProduct(btn) {
   }
   if (!prix || prix <= 0) { 
     alert('Veuillez saisir un prix valide.'); 
-    goStep(4); 
+    goStep(4);
     return; 
   }
 
@@ -3859,6 +3977,7 @@ function getSequencesContent() {
   };
 }
 
+/*
 // ══ COULEUR TEXTE & SURLIGNAGE ══
 let savedRange = null;
 document.addEventListener('DOMContentLoaded', () => {
@@ -3886,7 +4005,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-
+*/
 
 // ══ FICHIER DIGITAL ══
 let digitalFileUrl = null;
@@ -4056,39 +4175,55 @@ function insererMediaLocal(input) {
   input.value = '';
 }
 
-let savedSelection = null;
-
-const editor = document.getElementById('editorBody');
+// ══ SÉLECTION ÉDITEUR — VERSION CORRIGÉE ══
+let _savedSel = null;
 
 function saveSelection() {
   const sel = window.getSelection();
-  if (sel.rangeCount > 0) {
-    savedSelection = sel.getRangeAt(0);
+  if (sel && sel.rangeCount > 0 && sel.toString().length > 0) {
+    _savedSel = sel.getRangeAt(0).cloneRange();
   }
 }
 
-editor.addEventListener('mouseup', saveSelection);
-editor.addEventListener('keyup', saveSelection);
-
 function restoreSelection() {
   const sel = window.getSelection();
-  if (savedSelection) {
+  if (_savedSel && sel) {
     sel.removeAllRanges();
-    sel.addRange(savedSelection);
+    sel.addRange(_savedSel);
   }
 }
 
 function applyColor(color) {
-  editor.focus();
-  restoreSelection();
+  const ed = document.getElementById('editorBody');
+  ed.focus();
+  if (_savedSel) {
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(_savedSel);
+  }
   document.execCommand('foreColor', false, color);
 }
 
 function applyHighlight(color) {
-  editor.focus();
-  restoreSelection();
+  const ed = document.getElementById('editorBody');
+  ed.focus();
+  if (_savedSel) {
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(_savedSel);
+  }
   document.execCommand('hiliteColor', false, color);
 }
+
+// Sauvegarder à chaque interaction dans l'éditeur
+document.addEventListener('DOMContentLoaded', function() {
+  const ed = document.getElementById('editorBody');
+  if (ed) {
+    ed.addEventListener('mouseup',  saveSelection);
+    ed.addEventListener('keyup',    saveSelection);
+    ed.addEventListener('touchend', saveSelection);
+  }
+});
 
 function fmt(command) {
   document.execCommand(command, false, null);
@@ -4254,6 +4389,27 @@ const observer = new MutationObserver(function() {
   autoCloseMenuOnNav();
 });
 observer.observe(document.body, { childList: true, subtree: false });
+
+function toggleColorPalette(id) {
+  hidePalettes();
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display === 'flex' ? 'none' : 'flex';
+}
+
+function hidePalettes() {
+  ['textPalette','hlPalette'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+// Fermer les palettes quand on clique ailleurs
+document.addEventListener('mousedown', function(e) {
+  if (!e.target.closest('#textPalette') && !e.target.closest('#hlPalette') &&
+      !e.target.closest('#textColorPreview') && !e.target.closest('#hlPreview')) {
+    hidePalettes();
+  }
+});
 
 // ══ DÉMARRAGE ══
 loadUserInfo();
