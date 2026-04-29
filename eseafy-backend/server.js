@@ -255,5 +255,16 @@ app.get('/suivi', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'suivi.html'));
 });
 
+///MENTIONS LÉGALES
+app.get('/legal/mentions', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'legal', 'mentions.html'));
+});
+app.get('/legal/cgv', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'legal', 'conditions.html'));
+});
+app.get('/legal/confidentialite', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'legal', 'confidentialite.html'));
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`));
