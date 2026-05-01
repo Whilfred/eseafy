@@ -2041,40 +2041,94 @@ const cats = {
 
 function startCreation(type) {
   productType = type;
+  existingImageUrls = [];
+  imagesToDelete = []; 
+  
   const badge = document.getElementById('typeBadge');
   badge.className = 'type-badge ' + type;
   badge.textContent = type === 'digital' ? '📦 Produit digital' : '🚚 Produit physique';
-  document.getElementById('topCrumb').innerHTML = '<strong>Ma boutique</strong> &nbsp;/&nbsp; Nouveau produit ' + (type==='digital'?'digital':'physique');
+  
+  document.getElementById('topCrumb').innerHTML = '<strong>Ma boutique</strong> &nbsp;/&nbsp; Nouveau produit ' + (type === 'digital' ? 'digital' : 'physique');
+  
   const sel = document.getElementById('catSelect');
-  sel.innerHTML = '<option value="">Choisir une catégorie</option>' + cats[type].map(c=>`<option>${c}</option>`).join('');
+  sel.innerHTML = '<option value="">Choisir une catégorie</option>' + cats[type].map(c => `<option>${c}</option>`).join('');
+  
   document.getElementById('sumType').textContent = type === 'digital' ? 'Produit digital' : 'Produit physique';
-  document.getElementById('pName').value         = '';
+  document.getElementById('pName').value = '';
   document.getElementById('editorBody').innerHTML = '';
-  document.getElementById('prixInput').value     = '';
+  document.getElementById('prixInput').value = '';
   document.getElementById('prixBarreInput').value = '';
-  selectedFiles  = [];
+  
+  selectedFiles = [];
   digitalFileUrl = null;
+  
   const lbl = document.getElementById('digitalFileLabel');
-  if (lbl) { lbl.innerHTML = '📎 Cliquez pour uploader · PDF, ZIP, MP3, MP4, MOV…'; lbl.style.color = ''; }
+  if (lbl) { 
+    lbl.innerHTML = '📎 Cliquez pour uploader · PDF, ZIP, MP3, MP4, MOV…'; 
+    lbl.style.color = ''; 
+  }
+  
   afficherChampsType(type);
   showProdSubview('subProdCreate');
   goStep(1);
-  window.scrollTo({ top:0 });
+  window.scrollTo({ top: 0 });
 }
+
+// ══ NAVIGATION ENTRE LES ÉTAPES ══
 function goStep(n) {
-  document.querySelectorAll('.step-panel').forEach((p,i) => p.classList.toggle('active', i+1===n));
-  for (let i=1; i<=4; i++) {
-    const b = document.getElementById('b'+i);
-    const s = b.closest('.step');
-    s.classList.remove('active','done');
-    if (i<n)       { s.classList.add('done');   b.innerHTML  ='✓'; }
-    else if (i===n){ s.classList.add('active'); b.textContent=i;  }
-    else           { b.textContent=i; }
-    if (i<4) document.getElementById('l'+i).classList.toggle('done', i<n);
+  console.log('➡️ Aller à l\'étape', n);
+  
+  // Masquer tous les panels
+  document.querySelectorAll('.step-panel').forEach((panel, index) => {
+    if (index + 1 === n) {
+      panel.classList.add('active');
+    } else {
+      panel.classList.remove('active');
+    }
+  });
+  
+  // Mettre à jour l'apparence des étapes
+  for (let i = 1; i <= 4; i++) {
+    const b = document.getElementById('b' + i);
+    if (b) {
+      const stepDiv = b.closest('.step');
+      if (stepDiv) {
+        stepDiv.classList.remove('active', 'done');
+        if (i < n) {
+          stepDiv.classList.add('done');
+          b.innerHTML = '✓';
+        } else if (i === n) {
+          stepDiv.classList.add('active');
+          b.textContent = i;
+        } else {
+          b.textContent = i;
+        }
+      }
+    }
+    if (i < 4) {
+      const line = document.getElementById('l' + i);
+      if (line) {
+        if (i < n) {
+          line.classList.add('done');
+        } else {
+          line.classList.remove('done');
+        }
+      }
+    }
   }
-  if (n===4) document.getElementById('sumName').textContent = document.getElementById('pName').value || '—';
-  window.scrollTo({ top:0, behavior:'smooth' });
+  
+  // Mettre à jour le résumé à l'étape 4
+  if (n === 4) {
+    const nameInput = document.getElementById('pName');
+    if (nameInput) {
+      const sumName = document.getElementById('sumName');
+      if (sumName) sumName.textContent = nameInput.value || '—';
+    }
+  }
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
 
 function fmt(cmd) { document.execCommand(cmd,false,null); }
 
@@ -2092,17 +2146,23 @@ function addTag(e) {
 
 function handleImages(input) {
   const grid = document.getElementById('imgGrid');
+  if (!grid) return;
+  
   selectedFiles = Array.from(input.files).slice(0, 8);
+  
   selectedFiles.forEach(file => {
     const r = new FileReader();
     r.onload = e => {
       const d = document.createElement('div');
       d.className = 'img-th';
-      d.innerHTML = `<img src="${e.target.result}"/><button class="rm" onclick="this.parentElement.remove()">×</button>`;
+      d.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" /><button class="rm" onclick="this.parentElement.remove()">×</button>`;
       grid.appendChild(d);
     };
     r.readAsDataURL(file);
   });
+  
+  // Reset l'input pour permettre de réuploader les mêmes fichiers
+  input.value = '';
 }
 
 function updateSEO() {
@@ -2668,7 +2728,7 @@ async function editProduit(id) {
   editingProduitId = id;
 
   try {
-    const res  = await fetch(`${API_URL}/produits/${id}`, {
+    const res = await fetch(`${API_URL}/produits/${id}`, {
       headers: { 'Authorization': 'Bearer ' + token }
     });
     const data = await res.json();
@@ -2681,48 +2741,82 @@ async function editProduit(id) {
     navigate('nouveau-produit');
     startCreation(p.type);
 
-    // Pré-remplir après un court délai
     setTimeout(() => {
-      document.getElementById('pName').value          = p.nom || '';
+      // Remplir les champs
+      document.getElementById('pName').value = p.nom || '';
       document.getElementById('editorBody').innerHTML = p.description || '';
-      document.getElementById('prixInput').value      = p.prix || '';
+      document.getElementById('prixInput').value = p.prix || '';
       document.getElementById('prixBarreInput').value = p.prix_barre || '';
-      document.getElementById('seoTitle').value       = p.seo_titre || '';
-      document.getElementById('seoDescInp').value     = p.seo_desc || '';
+      document.getElementById('seoTitle').value = p.seo_titre || '';
+      document.getElementById('seoDescInp').value = p.seo_desc || '';
 
       // Catégorie
       const sel = document.getElementById('catSelect');
-      Array.from(sel.options).forEach(opt => {
-        if (opt.text === p.categorie) opt.selected = true;
-      });
+      if (sel) {
+        for (let opt of sel.options) {
+          if (opt.text === p.categorie) opt.selected = true;
+        }
+      }
 
       // Tags
       if (p.tags && p.tags.length > 0) {
         const tgInp = document.getElementById('tgInp');
-        p.tags.forEach(tag => {
-          const chip = document.createElement('span');
-          chip.className = 'chip';
-          chip.innerHTML = tag + ' <button onclick="this.parentElement.remove()">×</button>';
-          tgInp.before(chip);
-        });
+        if (tgInp) {
+          document.querySelectorAll('.chip').forEach(c => c.remove());
+          p.tags.forEach(tag => {
+            const chip = document.createElement('span');
+            chip.className = 'chip';
+            chip.innerHTML = tag + ' <button onclick="this.parentElement.remove()">×</button>';
+            tgInp.before(chip);
+          });
+        }
       }
 
-      // Statut toggle
+      // Toggle
       const toggle = document.getElementById('visibleToggle');
-      if (p.visible) toggle.classList.add('on');
-      else toggle.classList.remove('on');
+      if (toggle) {
+        if (p.visible) toggle.classList.add('on');
+        else toggle.classList.remove('on');
+      }
 
-      // Changer le bouton publier
+      // Bouton mise à jour
       const publishBtn = document.getElementById('publishBtn');
-      publishBtn.innerHTML = '💾 Mettre à jour';
-      publishBtn.onclick   = () => updateProduit(publishBtn);
+      if (publishBtn) {
+        publishBtn.innerHTML = '💾 Mettre à jour';
+        publishBtn.onclick = () => updateProduit(publishBtn);
+      }
 
-      // Changer le titre
-      document.getElementById('topCrumb').innerHTML =
-        '<strong>Ma boutique</strong> &nbsp;/&nbsp; Modifier le produit';
-
+      document.getElementById('topCrumb').innerHTML = '<strong>Ma boutique</strong> &nbsp;/&nbsp; Modifier le produit';
       updateSEO();
-      console.log('✅ Formulaire pré-rempli pour :', p.nom);
+      
+      // ⭐ IMAGES - AVEC URL COMPLÈTE ⭐
+      const grid = document.getElementById('imgGrid');
+      if (grid) {
+        grid.innerHTML = '';
+        if (p.images && p.images.length > 0) {
+          existingImageUrls = [...p.images];
+          p.images.forEach(imgUrl => {
+            const div = document.createElement('div');
+            div.className = 'img-th';
+            
+            // Construire l'URL complète si nécessaire
+            let fullImageUrl = imgUrl;
+            if (imgUrl && imgUrl.startsWith('/uploads/')) {
+              fullImageUrl = `https://eseafy-backend.fly.dev${imgUrl}`;
+            }
+            
+            div.innerHTML = `
+              <img src="${fullImageUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />
+              <button class="rm" onclick="removeExistingImage(this, '${imgUrl.replace(/'/g, "\\'")}')">×</button>
+            `;
+            grid.appendChild(div);
+          });
+        } else {
+          existingImageUrls = [];
+        }
+      }
+      
+      console.log('✅ Formulaire pré-rempli');
     }, 300);
 
   } catch (err) {
@@ -2750,7 +2844,7 @@ async function updateProduit(btn) {
   btn.innerHTML = '⏳ Mise à jour…';
 
   // Upload nouvelles images si sélectionnées
-  let imageUrls = [];
+  let newImageUrls = [];
   if (selectedFiles.length > 0) {
     const formData = new FormData();
     selectedFiles.forEach(file => formData.append('images', file));
@@ -2761,15 +2855,35 @@ async function updateProduit(btn) {
         body:    formData
       });
       const uploadData = await uploadRes.json();
-      if (uploadRes.ok) imageUrls = uploadData.urls;
+      if (uploadRes.ok) newImageUrls = uploadData.urls;
     } catch (err) {
       console.warn('⚠️ Upload échoué :', err);
     }
   }
 
+  // ⭐ Fusionner images existantes (non supprimées) + nouvelles ⭐
+  const finalImageUrls = [...existingImageUrls, ...newImageUrls];
+
+  // ⭐ Supprimer les images marquées ⭐
+  if (imagesToDelete.length > 0) {
+    try {
+      await fetch(`${API_URL}/upload/images/delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ urls: imagesToDelete })
+      });
+      console.log('🗑️ Images supprimées:', imagesToDelete.length);
+    } catch (err) {
+      console.warn('⚠️ Suppression images échouée:', err);
+    }
+  }
+
   try {
-    const body = { nom, description, prix, prix_barre, categorie, tags, statut, visible, seo_titre, seo_desc };
-    if (imageUrls.length > 0) body.images = imageUrls;
+    const body = { 
+      nom, description, prix, prix_barre, categorie, tags, 
+      statut, visible, seo_titre, seo_desc,
+      images: finalImageUrls  // ← Utiliser les images fusionnées
+    };
 
     const res  = await fetch(`${API_URL}/produits/${editingProduitId}`, {
       method:  'PUT',
@@ -2795,6 +2909,7 @@ async function updateProduit(btn) {
     btn.innerHTML = '💾 Mettre à jour';
   }
 }
+
 // ══ CHARGER LES ANALYTICS ══
 async function loadAnalytics() {
   console.log('📊 Chargement analytics…');
@@ -4201,6 +4316,19 @@ function fmt(command) {
 
 // ========== MENU HAMBURGER POUR MOBILE ==========
 // Cette fonction crée et gère le menu hamburger UNIQUEMENT sur mobile
+
+// ⭐ FONCTION POUR SUPPRIMER UNE IMAGE EXISTANTE ⭐
+function removeExistingImage(btn, imgUrl) {
+  if (!confirm('Supprimer cette image définitivement ?')) return;
+  
+  imagesToDelete.push(imgUrl);
+  existingImageUrls = existingImageUrls.filter(url => url !== imgUrl);
+  
+  const container = btn.closest('.img-th');
+  if (container) container.remove();
+  
+  showToast('🗑️ Image supprimée', 'info');
+}
 
 function initMobileMenu() {
   // Vérifier si on est sur mobile (largeur < 768px)
