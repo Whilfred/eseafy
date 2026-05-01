@@ -3977,36 +3977,6 @@ function getSequencesContent() {
   };
 }
 
-/*
-// ══ COULEUR TEXTE & SURLIGNAGE ══
-let savedRange = null;
-document.addEventListener('DOMContentLoaded', () => {
-  const editorBody = document.getElementById('editorBody');
-  if (editorBody) {
-    editorBody.addEventListener('mouseup', () => {
-      const sel = window.getSelection();
-      if (sel.rangeCount > 0) savedRange = sel.getRangeAt(0).cloneRange();
-    });
-  }
-  const textColorPicker = document.getElementById('textColorPicker');
-  if (textColorPicker) {
-    textColorPicker.addEventListener('change', function () {
-      document.getElementById('colorPreview').style.borderBottomColor = this.value;
-      if (savedRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); }
-      document.execCommand('foreColor', false, this.value);
-    });
-  }
-  const bgColorPicker = document.getElementById('bgColorPicker');
-  if (bgColorPicker) {
-    bgColorPicker.addEventListener('change', function () {
-      document.getElementById('bgPreview').style.background = this.value;
-      if (savedRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); }
-      document.execCommand('hiliteColor', false, this.value);
-    });
-  }
-});
-*/
-
 // ══ FICHIER DIGITAL ══
 let digitalFileUrl = null;
 
@@ -4175,7 +4145,7 @@ function insererMediaLocal(input) {
   input.value = '';
 }
 
-// ══ SÉLECTION ÉDITEUR — VERSION CORRIGÉE ══
+// ══ SÉLECTION ÉDITEUR ══
 let _savedSel = null;
 
 function saveSelection() {
