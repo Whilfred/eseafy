@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELISA Core - Multi-Agent System</title>
+    <style>
+        /* Styles simplifiés mais élégants */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 28px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+        }
+        
+        .conversation-panel {
+            background: white;
+            border-radius: 20px;
+            height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        
+        .agent-icon {
+            font-size: 24px;
+        }
+        
+        .agent-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-left: auto;
+        }
+        
+        .message-bubble {
+            background: #f3f4f6;
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-left: 32px;
+        }
+        
+        .message-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #1f2937;
+        }
+        
+        .tag {
+            color: #8b5cf6;
+            font-weight: 600;
+            background: rgba(139, 92, 246, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .controls-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            height: fit-content;
+        }
+        
+        .topic-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .stats {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f4f6;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.5s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 ELISA Core - Intelligence Collective</h1>
+            <div style="margin-top: 12px; font-size: 14px; color: #6b7280;">
+                5 agents IA collaborant pour optimiser vos campagnes
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="conversation-panel">
+                <div class="messages-container" id="messages">
+                    <div style="text-align: center; color: #9ca3af; padding: 40px;">
+                        🤖 Cliquez sur "Lancer ELISA" pour démarrer
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <select id="topicSelect" class="topic-select">
+                    <option>Choisir un objectif...</option>
+                </select>
+                
+                <button id="startBtn" class="btn btn-primary">🚀 Lancer ELISA</button>
+                <button id="continueBtn" class="btn btn-secondary" disabled>➡️ Prochain agent</button>
+                <button id="clearBtn" class="btn btn-secondary">🗑️ Effacer</button>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <span>💬 Messages</span>
+                        <span id="msgCount">0</span>
+                    </div>
+                    <div class="stat">
+                        <span>🎯 Agent actif</span>
+                        <span id="activeAgent">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let sessionId = null;
+        let nextAgent = 'data';
+        let messageCount = 0;
+        
+        // Charger les topics
+        fetch('/api/topics')
+            .then(res => res.json())
+            .then(data => {
+                const select = document.getElementById('topicSelect');
+                data.topics.forEach(topic => {
+                    const option = document.createElement('option');
+                    option.value = topic;
+                    option.textContent = topic;
+                    select.appendChild(option);
+                });
+            });
+        
+        function addMessage(agentName, message, color, icon) {
+            const container = document.getElementById('messages');
+            
+            if (container.children.length === 1 && container.children[0].textContent.includes('Cliquez')) {
+                container.innerHTML = '';
+            }
+            
+            const formatted = message.replace(/@(\w+)/g, '<span class="tag">@$1</span>');
+            
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message';
+            msgDiv.innerHTML = `
+                <div class="message-header">
+                    <span class="agent-icon">${icon}</span>
+                    <span class="agent-name" style="color: ${color}">${agentName}</span>
+                    <span class="message-time">${new Date().toLocaleTimeString()}</span>
+                </div>
+                <div class="message-bubble">
+                    <div class="message-text">${formatted}</div>
+                </div>
+            `;
+            
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+            messageCount++;
+            document.getElementById('msgCount').textContent = messageCount;
+        }
+        
+        async function startConversation() {
+            const topic = document.getElementById('topicSelect').value;
+            if (!topic || topic === 'Choisir un objectif...') {
+                alert('Veuillez choisir un objectif');
+                return;
+            }
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('continueBtn').disabled = false;
+            
+            const response = await fetch('/api/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic: topic })
+            });
+            
+            const data = await response.json();
+            sessionId = data.session_id;
+            nextAgent = data.next_agent;
+            
+            addMessage(data.message.agent_name, data.message.message, data.message.color, data.message.icon);
+            document.getElementById('activeAgent').textContent = nextAgent;
+        }
+        
+        async function continueConversation() {
+            if (!sessionId) return;
+            
+            const btn = document.getElementById('continueBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading"></div>';
+            
+            const response = await fetch('/api/step', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: sessionId, agent_key: nextAgent })
+            });
+            
+            const data = await response.json();
+            
+            if (data.message) {
+                addMessage(data.message.agent_name, data.message.message, data.message.color, data.message.icon);
+                nextAgent = data.next_agent;
+                document.getElementById('activeAgent').textContent = nextAgent;
+                
+                if (data.is_complete) {
+                    btn.disabled = true;
+                    btn.innerHTML = '✅ Terminé';
+                    addMessage('🎉 Système', 'Campagne validée et prête au lancement !', '#10b981', '🎉');
+                }
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '➡️ Prochain agent';
+        }
+        
+        function clearConversation() {
+            document.getElementById('messages').innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 40px;">🤖 Conversation effacée</div>';
+            sessionId = null;
+            messageCount = 0;
+            document.getElementById('msgCount').textContent = '0';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('continueBtn').disabled = true;
+            document.getElementById('activeAgent').textContent = '-';
+        }
+        
+        document.getElementById('startBtn').onclick = startConversation;
+        document.getElementById('continueBtn').onclick = continueConversation;
+        document.getElementById('clearBtn').onclick = clearConversation;
+    </script>
+</body>
+</html>

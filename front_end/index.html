@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Ojafy — Votre boutique. Votre empire.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      cursor: auto;
+    }
+
+    :root {
+      --bg-white: #FFFFFF;
+      --surface-light: #F8FAFF;
+      --card-white: #FFFFFF;
+      --border-light: #EFF2F8;
+      --text-dark: #11181C;
+      --text-muted: #5A6A7A;
+      --accent-cyan: #0099FF;
+      --accent-purple: #8B5CF6;
+      --accent-pink: #F43F5E;
+      --accent-gold: #F59E0B;
+      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.02), 0 4px 8px rgba(0, 0, 0, 0.02);
+      --shadow-md: 0 20px 35px -12px rgba(0, 0, 0, 0.08);
+      --shadow-hover: 0 30px 40px -18px rgba(0, 153, 255, 0.2);
+      --font-sans: 'Inter', sans-serif;
+      --font-display: 'Syne', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-white);
+      color: var(--text-dark);
+      font-family: var(--font-sans);
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Effet WAOUHH pour les produits physiques */
+    .product-card-mini {
+      display: flex;
+      gap: 14px;
+      background: var(--surface-light);
+      border-radius: 20px;
+      padding: 12px;
+      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      border: 1px solid var(--border-light);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-card-mini:hover {
+      transform: translateY(-8px) scale(1.02);
+      background: white;
+      border-color: var(--accent-cyan);
+      box-shadow: var(--shadow-hover), 0 0 0 4px rgba(0, 153, 255, 0.1);
+    }
+
+    .product-card-mini::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 153, 255, 0.08), transparent);
+      transition: left 0.5s ease;
+      pointer-events: none;
+    }
+
+    .product-card-mini:hover::after {
+      left: 100%;
+    }
+
+    .product-card-mini .product-img img {
+      width: 68px;
+      height: 68px;
+      border-radius: 18px;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .product-card-mini:hover .product-img img {
+      transform: scale(1.05);
+    }
+
+    /* NAVBAR */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      color: var(--text-dark);
+    }
+
+    .nav-logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: white;
+      box-shadow: 0 6px 14px rgba(0,153,255,0.2);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-cyan);
+    }
+
+    .btn-ghost, .btn-primary {
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.2s;
+      display: inline-block;
+    }
+
+    .btn-ghost {
+      border: 1px solid var(--border-light);
+      color: var(--text-dark);
+      background: white;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .btn-primary {
+      background: linear-gradient(95deg, var(--accent-cyan), var(--accent-purple));
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,153,255,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,153,255,0.4);
+    }
+
+    /* Hero section */
+    .hero {
+      padding: 3rem 3rem 5rem;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 3rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .hero-left {
+      flex: 1.2;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 153, 255, 0.08);
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1px solid rgba(0, 153, 255, 0.2);
+      margin-bottom: 1.8rem;
+      color: var(--accent-cyan);
+    }
+
+    .hero-title {
+      font-size: 4rem;
+      font-family: var(--font-display);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text-dark);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-gold));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 550px;
+      margin-bottom: 2rem;
+    }
+
+    .btn-hero {
+      background: linear-gradient(95deg, var(--accent-cyan), var(--accent-purple));
+      padding: 1rem 2rem;
+      border-radius: 60px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: white;
+      box-shadow: 0 8px 20px rgba(0,153,255,0.3);
+      transition: 0.2s;
+      border: none;
+    }
+
+    .btn-hero:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(0,153,255,0.4);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 3rem;
+    }
+
+    .stat-val {
+      font-size: 2rem;
+      font-weight: 800;
+      font-family: var(--font-display);
+      color: var(--text-dark);
+    }
+
+    /* Carte boutique */
+    .hero-card {
+      background: white;
+      border-radius: 2rem;
+      border: 1px solid var(--border-light);
+      width: 400px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s;
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .products-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* MARQUEE */
+    .marquee-section {
+      background: var(--surface-light);
+      border-top: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+      padding: 1rem 0;
+      overflow: hidden;
+    }
+
+    /* BENTO */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.8rem;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .bento-card {
+      background: white;
+      border-radius: 2rem;
+      padding: 1.8rem;
+      border: 1px solid var(--border-light);
+      transition: all 0.3s;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .bento-card:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* Pricing */
+    .pricing-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      max-width: 1300px;
+      margin: 3rem auto;
+    }
+
+    .plan-card {
+      background: white;
+      border-radius: 2rem;
+      padding: 2rem;
+      width: 320px;
+      transition: 0.25s;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .plan-card.featured {
+      border: 2px solid var(--accent-cyan);
+      background: white;
+      transform: scale(1.02);
+      box-shadow: 0 20px 35px -12px rgba(0,153,255,0.2);
+    }
+
+    .plan-amount {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .plan-features {
+      list-style: none;
+      margin-top: 1.5rem;
+      line-height: 2;
+    }
+
+    .plan-features li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feat-check {
+      color: #10B981;
+      font-weight: 600;
+    }
+
+    /* CTA section */
+    .cta-section {
+      margin: 4rem 2rem;
+      border-radius: 2.5rem;
+      background: linear-gradient(135deg, #F0F7FF, #FFFFFF);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-content {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-light);
+      padding: 3rem 2rem 1rem;
+      background: var(--surface-light);
+    }
+
+    /* reveal animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: all 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .step-card {
+      background: white;
+      border-radius: 2rem;
+      padding: 2rem;
+      text-align: center;
+      transition: 0.3s;
+      border: 1px solid var(--border-light);
+    }
+
+    .step-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent-cyan);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .testimonial-card {
+      background: white;
+      border-radius: 1.8rem;
+      padding: 1.8rem;
+      transition: 0.3s;
+      border: 1px solid var(--border-light);
+    }
+
+    .testimonial-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-cyan);
+    }
+
+    .btn-outline-hero {
+      border: 1px solid var(--border-light);
+      padding: 0.8rem 1.8rem;
+      border-radius: 40px;
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 500;
+      margin-left: 1rem;
+      transition: 0.2s;
+    }
+
+    .btn-outline-hero:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      transition: 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-cyan);
+    }
+
+    .footer-col-title {
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+
+    /* ========== RESPONSIVE COMPLET ========== */
+
+    /* Tablettes (768px - 1024px) */
+    @media (max-width: 1024px) {
+      .hero-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .hero-left {
+        text-align: center;
+      }
+      
+      .hero-sub {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .hero-stats {
+        justify-content: center;
+      }
+      
+      .hero-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      
+      .bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .pricing-grid {
+        gap: 1.5rem;
+      }
+      
+      .plan-card {
+        width: 280px;
+      }
+    }
+
+    /* Mobiles (max 767px) */
+    @media (max-width: 767px) {
+      /* Navigation */
+      nav {
+        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .nav-cta {
+        display: flex;
+        gap: 0.5rem;
+      }
+      
+      .btn-ghost, .btn-primary {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+      }
+      
+      .nav-logo {
+        font-size: 1.3rem;
+      }
+      
+      .nav-logo-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1.2rem;
+      }
+      
+      /* Hero section */
+      .hero {
+        padding: 1.5rem 1rem 2rem;
+      }
+      
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .hero-badge {
+        font-size: 0.7rem;
+      }
+      
+      .hero-sub {
+        font-size: 0.95rem;
+      }
+      
+      .hero-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .btn-hero {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+      }
+      
+      .btn-outline-hero {
+        margin-left: 0;
+        width: fit-content;
+      }
+      
+      .hero-stats {
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .stat-val {
+        font-size: 1.5rem;
+      }
+      
+      /* Hero Card (boutique exemple) */
+      .hero-card {
+        width: 100%;
+        max-width: 380px;
+        margin: 0 auto;
+      }
+      
+      .card-body {
+        padding: 1rem;
+      }
+      
+      .product-card-mini {
+        gap: 10px;
+        padding: 10px;
+      }
+      
+      .product-card-mini .product-img img {
+        width: 55px;
+        height: 55px;
+        border-radius: 14px;
+      }
+      
+      /* Marquee */
+      .marquee-section div {
+        font-size: 0.8rem;
+        gap: 1rem;
+      }
+      
+      /* How section */
+      #how {
+        padding: 3rem 1rem;
+      }
+      
+      #how h2 {
+        font-size: 2rem;
+      }
+      
+      .step-card {
+        width: 100% !important;
+        max-width: 280px;
+      }
+      
+      /* Bento grid */
+      .bento-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem;
+      }
+      
+      .bento-card {
+        padding: 1.2rem;
+      }
+      
+      .bento-card h3 {
+        font-size: 1.2rem;
+        margin-top: 0.5rem;
+      }
+      
+      /* Pricing section */
+      #pricing {
+        padding: 3rem 1rem;
+      }
+      
+      #pricing h2 {
+        font-size: 2rem;
+      }
+      
+      .pricing-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      
+      .plan-card {
+        width: 100%;
+        max-width: 320px;
+      }
+      
+      .plan-card.featured {
+        transform: scale(1);
+      }
+      
+      .plan-amount {
+        font-size: 2rem;
+      }
+      
+      /* Testimonials */
+      #testimonials {
+        padding: 3rem 1rem;
+      }
+      
+      #testimonials h2 {
+        font-size: 1.8rem;
+      }
+      
+      .testimonial-card {
+        width: 100%;
+        max-width: 320px;
+      }
+      
+      /* CTA section */
+      .cta-section {
+        margin: 2rem 1rem;
+      }
+      
+      .cta-content {
+        padding: 2rem 1rem;
+      }
+      
+      .cta-content h2 {
+        font-size: 1.8rem;
+      }
+      
+      .cta-content p {
+        font-size: 0.9rem;
+        padding: 0 0.5rem;
+      }
+      
+      /* Footer */
+      footer {
+        padding: 2rem 1rem 1rem;
+      }
+      
+      footer > div:first-child {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+      }
+      
+      footer .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+      }
+      
+      footer .footer-links li {
+        margin-bottom: 0;
+      }
+      
+      .footer-col-title {
+        margin-bottom: 0.5rem;
+      }
+      
+      /* Position absolute fixe sur hero-card */
+      .hero-content > div:last-child {
+        position: static;
+      }
+      
+      .hero-content > div:last-child > div:last-child {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        margin-top: 1rem;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+    }
+
+    /* Petits mobiles (max 480px) */
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 1.8rem;
+      }
+      
+      .stat-val {
+        font-size: 1.3rem;
+      }
+      
+      .hero-stat div:last-child {
+        font-size: 0.7rem;
+      }
+      
+      #how h2 {
+        font-size: 1.6rem;
+      }
+      
+      #pricing h2 {
+        font-size: 1.8rem;
+      }
+      
+      .plan-amount {
+        font-size: 1.8rem;
+      }
+      
+      .plan-features {
+        font-size: 0.85rem;
+      }
+      
+      .btn-hero {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .btn-outline-hero {
+        width: 100%;
+        text-align: center;
+      }
+      
+      .hero-card .card-header {
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+      
+      .products-grid {
+        gap: 10px;
+      }
+      
+      .product-card-mini {
+        flex-wrap: wrap;
+        text-align: center;
+        justify-content: center;
+      }
+      
+      .product-card-mini > div:last-child {
+        text-align: center;
+      }
+      
+      .hero-card .card-body > div:last-child {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+      }
+    }
+
+    /* Fix pour la marquee animation sur mobile */
+    @media (max-width: 767px) {
+      @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">E</div>
+      Ojafy
+    </a>
+    <div class="nav-links">
+      <a href="#features">Fonctionnalités</a>
+      <a href="#pricing">Tarifs</a>
+      <a href="#how">Comment ça marche</a>
+      <a href="#testimonials">Témoignages</a>
+    </div>
+    <div class="nav-cta">
+      <a href="login.html" class="btn-ghost">Connexion</a>
+      <a href="login.html?signup=true" class="btn-primary">Créer ma boutique</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-badge">
+          🔥 Plateforme #1 en Afrique de l'Ouest
+        </div>
+        <h1 class="hero-title">
+          Votre boutique.<br>
+          Votre <em>empire</em>.<br>
+          Votre avenir.
+        </h1>
+        <p class="hero-sub">
+          Ojafy transforme votre idée en boutique professionnelle en 5 minutes. Vendez des produits digitaux ou physiques, acceptez les paiements à la livraison — conçu pour l'Afrique.
+        </p>
+        <div class="hero-actions">
+          <a href="login.html?signup=true" class="btn-hero">
+            ✨ Créer ma boutique gratuite
+            <span style="font-size:1.4rem;">→</span>
+          </a>
+          <a href="#" class="btn-outline-hero" id="demoBtn">▶ Voir la démo</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="stat-val">2,400+</div><div style="color:var(--text-muted)">Boutiques actives</div></div>
+          <div class="hero-stat"><div class="stat-val">18M <span style="font-size:1rem">XOF</span></div><div style="color:var(--text-muted)">Transactions/mois</div></div>
+          <div class="hero-stat"><div class="stat-val">99.9%</div><div style="color:var(--text-muted)">Disponibilité</div></div>
+        </div>
+      </div>
+
+      <div style="position:relative">
+        <div class="hero-card">
+          <div class="card-header" style="padding:1rem; border-bottom:1px solid var(--border-light); display:flex; gap:10px; align-items:center">
+            <div style="display:flex; gap:6px"><div style="width:12px;height:12px;border-radius:50%;background:#FF5F57"></div><div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E"></div><div style="width:12px;height:12px;border-radius:50%;background:#28C840"></div></div>
+            <div style="font-size:0.7rem; background:var(--surface-light); padding:4px 12px; border-radius:40px; color:var(--text-muted)">monshop.Ojafy.bf</div>
+          </div>
+          <div class="card-body" style="padding:1.2rem">
+            <div style="border-radius:1.2rem; overflow:hidden; margin-bottom:1rem">
+              <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=75&fit=crop" style="width:100%;height:140px;object-fit:cover" alt="boutique">
+            </div>
+            <div style="font-size:0.7rem; color:var(--accent-cyan); font-weight:600; letter-spacing:1px; margin-bottom:12px">✨ PRODUITS VEDETTES</div>
+            <div class="products-grid">
+              <div class="product-card-mini">
+                <div class="product-img"><img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&q=80&fit=crop" alt="T-Shirt physique"></div>
+                <div style="flex:1">
+                  <div style="font-weight:700; color:var(--text-dark)">T-Shirt Édition Limitée</div>
+                  <div style="color:var(--accent-cyan); font-weight:600">8 500 XOF</div>
+                  <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px">👕 Physique · Livraison offerte</div>
+                </div>
+              </div>
+              <div class="product-card-mini">
+                <div class="product-img"><img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=200&q=80&fit=crop" alt="Sac artisanal"></div>
+                <div style="flex:1">
+                  <div style="font-weight:700; color:var(--text-dark)">Sac Artisanal Faso Danfani</div>
+                  <div style="color:var(--accent-cyan); font-weight:600">12 500 XOF</div>
+                  <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px">🎒 Physique · Fait main</div>
+                </div>
+              </div>
+              <div class="product-card-mini">
+                <div class="product-img"><img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&q=70&fit=crop" alt="E-book"></div>
+                <div style="flex:1">
+                  <div style="font-weight:700; color:var(--text-dark)">Livres</div>
+                  <div style="color:var(--accent-cyan); font-weight:600">5 000 XOF</div>
+                  <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px"> Obtenir maintenant</div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:1.2rem; background:var(--surface-light); border-radius:1.2rem; padding:0.9rem">
+              <div><div style="font-size:0.7rem; color:var(--text-muted)">Revenu ce mois</div><div style="font-weight:800">847k XOF</div><div style="color:#10B981; font-size:0.7rem">↑ +23%</div></div>
+              <div><div style="font-size:0.7rem; color:var(--text-muted)">Commandes</div><div style="font-weight:800">124</div><div style="color:#10B981; font-size:0.7rem">↑ +18 cette semaine</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute; bottom:-20px; left:-20px; background:white; border-radius:60px; padding:0.5rem 1.2rem; border-left:4px solid var(--accent-cyan); box-shadow:var(--shadow-sm); font-size:0.8rem; font-weight:500">
+          🎉 +15 000 XOF • Nouvelle commande
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee-section">
+    <div style="display:flex; white-space:nowrap; animation: scroll 22s linear infinite; gap: 2rem; font-weight:500; color:var(--text-muted)">
+      🛍️ Boutiques en ligne &nbsp;✦&nbsp; 💳 Paiement à la livraison &nbsp;✦&nbsp; 📦 Produits physiques &nbsp;✦&nbsp; ⚡ Lancement 5min &nbsp;✦&nbsp; 🌍 Fait pour l'Afrique &nbsp;✦&nbsp; 🔒 Sécurisé
+      🛍️ Boutiques en ligne &nbsp;✦&nbsp; 💳 Paiement à la livraison &nbsp;✦&nbsp; 📦 Produits physiques
+    </div>
+  </div>
+
+  <style>
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .marquee-section div { display: inline-block; }
+  </style>
+
+  <section id="how" style="padding: 5rem 2rem; text-align:center; background: white">
+    <div style="color:var(--accent-cyan); font-weight:600; letter-spacing:2px">SIMPLICITÉ RADICALE</div>
+    <h2 style="font-size:3rem; font-family:var(--font-display); margin:1rem 0">Ouvert en <span style="color:var(--accent-pink)">3 étapes</span></h2>
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:2rem; margin-top:3rem">
+      <div class="step-card" style="width:280px"><div style="font-size:2.5rem; font-weight:800; color:var(--accent-cyan)">1</div><h3>Créez votre compte</h3><p style="color:var(--text-muted)">Gratuit, 30 secondes, sans carte</p></div>
+      <div class="step-card" style="width:280px"><div style="font-size:2.5rem; font-weight:800; color:var(--accent-cyan)">2</div><h3>Ajoutez vos produits</h3><p style="color:var(--text-muted)">Physiques ou digitaux, en un clic</p></div>
+      <div class="step-card" style="width:280px"><div style="font-size:2.5rem; font-weight:800; color:var(--accent-cyan)">3</div><h3>Vendez & encaissez</h3><p style="color:var(--text-muted)">Paiement à la livraison intégré</p></div>
+    </div>
+  </section>
+
+  <section id="features" style="padding: 3rem 1rem; background: var(--surface-light)">
+    <div style="text-align:center"><span style="color:var(--accent-cyan); font-weight:600">FONCTIONNALITÉS PUISSANTES</span><h2 style="font-size:2.8rem; font-family:var(--font-display); margin-top:0.5rem">Tout pour <em style="color:var(--accent-purple)">dominer</em></h2></div>
+    <div class="bento-grid">
+      <div class="bento-card"><span style="font-size:2rem">📦</span><h3>Produits physiques</h3><p>Vendez des T-shirts, sacs artisanaux, livres et bien plus encore — gérez tout depuis une seule interface.</p><div style="margin-top:1rem"><img src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=300&fit=crop" style="border-radius:1rem; width:100%; height:100px; object-fit:cover"></div></div>
+      <div class="bento-card"><span style="font-size:2rem">🚚</span><h3>Paiement à la livraison</h3><p>Adapté au contexte africain : vos clients paient à la réception, sans friction.</p><div style="margin-top:16px; background:var(--surface-light); padding:8px; border-radius:1rem">📍 Disponible dans 8 pays d'Afrique de l'Ouest</div></div>
+      <div class="bento-card"><span style="font-size:2rem">📊</span><h3>Analytics en temps réel</h3><p>Dashboard magique : chiffre d'affaires, commandes, produits les plus vendus.</p><div style="margin-top:20px; background:var(--surface-light); border-radius:1rem; padding:0.6rem">📈 +38% de croissance moyenne / mois</div></div>
+      <div class="bento-card"><span style="font-size:2rem">🎨</span><h3>Design sans limites</h3><p>Personnalisez thèmes, couleurs, ajoutez votre propre domaine.</p></div>
+      <div class="bento-card"><span style="font-size:2rem">🔔</span><h3>Alertes instantanées</h3><p>Notifications à chaque commande, livraison confirmée.</p><div style="background:#EFF6FF; border-radius:12px; padding:8px; margin-top:12px; color:var(--accent-cyan)">✨ Nouvelle commande #A47 – 22 500 XOF</div></div>
+      <div class="bento-card"><span style="font-size:2rem">🌍</span><h3>Hébergement local</h3><p>Données en Afrique, rapidité et conformité.</p></div>
+    </div>
+  </section>
+
+  <section id="testimonials" style="padding: 5rem 2rem; background: white">
+    <div style="text-align:center"><span style="color:var(--accent-cyan); font-weight:600">★★★★★ AVIS VÉRIFIÉS</span><h2 style="font-size:2.5rem; margin-top:0.5rem">Ils ont lancé leur <span style="color:var(--accent-pink)">empire</span></h2></div>
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:2rem; margin-top:3rem">
+      <div class="testimonial-card" style="max-width:320px"><p style="color:var(--text-muted)">“Grâce à Ojafy, je vends mes T-shirts et sacs artisanaux partout au Burkina. L'effet waouh des produits physiques attire mes clients !”</p><div style="margin-top:1rem"><strong>— Fatima O.</strong><div style="color:var(--text-muted)">Ouagadougou</div></div></div>
+      <div class="testimonial-card" style="max-width:320px"><p>“Le paiement à la livraison a boosté mes ventes de produits physiques. Mes clients adorent la confiance et le suivi.”</p><div><strong>— Kofi A.</strong><div>Abidjan</div></div></div>
+      <div class="testimonial-card" style="max-width:320px"><p>“Design moderne, rapide, parfait pour les créateurs africains. Ojafy m'aide à gérer produits physiques”</p><div><strong>— Aminata D.</strong><div>Dakar</div></div></div>
+    </div>
+  </section>
+
+  <section id="pricing" style="padding: 4rem 2rem; background: var(--surface-light)">
+    <div style="text-align:center"><span style="color:var(--accent-cyan)">TARIFICATION</span><h2 style="font-size:3rem">Simple & <span style="color:var(--accent-gold)">transparent</span></h2></div>
+    <div class="pricing-grid">
+      <div class="plan-card"><h3>Starter</h3><div class="plan-amount">Gratuit</div><ul class="plan-features"><li><span class="feat-check">✓</span> 5 produits</li><li><span class="feat-check">✓</span> Boutique en ligne</li><li><span class="feat-check">✓</span> Paiement à la livraison</li><li><span class="feat-check">✓</span> Sous-domaine Ojafy</li></ul><a href="login.html?signup=true" class="btn-ghost" style="display:inline-block; margin-top:1.5rem">Commencer</a></div>
+      <div class="plan-card featured"><h3>Pro <span style="background:var(--accent-cyan); padding:2px 8px; border-radius:40px; font-size:0.7rem; color:white">POPULAIRE</span></h3><div class="plan-amount">9 900 <span style="font-size:1rem">XOF/mois</span></div><ul class="plan-features"><li><span class="feat-check">✓</span> Produits illimités</li><li><span class="feat-check">✓</span> Domaine personnalisé</li><li><span class="feat-check">✓</span> Analytics avancés</li><li><span class="feat-check">✓</span> Support prioritaire</li><li><span class="feat-check">✓</span> Livraison intégrée</li></ul><a href="login.html?signup=true" class="btn-primary" style="display:inline-block; margin-top:1.5rem">Choisir Pro</a></div>
+      <div class="plan-card"><h3>Business</h3><div class="plan-amount">24 900 <span style="font-size:1rem">XOF/mois</span></div><ul class="plan-features"><li><span class="feat-check">✓</span> Tout Pro inclus</li><li><span class="feat-check">✓</span> API complète</li><li><span class="feat-check">✓</span> Multi-boutiques</li><li><span class="feat-check">✓</span> SLA 99.9%</li></ul><a href="login.html?signup=true" class="btn-ghost" style="display:inline-block; margin-top:1.5rem">Nous contacter</a></div>
+    </div>
+  </section>
+
+  <div class="cta-section">
+    <div class="cta-content">
+      <span style="color:var(--accent-cyan); font-weight:600">PRÊT À BRILLER ?</span>
+      <h2 style="font-size:3rem; margin:0.8rem 0">Votre boutique à <span style="color:var(--accent-pink)">quelques clics</span></h2>
+      <p style="color:var(--text-muted); max-width:500px; margin:0 auto 1.8rem">Rejoignez +2400 vendeurs et lancez votre empire dès aujourd'hui.</p>
+      <a href="login.html?signup=true" class="btn-hero" style="background: linear-gradient(95deg, var(--accent-cyan), var(--accent-purple)); color:white">🚀 Créer ma boutique gratuitement</a>
+    </div>
+  </div>
+
+  <footer>
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:2rem; max-width:1300px; margin:0 auto">
+      <div><div style="display:flex; align-items:center; gap:8px"><div class="nav-logo-icon">E</div><strong style="font-size:1.4rem">Ojafy</strong></div><p style="margin-top:0.5rem; color:var(--text-muted)">E-commerce pensé pour l'Afrique</p></div>
+      <div><div class="footer-col-title">Produit</div><ul class="footer-links"><li><a href="#features">Fonctionnalités</a></li><li><a href="#pricing">Tarifs</a></li></ul></div>
+      <div><div class="footer-col-title">Ressources</div><ul class="footer-links"><li><a href="#">Blog</a></li><li><a href="#">Support</a></li><li><a href="#">Tutoriels</a></li></ul></div>
+      <div><div class="footer-col-title">Légal</div><ul class="footer-links"><li><a href="#">Confidentialité</a></li><li><a href="#">CGU</a></li><li><a href="#">Mentions légales</a></li></ul></div>
+    </div>
+    <div style="text-align:center; margin-top:3rem; border-top:1px solid var(--border-light); padding-top:2rem; color:var(--text-muted)">© 2024 Ojafy — Fait avec ❤️</div>
+  </footer>
+
+  <script>
+    document.getElementById('demoBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      alert("🎬 Démo Ojafy : Créez votre boutique en 5 minutes avec notre interface intuitive !");
+    });
+
+    const reveals = document.querySelectorAll('.step-card, .bento-card, .testimonial-card, .plan-card, .hero-card, .cta-section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => {
+      el.classList.add('reveal');
+      observer.observe(el);
+    });
+    document.querySelectorAll('.section-eyebrow, .section-title, .hero-left').forEach(el => {
+      el.classList.add('reveal');
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>

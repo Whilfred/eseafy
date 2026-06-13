@@ -1,0 +1,181 @@
+# 🚀 ESEAFY Backend
+
+Backend officiel de la plateforme **ESEAFY**.
+
+API Node.js pour la gestion de :
+
+* Authentification
+* Produits
+* Commandes
+* Paiements
+* Email Automation (ELISA)
+* Analytics
+* Affiliation
+* Promotions
+* Tracking
+
+---
+
+# ⚙️ Technologies
+
+* Node.js
+* Express.js
+* PostgreSQL
+* Nodemailer
+* JWT
+* Cron Jobs
+* Feexpay
+
+---
+
+# 📦 Installation
+
+## 1. Cloner le projet
+
+```bash
+git clone https://github.com/your-repo/eseafy-backend.git
+```
+
+## 2. Entrer dans le dossier
+
+```bash
+cd eseafy-backend
+```
+
+## 3. Installer les dépendances
+
+```bash
+npm install
+```
+
+---
+
+# 🔐 Configuration
+
+Créer un fichier `.env`
+
+```
+PORT=3001
+DATABASE_URL=
+JWT_SECRET=
+GMAIL_USER=
+GMAIL_PASS=
+FEEXPAY_API_KEY=
+```
+
+---
+
+# 🚀 Lancer le projet
+
+Mode développement
+
+```bash
+npm run dev
+```
+
+Production
+
+```bash
+npm start
+```
+
+---
+
+# 📁 Structure du projet
+
+```
+eseafy-backend
+│
+├── config/
+├── jobs/
+├── middleware/
+├── models/
+├── routes/
+├── services/
+├── server.js
+├── package.json
+└── .env
+```
+
+---
+
+# 🧠 Fonctionnalités
+
+## 🔐 Authentification
+
+* Inscription
+* Connexion
+* JWT
+
+## 📦 Produits
+
+* Ajouter produit
+* Modifier produit
+* Supprimer produit
+
+## 🛒 Commandes
+
+* Créer commande
+* Gestion commandes
+
+## 💳 Paiement
+
+* Feexpay
+* Validation paiement
+
+## 📧 ELISA Automation
+
+* Campagnes emails
+* Cron automatique
+
+## 📊 Analytics
+
+* Tracking utilisateurs
+* Statistiques
+
+## 🤝 Affiliation
+
+* Système affiliés
+* Commissions
+
+---
+
+# 📡 API
+
+Base URL
+
+```
+http://localhost:3001
+```
+
+---
+
+# 📦 Scripts
+
+```json
+npm run dev
+npm start
+```
+
+---
+
+# 👨‍💻 Développement
+
+Backend structuré par :
+
+* Routes
+* Services
+* Middleware
+* Jobs
+
+---
+
+# 📄 Licence
+
+MIT
+
+---
+
+# 🚀 Projet
+
+ESEAFY Backend

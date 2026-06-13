@@ -1,0 +1,13 @@
+﻿# Environnements
+venv/
+node_modules/
+.env
+*.pyc
+__pycache__/
+*.exe
+.DS_Store
+*.log
+# Secrets
+elisa-core/.env
+eseafy-admin/.env
+eseafy-backend/.env

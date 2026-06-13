@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELISA — Documentation</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #fafaf7;
+    --grey-100: #f0efea;
+    --grey-200: #e0dfda;
+    --grey-400: #999890;
+    --grey-600: #555450;
+    --ink: #1a1918;
+    --accent: #0a0a0a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--grey-100); }
+  ::-webkit-scrollbar-thumb { background: var(--black); }
+
+  /* ─── HEADER ─── */
+  .masthead {
+    border-bottom: 2px solid var(--black);
+    padding: 0 60px;
+    display: flex;
+    align-items: stretch;
+    min-height: 80px;
+    position: sticky;
+    top: 0;
+    background: var(--white);
+    z-index: 100;
+  }
+  .masthead-logo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+    border-right: 1px solid var(--grey-200);
+    padding-right: 40px;
+    margin-right: 40px;
+    text-decoration: none;
+    color: inherit;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--black);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px; color: var(--white);
+    font-weight: 500;
+    letter-spacing: -0.5px;
+  }
+  .logo-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+  }
+  .logo-sub {
+    font-size: 10px;
+    color: var(--grey-400);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: -4px;
+  }
+  .masthead-nav {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;
+  }
+  .masthead-nav a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--grey-600);
+    text-decoration: none;
+    padding: 28px 20px;
+    border-right: 1px solid transparent;
+    transition: all 0.2s;
+    letter-spacing: 0.2px;
+  }
+  .masthead-nav a:hover { color: var(--black); }
+  .masthead-tag {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tag-version {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    background: var(--grey-100);
+    border: 1px solid var(--grey-200);
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: var(--grey-600);
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 100px 60px 80px;
+    border-bottom: 1px solid var(--grey-200);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: end;
+  }
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 24px;
+  }
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 72px;
+    line-height: 1;
+    letter-spacing: -3px;
+    margin-bottom: 8px;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--grey-400);
+  }
+  .hero-subtitle {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--grey-600);
+    margin-bottom: 40px;
+    font-style: italic;
+    letter-spacing: -0.5px;
+  }
+  .hero-desc {
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--grey-600);
+    max-width: 440px;
+    font-weight: 300;
+  }
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .acronym-table {
+    border-top: 2px solid var(--black);
+  }
+  .acronym-row {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    border-bottom: 1px solid var(--grey-200);
+    padding: 16px 0;
+    align-items: baseline;
+    gap: 24px;
+  }
+  .acronym-letter {
+    font-family: 'DM Serif Display', serif;
+    font-size: 40px;
+    line-height: 1;
+    color: var(--grey-200);
+    font-style: italic;
+  }
+  .acronym-word {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--black);
+    margin-bottom: 2px;
+  }
+  .acronym-def {
+    font-size: 13px;
+    color: var(--grey-600);
+    font-weight: 300;
+  }
+
+  /* ─── LAYOUT ─── */
+  .page-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 80px);
+  }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    border-right: 1px solid var(--grey-200);
+    padding: 48px 32px;
+    position: sticky;
+    top: 80px;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+  .sidebar-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+  .sidebar-section-title:first-child { margin-top: 0; }
+  .sidebar-link {
+    display: block;
+    font-size: 13px;
+    color: var(--grey-600);
+    text-decoration: none;
+    padding: 7px 0;
+    border-left: 2px solid transparent;
+    padding-left: 12px;
+    margin-left: -12px;
+    transition: all 0.15s;
+    font-weight: 400;
+  }
+  .sidebar-link:hover {
+    color: var(--black);
+    border-left-color: var(--black);
+  }
+  .sidebar-link.active {
+    color: var(--black);
+    font-weight: 600;
+    border-left-color: var(--black);
+  }
+
+  /* ─── MAIN CONTENT ─── */
+  .content {
+    padding: 64px 80px 120px 80px;
+    max-width: 860px;
+  }
+
+  /* ─── SECTIONS ─── */
+  .section {
+    margin-bottom: 80px;
+    padding-bottom: 80px;
+    border-bottom: 1px solid var(--grey-200);
+  }
+  .section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 40px;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+  .section-intro {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--grey-600);
+    font-weight: 300;
+    margin-bottom: 40px;
+    max-width: 600px;
+  }
+
+  h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    margin-top: 48px;
+    margin-bottom: 16px;
+  }
+  p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--grey-600);
+    margin-bottom: 16px;
+    font-weight: 300;
+  }
+  p strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ─── PIPELINE FLOW ─── */
+  .pipeline {
+    margin: 48px 0;
+    position: relative;
+  }
+  .pipeline-step {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 24px;
+    margin-bottom: 0;
+    position: relative;
+  }
+  .pipeline-step:not(:last-child) .step-line {
+    position: absolute;
+    left: 23px;
+    top: 48px;
+    bottom: -32px;
+    width: 2px;
+    background: var(--grey-200);
+    z-index: 0;
+  }
+  .step-num {
+    width: 48px; height: 48px;
+    border: 2px solid var(--black);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--white);
+    position: relative; z-index: 1;
+    flex-shrink: 0;
+  }
+  .step-body {
+    padding: 12px 0 40px;
+  }
+  .step-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--black);
+    margin-bottom: 6px;
+    letter-spacing: -0.2px;
+  }
+  .step-desc {
+    font-size: 14px;
+    color: var(--grey-600);
+    line-height: 1.7;
+    font-weight: 300;
+    margin: 0;
+  }
+
+  /* ─── AGENTS GRID ─── */
+  .agents-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--grey-200);
+    border: 1px solid var(--grey-200);
+    margin: 40px 0;
+  }
+  .agent-cell {
+    background: var(--white);
+    padding: 28px;
+    transition: background 0.2s;
+  }
+  .agent-cell:hover { background: var(--grey-100); }
+  .agent-cell.central {
+    grid-column: 1 / -1;
+    background: var(--black);
+    color: var(--white);
+  }
+  .agent-cell.central:hover { background: #222; }
+  .agent-cell.central .agent-role-label { color: rgba(255,255,255,0.4); }
+  .agent-cell.central .agent-desc { color: rgba(255,255,255,0.65); }
+  .agent-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .agent-icon {
+    font-size: 20px;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--grey-100);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .agent-cell.central .agent-icon {
+    background: rgba(255,255,255,0.1);
+  }
+  .agent-name-text {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+  .agent-role-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--grey-400);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: block;
+  }
+  .agent-desc {
+    font-size: 13px;
+    color: var(--grey-600);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* ─── CONVERSATION EXAMPLE ─── */
+  .chat-demo {
+    margin: 40px 0;
+    border: 1px solid var(--grey-200);
+    border-radius: 0;
+    overflow: hidden;
+  }
+  .chat-demo-header {
+    background: var(--grey-100);
+    padding: 12px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--grey-400);
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--grey-200);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chat-demo-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--grey-400);
+  }
+  .chat-messages {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .chat-msg {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .chat-avatar {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .chat-avatar.black { background: var(--black); }
+  .chat-avatar.grey  { background: var(--grey-100); border: 1px solid var(--grey-200); }
+  .chat-msg-body {}
+  .chat-msg-name {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+  .chat-msg-text {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink);
+    background: var(--grey-100);
+    padding: 10px 14px;
+    border-radius: 2px 10px 10px 10px;
+    max-width: 520px;
+    font-weight: 300;
+  }
+  .chat-msg.is-central .chat-msg-text {
+    background: var(--black);
+    color: var(--white);
+    border-radius: 2px 10px 10px 10px;
+  }
+  .chat-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0;
+  }
+  .chat-divider-line {
+    flex: 1; height: 1px;
+    background: var(--grey-200);
+  }
+  .chat-divider-text {
+    font-size: 10px;
+    color: var(--grey-400);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  /* ─── CALLOUT ─── */
+  .callout {
+    border-left: 3px solid var(--black);
+    padding: 16px 20px;
+    background: var(--grey-100);
+    margin: 24px 0;
+  }
+  .callout p { margin: 0; font-size: 14px; }
+  .callout.warn { border-left-color: var(--grey-400); }
+
+  /* ─── LEARNING TABLE ─── */
+  .learn-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 32px 0;
+    font-size: 13px;
+  }
+  .learn-table th {
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    padding: 8px 16px;
+    border-bottom: 2px solid var(--black);
+    font-weight: 400;
+  }
+  .learn-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--grey-200);
+    color: var(--grey-600);
+    vertical-align: top;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+  .learn-table td:first-child {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--black);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .learn-table tr:hover td { background: var(--grey-100); }
+
+  /* ─── CODE BLOCK ─── */
+  .code-block {
+    background: var(--black);
+    color: #d4d4c8;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    padding: 24px;
+    border-radius: 4px;
+    margin: 24px 0;
+    overflow-x: auto;
+  }
+  .code-block .comment { color: #666660; }
+  .code-block .key     { color: #a8c8a8; }
+  .code-block .val     { color: #c8a8c8; }
+  .code-block .sym     { color: #d4d4c8; opacity: 0.5; }
+
+  /* ─── FLOW DIAGRAM ─── */
+  .flow-diagram {
+    margin: 40px 0;
+    padding: 40px;
+    background: var(--grey-100);
+    border: 1px solid var(--grey-200);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    font-size: 13px;
+  }
+  .flow-node {
+    background: var(--white);
+    border: 1px solid var(--grey-200);
+    padding: 12px 24px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    min-width: 200px;
+    position: relative;
+  }
+  .flow-node.dark {
+    background: var(--black);
+    color: var(--white);
+    border-color: var(--black);
+  }
+  .flow-node.dashed {
+    border-style: dashed;
+    color: var(--grey-400);
+    font-weight: 300;
+    font-style: italic;
+    font-size: 12px;
+  }
+  .flow-node .sub {
+    display: block;
+    font-size: 11px;
+    font-weight: 300;
+    opacity: 0.6;
+    margin-top: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+  .flow-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 4px 0;
+  }
+  .flow-arrow-line {
+    width: 2px;
+    height: 20px;
+    background: var(--grey-400);
+  }
+  .flow-arrow-head {
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid var(--grey-400);
+  }
+  .flow-arrow-label {
+    font-size: 10px;
+    color: var(--grey-400);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 2px 0;
+  }
+  .flow-branch {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    margin: 4px 0;
+  }
+  .flow-branch-arm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    border-top: 2px solid var(--black);
+    padding: 40px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--grey-400);
+    letter-spacing: 0.5px;
+  }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 60px; padding: 60px 32px; }
+    .hero-title { font-size: 52px; }
+    .page-grid { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .content { padding: 48px 32px 80px; }
+    .agents-grid { grid-template-columns: 1fr; }
+    .masthead { padding: 0 32px; }
+    .footer { padding: 32px; flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <a class="masthead-logo" href="#">
+    <div class="logo-mark">EL</div>
+    <div>
+      <div class="logo-name">ELISA</div>
+      <div class="logo-sub">by Ojafy</div>
+    </div>
+  </a>
+  <nav class="masthead-nav">
+    <a href="#concept">Concept</a>
+    <a href="#agents">Agents</a>
+    <a href="#pipeline">Pipeline</a>
+    <a href="#conversation">Conversation</a>
+    <a href="#apprentissage">Apprentissage</a>
+  </nav>
+  <div class="masthead-tag">
+    <span class="tag-version">v2.0 — ELISA CORE</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Documentation technique</div>
+    <h1 class="hero-title">ELISA<em>.</em></h1>
+    <p class="hero-subtitle">L'intelligence marketing qui trouve vos prospects.</p>
+    <p class="hero-desc">
+      ELISA est un système multi-agents autonome intégré à Ojafy. 
+      Décrivez un produit — ELISA analyse votre base de données, 
+      fait parler ses agents entre eux, et vous retourne la liste des 
+      prospects les plus susceptibles d'acheter.
+    </p>
+  </div>
+  <div class="hero-right">
+    <div class="acronym-table">
+      <div class="acronym-row">
+        <div class="acronym-letter">E</div>
+        <div>
+          <div class="acronym-word">Engagement</div>
+          <div class="acronym-def">Mesure l'activité et l'implication des clients dans la boutique</div>
+        </div>
+      </div>
+      <div class="acronym-row">
+        <div class="acronym-letter">L</div>
+        <div>
+          <div class="acronym-word">Lead</div>
+          <div class="acronym-def">Identifie et qualifie les prospects avec le plus fort potentiel</div>
+        </div>
+      </div>
+      <div class="acronym-row">
+        <div class="acronym-letter">I</div>
+        <div>
+          <div class="acronym-word">Intelligence</div>
+          <div class="acronym-def">Analyse comportementale basée sur les données réelles de la base</div>
+        </div>
+      </div>
+      <div class="acronym-row">
+        <div class="acronym-letter">S</div>
+        <div>
+          <div class="acronym-word">Scoring</div>
+          <div class="acronym-def">Attribue un score de propension d'achat à chaque profil client</div>
+        </div>
+      </div>
+      <div class="acronym-row">
+        <div class="acronym-letter">A</div>
+        <div>
+          <div class="acronym-word">Automation</div>
+          <div class="acronym-def">Déclenche automatiquement les campagnes vers les bons prospects</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE BODY -->
+<div class="page-grid">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section-title">Vue d'ensemble</div>
+    <a class="sidebar-link" href="#concept">Qu'est-ce qu'ELISA</a>
+    <a class="sidebar-link" href="#probleme">Le problème résolu</a>
+
+    <div class="sidebar-section-title">Architecture</div>
+    <a class="sidebar-link" href="#agents">Les 7 agents</a>
+    <a class="sidebar-link" href="#central">Central Agent</a>
+    <a class="sidebar-link" href="#pipeline">Pipeline dynamique</a>
+
+    <div class="sidebar-section-title">Fonctionnement</div>
+    <a class="sidebar-link" href="#conversation">La conversation</a>
+    <a class="sidebar-link" href="#louche">Cas : produit inconnu</a>
+    <a class="sidebar-link" href="#decisions">Décisions de Central</a>
+
+    <div class="sidebar-section-title">Intelligence</div>
+    <a class="sidebar-link" href="#apprentissage">Auto-apprentissage</div>
+    <a class="sidebar-link" href="#parametres">Paramètres adaptatifs</a>
+    <a class="sidebar-link" href="#verdict">Verdict final</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="content">
+
+    <!-- CONCEPT -->
+    <section class="section" id="concept">
+      <div class="section-label">Vue d'ensemble</div>
+      <h2 class="section-title">Qu'est-ce qu'ELISA ?</h2>
+      <p class="section-intro">
+        ELISA n'est pas un chatbot. C'est un système de 7 agents IA spécialisés qui se parlent entre eux 
+        pour analyser vos données e-commerce et trouver les prospects les plus qualifiés pour n'importe quel produit.
+      </p>
+
+      <p>La plupart des outils marketing vous donnent des tableaux de bord et vous laissent travailler. 
+      ELISA fait le travail à votre place. Vous lui donnez la description d'un produit — 
+      <strong>elle cherche, analyse, discute, et vous retourne une décision.</strong></p>
+
+      <p>Concrètement : vous tapez <em>"je veux vendre des sachets de thé au gingembre"</em>, 
+      ELISA va dans votre base de données, identifie les clients qui ont acheté des produits similaires, 
+      les score selon leur probabilité d'achat, conçoit une campagne adaptée, et calcule le ROI estimé. 
+      Tout ça sans que vous appuyiez sur un seul bouton après avoir lancé l'analyse.</p>
+
+      <div id="probleme"></div>
+      <h3>Le problème qu'elle résout</h3>
+      <p>Les marchands sur Ojafy ont des données — commandes, clients, comportements — 
+      mais <strong>pas le temps ni les outils pour les exploiter</strong>. 
+      Envoyer un email au bon client au bon moment demande normalement un CRM, 
+      un outil de segmentation, un logiciel d'emailing, et une personne qui sait les utiliser.</p>
+
+      <p>ELISA compresse tout ça en une seule question et une réponse actionnable.</p>
+
+      <div class="callout">
+        <p><strong>Positionnement marché :</strong> Les outils équivalents (Klaviyo, HubSpot, ActiveCampaign) 
+        sont conçus pour l'Occident, en dollars, avec des intégrations qui n'existent pas en Afrique de l'Ouest. 
+        ELISA est construite nativement pour le marché UEMOA — Mobile Money, FCFA, comportements d'achat locaux.</p>
+      </div>
+    </section>
+
+    <!-- AGENTS -->
+    <section class="section" id="agents">
+      <div class="section-label">Architecture</div>
+      <h2 class="section-title">Les 7 agents</h2>
+      <p class="section-intro">
+        Chaque agent est un spécialiste. Ils ne font pas la même chose — 
+        ils ont chacun un rôle précis, des données précises, et une façon de parler qui leur est propre.
+      </p>
+
+      <div class="agents-grid">
+        <div class="agent-cell central">
+          <div class="agent-header">
+            <div class="agent-icon">🧠</div>
+            <div>
+              <span class="agent-role-label">Orchestrateur</span>
+              <div class="agent-name-text">Central Agent</div>
+            </div>
+          </div>
+          <p class="agent-desc">
+            Le chef d'orchestre. Il reçoit la demande initiale, décide quel agent interroger en premier, 
+            lit les réponses de chaque spécialiste, adapte sa stratégie en temps réel, 
+            et donne le verdict final. C'est lui qui décide si on continue, on pivote, ou on arrête. 
+            Il parle à tous les autres agents et agrège leurs résultats.
+          </p>
+        </div>
+        <div class="agent-cell">
+          <div class="agent-header">
+            <div class="agent-icon">📊</div>
+            <div>
+              <span class="agent-role-label">Analyste données</span>
+              <div class="agent-name-text">Data Agent</div>
+            </div>
+          </div>
+          <p class="agent-desc">
+            Cherche dans la base de données. Cherche le produit exact d'abord. 
+            S'il ne le trouve pas, infère la catégorie parente et élargit la recherche. 
+            Remonte les chiffres : ventes, revenus, segments, panier moyen.
+          </p>
+        </div>
+        <div class="agent-cell">
+          <div class="agent-header">
+            <div class="agent-icon">🔎</div>
+            <div>
+              <span class="agent-role-label">Qualification leads</span>
+              <div class="agent-name-text">Prospect Agent</div>
+            </div>
+          </div>
+          <p class="agent-desc">
+            Qualifie les prospects. Identifie les clients des segments A et B 
+            les plus pertinents pour le produit. Tient compte de la récence d'achat, 
+            de la sensibilité aux promos, et du comportement d'achat.
+          </p>
+        </div>
+        <div class="agent-cell">
+          <div class="agent-header">
+            <div class="agent-icon">🎯</div>
+            <div>
+              <span class="agent-role-label">Propension achat</span>
+              <div class="agent-name-text">Scoring Agent</div>
+            </div>
+          </div>
+          <p class="agent-desc">
+            Calcule un score de propension /100 pour chaque segment. 
+            Le score tient compte du taux de conversion global, de la taille du segment A, 
+            et du risque de churn. Les seuils s'ajustent automatiquement selon l'historique.
+          </p>
+        </div>
+        <div class="agent-cell">
+          <div class="agent-header">
+            <div class="agent-icon">🛒</div>
+            <div>
+              <span class="agent-role-label">Stratégie offre</span>
+              <div class="agent-name-text">Product Agent</div>
+            </div>
+          </div>
+          <p class="agent-desc">
+            Propose des stratégies de prix basées sur les données : option volume, 
+            option premium, option bundle. Compare avec le panier moyen du segment A 
+            pour calibrer les tarifs.
+          </p>
+        </div>
+        <div class="agent-cell">
+          <div class="agent-header">
+            <div class="agent-icon">📧</div>
+            <div>
+              <span class="agent-role-label">Campagnes email</span>
+              <div class="agent-name-text">Marketing Agent</div>
+            </div>
+          </div>
+          <p class="agent-desc">
+            Conçoit la campagne email : segment cible, objet du mail, angle du message, 
+            CTA, timing optimal. Prend en compte le taux de conversion actuel 
+            et la proportion de clients sensibles aux promos.
+          </p>
+        </div>
+        <div class="agent-cell">
+          <div class="agent-header">
+            <div class="agent-icon">⚡</div>
+            <div>
+              <span class="agent-role-label">ROI & verdict</span>
+              <div class="agent-name-text">Optim Agent</div>
+            </div>
+          </div>
+          <p class="agent-desc">
+            Simule le retour sur investissement : prospects ciblés × taux de conversion estimé × 
+            panier moyen − coût de campagne. Donne un verdict chiffré : GO / À TESTER / STOP. 
+            Les seuils s'auto-ajustent selon l'historique des sessions.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PIPELINE -->
+    <section class="section" id="pipeline">
+      <div class="section-label">Architecture</div>
+      <div id="central"></div>
+      <h2 class="section-title">Le pipeline dynamique</h2>
+      <p class="section-intro">
+        Contrairement à un pipeline fixe où les agents se suivent toujours dans le même ordre, 
+        ELISA a un pipeline dynamique : Central décide du prochain agent en fonction 
+        de ce qu'il vient d'apprendre.
+      </p>
+
+      <h3>La différence fondamentale</h3>
+      <p>Un pipeline fixe : <strong>Data → Prospect → Scoring → Product → Marketing → Optim</strong>, 
+      peu importe le produit, peu importe les données trouvées.</p>
+      <p>Le pipeline dynamique d'ELISA : Central lit chaque réponse, décide si on continue 
+      ou on pivote, et peut rappeler le même agent deux fois, sauter une étape, 
+      ou stopper prématurément.</p>
+
+      <div class="flow-diagram">
+        <div class="flow-node dark">
+          🧠 Central Agent
+          <span class="sub">reçoit la description du produit</span>
+        </div>
+        <div class="flow-arrow">
+          <div class="flow-arrow-line"></div>
+          <div class="flow-arrow-label">délègue</div>
+          <div class="flow-arrow-line"></div>
+          <div class="flow-arrow-head"></div>
+        </div>
+        <div class="flow-node">
+          📊 Data Agent
+          <span class="sub">cherche dans la base</span>
+        </div>
+        <div class="flow-arrow">
+          <div class="flow-arrow-line"></div>
+          <div class="flow-arrow-label">retour à</div>
+          <div class="flow-arrow-line"></div>
+          <div class="flow-arrow-head"></div>
+        </div>
+        <div class="flow-node dark">
+          🧠 Central Agent
+          <span class="sub">lit le retour — décide</span>
+        </div>
+        <div class="flow-arrow" style="padding: 8px 0;">
+          <div class="flow-arrow-line" style="height:12px;"></div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-branch-arm">
+            <div class="flow-node" style="min-width:160px; font-size:12px;">
+              ✅ Produit trouvé
+              <span class="sub">→ Prospect Agent</span>
+            </div>
+          </div>
+          <div class="flow-branch-arm">
+            <div class="flow-node" style="min-width:160px; font-size:12px; border-style:dashed;">
+              ❌ Produit absent
+              <span class="sub">→ Data Agent (catégorie)</span>
+            </div>
+          </div>
+          <div class="flow-branch-arm">
+            <div class="flow-node" style="min-width:160px; font-size:12px; color:var(--grey-400); border-style:dashed;">
+              🚫 Rien du tout
+              <span class="sub">→ STOP</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-arrow" style="padding:8px 0;">
+          <div class="flow-arrow-line" style="height:16px;"></div>
+          <div class="flow-arrow-label">si données trouvées</div>
+          <div class="flow-arrow-line" style="height:16px;"></div>
+          <div class="flow-arrow-head"></div>
+        </div>
+        <div class="flow-node">
+          🔎 Prospect → 🎯 Scoring → 🛒 Product → 📧 Marketing → ⚡ Optim
+          <span class="sub">chaque agent parle à Central avant de passer au suivant</span>
+        </div>
+        <div class="flow-arrow">
+          <div class="flow-arrow-line"></div>
+          <div class="flow-arrow-label">verdict</div>
+          <div class="flow-arrow-line"></div>
+          <div class="flow-arrow-head"></div>
+        </div>
+        <div class="flow-node dark">
+          🧠 Central — Conclusion
+          <span class="sub">GO / À TESTER / STOP + explication</span>
+        </div>
+      </div>
+
+      <p>À chaque étape, Central reçoit la réponse de l'agent spécialiste, 
+      réfléchit en langage naturel, et indique le prochain agent à appeler. 
+      Ce mécanisme est encodé dans chaque réponse de Central sous forme d'une directive JSON : 
+      <code style="font-family:'DM Mono',monospace;font-size:12px;background:var(--grey-100);padding:2px 6px;">{"next": "scoring", "note": "cibler segment A uniquement"}</code></p>
+    </section>
+
+    <!-- CONVERSATION -->
+    <section class="section" id="conversation">
+      <div class="section-label">Fonctionnement</div>
+      <h2 class="section-title">La conversation entre agents</h2>
+      <p class="section-intro">
+        Les agents parlent en langage naturel. Pas de JSON entre eux, pas de codes. 
+        Des phrases, des questions, des doutes exprimés — exactement comme deux collègues 
+        qui travaillent sur le même dossier.
+      </p>
+
+      <div class="chat-demo">
+        <div class="chat-demo-header">
+          <div class="chat-demo-dot"></div>
+          <div class="chat-demo-dot"></div>
+          <div class="chat-demo-dot"></div>
+          EXEMPLE DE SESSION — produit : "huile de palme rouge 5L"
+        </div>
+        <div class="chat-messages">
+
+          <div class="chat-msg is-central">
+            <div class="chat-avatar black">🧠</div>
+            <div class="chat-msg-body">
+              <div class="chat-msg-name">Central Agent</div>
+              <div class="chat-msg-text">Ok, on cherche les meilleurs prospects pour de l'huile de palme rouge 5L. C'est un produit alimentaire de consommation courante — je m'attends à des acheteurs récurrents. Data, tu peux aller voir ce qu'on a dans la base sur ce produit et les catégories alimentation ?</div>
+            </div>
+          </div>
+
+          <div class="chat-msg">
+            <div class="chat-avatar grey">📊</div>
+            <div class="chat-msg-body">
+              <div class="chat-msg-name">Data Agent</div>
+              <div class="chat-msg-text">Central, j'ai cherché "huile de palme" dans la base — pas de résultat direct sur ce terme exact. Par contre j'ai de l'activité dans la catégorie alimentation et épicerie. On a 3 produits dans cet espace avec 847 commandes payées au total. Le panier moyen sur ces achats c'est 4 200 FCFA. Tu veux que je ramène les segments actifs sur cette catégorie ?</div>
+            </div>
+          </div>
+
+          <div class="chat-msg is-central">
+            <div class="chat-avatar black">🧠</div>
+            <div class="chat-msg-body">
+              <div class="chat-msg-name">Central Agent</div>
+              <div class="chat-msg-text">Parfait, exactement ce que je voulais. Les clients alimentation sont notre cible naturelle pour ce produit. Prospect Agent, tu peux qualifier les segments A et B dans cette base et me dire combien on a de profils pertinents ?</div>
+            </div>
+          </div>
+
+          <div class="chat-msg">
+            <div class="chat-avatar grey">🔎</div>
+            <div class="chat-msg-body">
+              <div class="chat-msg-name">Prospect Agent</div>
+              <div class="chat-msg-text">J'ai regardé les segments A et B — on est sur 124 clients segment A avec un panier moyen à 6 800 FCFA et 287 en segment B à 3 100 FCFA. Ce qui m'intéresse c'est que 89 d'entre eux sont marqués "sensibles aux promos" — c'est un bon levier pour un premier achat sur ce produit. Est-ce qu'on cible les deux segments ou on commence uniquement par A pour tester ?</div>
+            </div>
+          </div>
+
+          <div class="chat-divider">
+            <div class="chat-divider-line"></div>
+            <div class="chat-divider-text">Scoring · Product · Marketing · Optim</div>
+            <div class="chat-divider-line"></div>
+          </div>
+
+          <div class="chat-msg is-central">
+            <div class="chat-avatar black">🧠</div>
+            <div class="chat-msg-body">
+              <div class="chat-msg-name">Central Agent — Verdict final</div>
+              <div class="chat-msg-text">On a tout ce qu'il faut pour y aller. 411 prospects qualifiés, score de propension à 72/100, revenu net estimé à 3 400 FCFA avec un taux de conversion projeté à 12%. C'est un GO. Je recommande de démarrer par le segment A avec un email personnalisé axé sur la qualité, et d'inclure les 89 sensibles aux promos du segment B avec un code -10%. On valide ?</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="louche"></div>
+      <h3>Cas particulier : produit inconnu dans la base</h3>
+      <p>Si vous cherchez des prospects pour <strong>une louche</strong> et qu'aucune louche n'a jamais été vendue 
+      dans votre boutique, ELISA ne s'arrête pas là. Elle raisonne :</p>
+
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="step-num">1</div>
+          <div class="step-line"></div>
+          <div class="step-body">
+            <div class="step-title">Data Agent cherche "louche"</div>
+            <p class="step-desc">Aucun résultat dans la base.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">2</div>
+          <div class="step-line"></div>
+          <div class="step-body">
+            <div class="step-title">Data Agent infère la catégorie</div>
+            <p class="step-desc">Via LLM : louche → ustensile de cuisine → catégorie cuisine. Il remonte ça à Central avec sa suggestion.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">3</div>
+          <div class="step-line"></div>
+          <div class="step-body">
+            <div class="step-title">Central valide et redirige</div>
+            <p class="step-desc">"Ok, les acheteurs de cuisine sont notre cible. Retourne chercher dans la catégorie cuisine et remonte les clients les plus actifs."</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">4</div>
+          <div class="step-line"></div>
+          <div class="step-body">
+            <div class="step-title">Data Agent élargit la recherche</div>
+            <p class="step-desc">Cherche dans la catégorie cuisine, remonte les segments A et B actifs sur ces produits, avec leurs paniers moyens.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">5</div>
+          <div class="step-line"></div>
+          <div class="step-body">
+            <div class="step-title">Le pipeline continue normalement</div>
+            <p class="step-desc">Avec la note explicite "via catégorie cuisine" dans le contexte — chaque agent suivant sait que c'est une inférence, pas une correspondance directe.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Sécurité anti-boucle</div>
+            <p class="step-desc">Data Agent ne peut être rappelé que 3 fois maximum par session. Au-delà, Central conclut qu'il n'y a pas assez de données et donne un STOP.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DÉCISIONS CENTRAL -->
+    <section class="section" id="decisions">
+      <div class="section-label">Fonctionnement</div>
+      <h2 class="section-title">Comment Central décide</h2>
+      <p class="section-intro">
+        Central ne suit pas un script. Il lit chaque réponse et décide dynamiquement 
+        quoi faire ensuite, en appliquant des règles simples et des seuils configurables.
+      </p>
+
+      <table class="learn-table">
+        <thead>
+          <tr>
+            <th>Situation</th>
+            <th>Ce que Central fait</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Data trouve le produit exact</td>
+            <td>Passe directement à Prospect Agent avec les données trouvées</td>
+          </tr>
+          <tr>
+            <td>Data ne trouve rien</td>
+            <td>Demande à Data de chercher dans la catégorie parente</td>
+          </tr>
+          <tr>
+            <td>Data revient avec la catégorie</td>
+            <td>Passe à Prospect Agent avec la note "via catégorie X"</td>
+          </tr>
+          <tr>
+            <td>Prospects insuffisants (&lt; seuil)</td>
+            <td>STOP — "trop peu de prospects pour justifier une campagne"</td>
+          </tr>
+          <tr>
+            <td>Score propension &lt; seuil</td>
+            <td>STOP — "score trop bas, probabilité d'achat insuffisante"</td>
+          </tr>
+          <tr>
+            <td>Scoring OK, tout normal</td>
+            <td>Continue vers Product → Marketing → Optim</td>
+          </tr>
+          <tr>
+            <td>Optim retourne le ROI</td>
+            <td>Verdict final : GO / À TESTER / STOP + explication en langage naturel</td>
+          </tr>
+          <tr>
+            <td>Agent pose une question</td>
+            <td>Central lit la question, tranche, et continue avec sa décision</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        <p>Chaque réponse de Central contient une directive cachée en fin de message : 
+        <code style="font-family:'DM Mono',monospace;font-size:12px;">{"next": "prospect", "note": "focus segment A"}</code>. 
+        Flask lit cette directive et route le prochain appel vers le bon agent. 
+        Si Central écrit STOP, la session se termine immédiatement.</p>
+      </div>
+    </section>
+
+    <!-- APPRENTISSAGE -->
+    <section class="section" id="apprentissage">
+      <div class="section-label">Intelligence</div>
+      <h2 class="section-title">L'auto-apprentissage</h2>
+      <p class="section-intro">
+        ELISA observe ses propres résultats et ajuste ses paramètres entre les sessions. 
+        Si elle est trop sévère, elle s'assouplit. Si elle est trop permissive, elle monte ses exigences.
+      </p>
+
+      <h3>Comment ça fonctionne</h3>
+      <p>Après chaque session terminée, le verdict (GO, À TESTER, ou STOP) est enregistré 
+      dans un historique local. ELISA regarde les <strong>5 dernières sessions</strong> 
+      et ajuste ses seuils en conséquence.</p>
+
+      <div id="parametres"></div>
+
+      <table class="learn-table">
+        <thead>
+          <tr>
+            <th>Paramètre</th>
+            <th>Valeur par défaut</th>
+            <th>Si 4 STOP sur 5</th>
+            <th>Si 4 GO sur 5</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>scoring.seuil_chaud</td>
+            <td>65/100</td>
+            <td>↓ 60/100 (plus permissif)</td>
+            <td>↑ 70/100 (plus exigeant)</td>
+          </tr>
+          <tr>
+            <td>prospect.min_prospects</td>
+            <td>5 clients</td>
+            <td>↓ 3 clients</td>
+            <td>↑ 7 clients</td>
+          </tr>
+          <tr>
+            <td>optimization.roi_min_go</td>
+            <td>2 000 FCFA</td>
+            <td>↓ 1 800 FCFA</td>
+            <td>↑ 2 300 FCFA</td>
+          </tr>
+          <tr>
+            <td>optimization.roi_min_test</td>
+            <td>500 FCFA</td>
+            <td>↓ 300 FCFA</td>
+            <td>↑ 800 FCFA</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Les paramètres sont stockés dans <code style="font-family:'DM Mono',monospace;font-size:12px;background:var(--grey-100);padding:2px 6px;">agents/params.json</code> 
+      et rechargés à chaque session. Chaque agent relit ses propres paramètres avant de répondre — 
+      les seuils qu'un agent utilise sont donc toujours à jour, même si une autre session 
+      vient de les modifier.</p>
+
+      <div id="verdict"></div>
+      <h3>Le verdict final</h3>
+      <p>Central synthétise toutes les informations et donne un verdict en trois options :</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:var(--grey-200); border:1px solid var(--grey-200); margin:24px 0;">
+        <div style="background:var(--white); padding:24px;">
+          <div style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:2px; margin-bottom:8px; color:var(--grey-400);">VERDICT 01</div>
+          <div style="font-size:18px; font-weight:600; margin-bottom:8px;">GO</div>
+          <p style="font-size:13px; margin:0;">Revenu net estimé ≥ seuil GO. Le pipeline recommande de lancer la campagne immédiatement.</p>
+        </div>
+        <div style="background:var(--grey-100); padding:24px; border-left:1px solid var(--grey-200); border-right:1px solid var(--grey-200);">
+          <div style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:2px; margin-bottom:8px; color:var(--grey-400);">VERDICT 02</div>
+          <div style="font-size:18px; font-weight:600; margin-bottom:8px;">À TESTER</div>
+          <p style="font-size:13px; margin:0; color:var(--grey-600);">Revenu entre les deux seuils. Lancer un test réduit d'abord, mesurer, puis décider.</p>
+        </div>
+        <div style="background:var(--white); padding:24px;">
+          <div style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:2px; margin-bottom:8px; color:var(--grey-400);">VERDICT 03</div>
+          <div style="font-size:18px; font-weight:600; margin-bottom:8px;">STOP</div>
+          <p style="font-size:13px; margin:0;">Pas assez de prospects, score trop bas, ou ROI négatif. Pas de campagne.</p>
+        </div>
+      </div>
+
+      <p>Le verdict est accompagné d'une explication en langage naturel : pourquoi ce verdict, 
+      quels chiffres l'ont déterminé, et quelle est la prochaine action recommandée. 
+      Ce n'est pas un score brut — c'est une décision argumentée.</p>
+    </section>
+
+    <!-- STACK TECHNIQUE -->
+    <section class="section" id="stack">
+      <div class="section-label">Architecture technique</div>
+      <h2 class="section-title">Ce qu'il y a sous le capot</h2>
+      <p class="section-intro">
+        ELISA tourne en Python sur un serveur Flask. Les agents appellent le LLM Groq 
+        et lisent directement la base de données PostgreSQL d'Ojafy.
+      </p>
+
+      <div class="code-block">
+<span class="comment"># Structure du projet</span>
+elisa-core/
+├── <span class="key">app.py</span>           <span class="comment"># Flask API + routing dynamique</span>
+├── agents/
+│   ├── <span class="key">base.py</span>      <span class="comment"># BaseAgent + auto-learning (adapt_params)</span>
+│   ├── <span class="key">central.py</span>   <span class="comment"># Orchestrateur — décision dynamique</span>
+│   ├── <span class="key">data_agent.py</span>  <span class="comment"># Recherche BD + fallback catégorie</span>
+│   ├── <span class="key">prospect_agent.py</span>  <span class="comment"># Qualification leads</span>
+│   ├── <span class="key">scoring_agent.py</span>   <span class="comment"># Scores + seuils adaptatifs</span>
+│   └── <span class="key">specialists.py</span>     <span class="comment"># Product · Marketing · Optim</span>
+├── <span class="key">agents/params.json</span>   <span class="comment"># Paramètres auto-ajustés (persistants)</span>
+├── <span class="key">agents/verdict_history.json</span>  <span class="comment"># Historique verdicts pour learning</span>
+├── database/
+│   └── <span class="key">db.py</span>        <span class="comment"># PostgreSQL — 8 requêtes analytiques</span>
+└── templates/
+    └── <span class="key">chat.html</span>    <span class="comment"># Interface multi-agents en temps réel</span>
+      </div>
+
+      <table class="learn-table">
+        <thead>
+          <tr>
+            <th>Composant</th>
+            <th>Technologie</th>
+            <th>Rôle</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>API serveur</td>
+            <td>Flask + Python</td>
+            <td>Orchestre les sessions, maintient l'état de la conversation</td>
+          </tr>
+          <tr>
+            <td>LLM</td>
+            <td>Groq — llama-3.1-8b-instant</td>
+            <td>Génère les réponses en langage naturel pour chaque agent</td>
+          </tr>
+          <tr>
+            <td>Base de données</td>
+            <td>PostgreSQL</td>
+            <td>Source de vérité : commandes, segments, profils, events</td>
+          </tr>
+          <tr>
+            <td>Frontend</td>
+            <td>HTML/CSS/JS vanilla</td>
+            <td>Interface chat temps réel avec suivi des agents actifs</td>
+          </tr>
+          <tr>
+            <td>Persistance params</td>
+            <td>JSON local (params.json)</td>
+            <td>Paramètres d'apprentissage persistants entre sessions</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div>ELISA — Engagement Lead Intelligence Scoring Automation</div>
+  <div>Ojafy · Marché UEMOA · v2.0</div>
+  <div>Documentation interne — 2025</div>
+</footer>
+
+<script>
+  // Active sidebar links on scroll
+  const sections = document.querySelectorAll('.section');
+  const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id || entry.target.querySelector('[id]')?.id;
+        sidebarLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${id}`) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { threshold: 0.3, rootMargin: '-80px 0px 0px 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
